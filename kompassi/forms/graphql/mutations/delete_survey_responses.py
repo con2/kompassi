@@ -48,6 +48,7 @@ class DeleteSurveyResponses(graphene.Mutation):
             survey=survey.slug,
             organization=survey.event.organization.slug,
             event=survey.event.slug,
+            response=", ".join(str(response_id) for response_id in input.response_ids),
             count_deleted=count_deleted,
         )
 

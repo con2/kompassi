@@ -15,6 +15,7 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
 import InvolvementAdminView from "@/components/involvement/InvolvementAdminView";
+import Pagination, { getPage } from "@/components/pagination/Pagination";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -35,19 +36,27 @@ const query = graphql(`
   query InvolvementEventLog(
     $eventSlug: String!
     $filters: [DimensionFilterInput!]
+    $page: Int
   ) {
     event(slug: $eventSlug) {
       name
       slug
 
       involvement {
-        eventLog(filters: $filters) {
+        eventLog(filters: $filters, page: $page) {
           dimensions {
             slug
             values {
               slug
               title
             }
+          }
+          pagination {
+            page
+            totalPages
+            totalCount
+            hasPrevious
+            hasNext
           }
           entries {
             ...InvolvementEventLogEntry
@@ -66,7 +75,26 @@ interface Props {
   searchParams: Promise<Record<string, string>>;
 }
 
+/// Both generateMetadata and the page use these so that Apollo answers both from one request.
+function getQueryVariables(
+  eventSlug: string,
+  searchParams: Record<string, string>,
+) {
+  const {
+    success: _success, // eslint-disable-line @typescript-eslint/no-unused-vars
+    error: _error, // eslint-disable-line @typescript-eslint/no-unused-vars
+    ...filterSearchParams
+  } = searchParams;
+
+  return {
+    eventSlug,
+    filters: buildDimensionFilters(filterSearchParams),
+    page: getPage(searchParams),
+  };
+}
+
 export async function generateMetadata(props: Props) {
+  const searchParams = await props.searchParams;
   const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
@@ -79,7 +107,7 @@ export async function generateMetadata(props: Props) {
 
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, filters: [] },
+    variables: getQueryVariables(eventSlug, searchParams),
   });
 
   if (!data.event?.involvement) {
@@ -117,16 +145,9 @@ export default async function InvolvementEventLogPage(props: Props) {
     );
   }
 
-  const {
-    success: _success, // eslint-disable-line @typescript-eslint/no-unused-vars
-    error: _error, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ...filterSearchParams
-  } = searchParams;
-  const filters = buildDimensionFilters(filterSearchParams);
-
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, filters },
+    variables: getQueryVariables(eventSlug, searchParams),
   });
 
   if (!data.event?.involvement) {
@@ -135,7 +156,7 @@ export default async function InvolvementEventLogPage(props: Props) {
 
   const event = data.event;
   const { eventLog } = data.event.involvement;
-  const entries = eventLog.entries;
+  const { entries, pagination } = eventLog;
 
   const dimensionTitles: Record<string, string> = {
     month: t.filters.month,
@@ -145,9 +166,7 @@ export default async function InvolvementEventLogPage(props: Props) {
 
   const dimensions: Dimension[] = eventLog.dimensions.map((dimension) => {
     let values = dimension.values;
-    if (dimension.slug === "month") {
-      values = [{ slug: "", title: t.filters.currentMonth }, ...values];
-    } else if (dimension.slug === "actor") {
+    if (dimension.slug === "actor") {
       values = [
         ...values,
         { slug: "system", title: t.attributes.actor.missing },
@@ -219,15 +238,28 @@ export default async function InvolvementEventLogPage(props: Props) {
         locale={locale}
       />
 
+      <Pagination
+        pagination={pagination}
+        searchParams={searchParams}
+        messages={translations.Pagination}
+        className="mb-2"
+      />
+
       <DataTable columns={columns} rows={entries}>
         <tfoot>
           <tr>
             <td colSpan={columns.length}>
-              {t.attributes.count(entries.length)}
+              {t.attributes.count(pagination.totalCount)}
             </td>
           </tr>
         </tfoot>
       </DataTable>
+
+      <Pagination
+        pagination={pagination}
+        searchParams={searchParams}
+        messages={translations.Pagination}
+      />
     </InvolvementAdminView>
   );
 }

@@ -8,6 +8,7 @@ export const invalidDimensionSlugs = [
   "past",
   "display",
   "search",
+  "page",
   "error",
   "success",
   "force",

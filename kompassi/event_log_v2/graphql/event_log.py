@@ -1,13 +1,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import cached_property
 
 import graphene
 from django.contrib.auth import get_user_model
+from django.core.paginator import Page
+from django.db import models
 
 from kompassi.core.models.event import Event
 from kompassi.core.models.organization import Organization
 from kompassi.core.models.person import Person
+from kompassi.graphql_api.pagination import PaginationInput, PaginationType
 
 from .. import registry
 from ..filters import EventLogFilters
@@ -22,6 +26,16 @@ class EventLog:
     event: Event
     organization: Organization
     filters: EventLogFilters
+    pagination: PaginationInput
+
+    @cached_property
+    def scoped_entries(self) -> models.QuerySet[Entry]:
+        return Entry.for_event_and_organization(self.event, self.organization)
+
+    @cached_property
+    def page(self) -> Page:
+        queryset = self.filters.filter(self.scoped_entries).select_related("actor__person").order_by("-id")
+        return self.pagination.paginate(queryset)
 
 
 class EventLogDimensionValueType(graphene.ObjectType):
@@ -37,11 +51,17 @@ class EventLogDimensionType(graphene.ObjectType):
 class EventLogType(graphene.ObjectType):
     @staticmethod
     def resolve_entries(event_log: EventLog, info):
-        queryset = Entry.for_event_and_organization(event_log.event, event_log.organization)
-        queryset = event_log.filters.filter(queryset)
-        return queryset.select_related("actor__person").order_by("-id")
+        entries = list(event_log.page.object_list)
+        Entry.prefetch_referenced_objects(entries)
+        return entries
 
     entries = graphene.NonNull(graphene.List(graphene.NonNull(LimitedEventLogEntryType)))
+
+    @staticmethod
+    def resolve_pagination(event_log: EventLog, info):
+        return PaginationType.from_page(event_log.page)
+
+    pagination = graphene.NonNull(PaginationType)
 
     @staticmethod
     def resolve_dimensions(event_log: EventLog, info):
@@ -56,9 +76,7 @@ class EventLogType(graphene.ObjectType):
 
         # The actor dropdown always reflects the selected month, regardless of the
         # entry_type/actor filters, so it never empties itself out from under the user.
-        year, month = event_log.filters.year_month
-        scoped_queryset = Entry.for_event_and_organization(event_log.event, event_log.organization)
-        month_queryset = Entry.year_month_filter(scoped_queryset, year, month)
+        month_queryset = event_log.filters.filter_month(event_log.scoped_entries)
         # order_by() clears Entry's default id ordering: left in place, Django adds id to
         # the SELECT to keep it satisfying ORDER BY, so DISTINCT stops deduplicating by
         # actor_id alone.

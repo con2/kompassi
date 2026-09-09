@@ -1,5 +1,5 @@
 import logging
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from datetime import date, datetime
 from enum import Enum
 from functools import cached_property
@@ -67,7 +67,9 @@ class Entry(MonthlyPartitionsMixin, models.Model):
             else:
                 return self.meta.message.format(**self.message_vars)
         except Exception as e:
-            logger.exception(f"Error formatting message for event log entry {self.pk}")
+            # No exc_info: the console log renderer prints tracebacks with locals, which takes
+            # seconds per entry, and a template/field mismatch is fully described by the error.
+            logger.warning("Error formatting message for event log entry %s (%s): %r", self.pk, self.entry_type, e)
             return f"An error occurred while formatting the message: {e}"
 
     def __str__(self):
@@ -100,6 +102,35 @@ class Entry(MonthlyPartitionsMixin, models.Model):
         if person_id := self.other_fields.get("person"):
             return Person.objects.get(id=person_id)
         return None
+
+    @classmethod
+    def prefetch_referenced_objects(cls, entries: Sequence[Self]) -> None:
+        """
+        Loads the events, organizations and persons that `other_fields` refer to with one
+        query per model and sets them on `entries`. Rendering `message` for a page of entries
+        otherwise looks each of them up one entry at a time.
+        """
+        event_slugs = {slug for entry in entries if (slug := entry.other_fields.get("event"))}
+        organization_slugs = {slug for entry in entries if (slug := entry.other_fields.get("organization"))}
+        person_ids = {str(person_id) for entry in entries if (person_id := entry.other_fields.get("person"))}
+
+        events_by_slug = {
+            event.slug: event for event in Event.objects.filter(slug__in=event_slugs).select_related("organization")
+        }
+        organizations_by_slug = {
+            organization.slug: organization for organization in Organization.objects.filter(slug__in=organization_slugs)
+        }
+        persons_by_id = {str(person.id): person for person in Person.objects.filter(id__in=person_ids)}
+
+        # Only found objects are set: a reference to a since-deleted object falls through to the
+        # cached property, which raises DoesNotExist and lets `message` report the error as before.
+        for entry in entries:
+            if (event := events_by_slug.get(entry.other_fields.get("event"))) is not None:
+                entry.event = event
+            if (organization := organizations_by_slug.get(entry.other_fields.get("organization"))) is not None:
+                entry.organization = organization
+            if (person := persons_by_id.get(str(entry.other_fields.get("person")))) is not None:
+                entry.person = person
 
     @classmethod
     def year_month_filter(cls, queryset: models.QuerySet[Self], year: int, month: int) -> models.QuerySet[Self]:

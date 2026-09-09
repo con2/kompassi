@@ -6,7 +6,9 @@ from django.contrib.auth import get_user_model
 
 from kompassi.core.models.event import Event
 from kompassi.core.models.organization import Organization
+from kompassi.core.models.person import Person
 from kompassi.core.models.venue import Venue
+from kompassi.graphql_api.pagination import PaginationInput
 from kompassi.tickets_v2.optimized_server.utils.uuid7 import uuid7
 
 from .filters import EventLogFilters
@@ -110,10 +112,38 @@ def test_actor_filter_system_sentinel_selects_entries_without_an_actor():
     assert set(both.values_list("id", flat=True)) == {with_actor.id, without_actor.id}
 
 
-def test_event_log_filters_from_graphql_defaults_month_to_current():
+@pytest.mark.django_db
+def test_month_filter_is_optional():
+    Entry.ensure_partitions()
+
+    event, _created = Event.get_or_create_dummy()
+    now = datetime.now(UTC)
+    last_month = now.replace(day=1) - timedelta(days=1)
+
+    this_month_entry = Entry.objects.create(
+        id=uuid7(now),
+        entry_type="core.event.created",
+        other_fields={"event": event.slug},
+    )
+    last_month_entry = Entry.objects.create(
+        id=uuid7(last_month),
+        entry_type="core.event.created",
+        other_fields={"event": event.slug},
+    )
+    scoped = Entry.for_event_and_organization(event, event.organization)
+
+    all_months = EventLogFilters().filter(scoped)
+    assert set(all_months.values_list("id", flat=True)) == {this_month_entry.id, last_month_entry.id}
+
+    this_month_only = EventLogFilters(month=f"{now.year}-{now.month:02}").filter(scoped)
+    assert set(this_month_only.values_list("id", flat=True)) == {this_month_entry.id}
+
+
+def test_event_log_filters_from_graphql_defaults_to_no_filters():
     filters = EventLogFilters.from_graphql(None)
 
     assert filters.month is None
+    assert filters.year_month is None
     assert filters.entry_type == []
     assert filters.actor == []
 
@@ -140,3 +170,75 @@ def test_event_log_filters_from_graphql_parses_known_slugs():
     assert filters.entry_type == ["core.event.created"]
     assert filters.actor == ["42"]
     assert filters.year_month == (2026, 1)
+
+
+@pytest.mark.django_db
+def test_pagination_newest_first_and_stale_page_resets_to_first():
+    Entry.ensure_partitions()
+
+    event, _created = Event.get_or_create_dummy()
+    now = datetime.now(UTC)
+    entries = [
+        Entry.objects.create(
+            id=uuid7(now + timedelta(seconds=i)),
+            entry_type="core.event.created",
+            other_fields={"event": event.slug},
+        )
+        for i in range(3)
+    ]
+    queryset = Entry.for_event_and_organization(event, event.organization).order_by("-id")
+
+    first_page = PaginationInput(page=1, page_size=2).paginate(queryset)
+    assert [entry.id for entry in first_page.object_list] == [entries[2].id, entries[1].id]
+    assert first_page.paginator.count == 3
+    assert first_page.paginator.num_pages == 2
+    assert first_page.has_next()
+    assert not first_page.has_previous()
+
+    second_page = PaginationInput(page=2, page_size=2).paginate(queryset)
+    assert [entry.id for entry in second_page.object_list] == [entries[0].id]
+    assert not second_page.has_next()
+    assert second_page.has_previous()
+
+    stale_page = PaginationInput(page=99, page_size=2).paginate(queryset)
+    assert stale_page.number == 1
+
+
+def test_pagination_input_from_graphql_clamps_out_of_range_values():
+    assert PaginationInput.from_graphql(None, None) == PaginationInput(page=1, page_size=100)
+    assert PaginationInput.from_graphql(0, 0) == PaginationInput(page=1, page_size=1)
+    assert PaginationInput.from_graphql(3, 10_000) == PaginationInput(page=3, page_size=500)
+
+
+@pytest.mark.django_db
+def test_prefetch_referenced_objects_renders_messages_without_further_queries(django_assert_num_queries):
+    Entry.ensure_partitions()
+
+    event, _created = Event.get_or_create_dummy()
+    person, _created = Person.get_or_create_dummy()
+    actor = User.objects.create(username="event-log-prefetch-actor")
+
+    for _ in range(3):
+        Entry.objects.create(
+            entry_type="core.person.viewed",
+            actor=actor,
+            other_fields={"event": event.slug, "person": person.id},
+        )
+    Entry.objects.create(
+        entry_type="involvement.registry.created",
+        actor=actor,
+        other_fields={"organization": event.organization.slug, "registry": "test-registry"},
+    )
+
+    entries = list(Entry.for_event_and_organization(event, event.organization).select_related("actor__person"))
+
+    with django_assert_num_queries(3):
+        Entry.prefetch_referenced_objects(entries)
+
+    with django_assert_num_queries(0):
+        messages = [entry.message for entry in entries]
+
+    assert all("An error occurred" not in message for message in messages)
+    assert entries[0].event == event
+    assert entries[0].organization == event.organization
+    assert entries[0].person == person

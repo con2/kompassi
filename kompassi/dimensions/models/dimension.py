@@ -37,6 +37,8 @@ INVALID_DIMENSION_SLUGS = [
     "past",
     "display",
     "search",
+    # clash with query string parameters for pagination
+    "page",
     # Do or do not. There is no try.
     "error",
     "success",

@@ -161,6 +161,15 @@ const translations: Translations = {
   DataTable: {
     create: "Luo uusi",
   },
+  Pagination: {
+    title: "Sivut",
+    first: "Ensimmäinen sivu",
+    previous: "Edellinen sivu",
+    next: "Seuraava sivu",
+    last: "Viimeinen sivu",
+    pageOf: (page: number, totalPages: number) =>
+      `Sivu ${page} / ${totalPages}`,
+  },
   Event: {
     title: "Tapahtumat",
     headline: "Aika ja paikka",
@@ -3262,7 +3271,6 @@ const translations: Translations = {
     },
     filters: {
       month: "Kuukausi",
-      currentMonth: "Tämä kuukausi",
       type: "Tyyppi",
       actor: "Tekijä",
     },

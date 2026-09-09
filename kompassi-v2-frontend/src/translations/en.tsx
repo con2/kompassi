@@ -155,6 +155,15 @@ const translations = {
   DataTable: {
     create: "Create",
   },
+  Pagination: {
+    title: "Pages",
+    first: "First page",
+    previous: "Previous page",
+    next: "Next page",
+    last: "Last page",
+    pageOf: (page: number, totalPages: number) =>
+      `Page ${page} of ${totalPages}`,
+  },
   Event: {
     title: "Events",
     headline: "Date and venue",
@@ -3315,7 +3324,6 @@ const translations = {
     },
     filters: {
       month: "Month",
-      currentMonth: "This month",
       type: "Type",
       actor: "Actor",
     },

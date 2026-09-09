@@ -15,6 +15,7 @@ from kompassi.event_log_v2.filters import EventLogFilters
 from kompassi.event_log_v2.graphql.event_log import EventLog, EventLogType
 from kompassi.event_log_v2.models.entry import Entry
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
+from kompassi.graphql_api.pagination import PaginationInput
 from kompassi.involvement.emperkelators.base import BaseEmperkelator
 from kompassi.involvement.filters import InvolvementFilters
 from kompassi.reports.graphql.report import ReportType
@@ -261,9 +262,11 @@ class InvolvementEventMetaType(DjangoObjectType):
         meta: InvolvementEventMeta,
         info,
         filters: list[DimensionFilterInput] | None = None,
+        page: int | None = None,
+        page_size: int | None = None,
     ):
         """
-        Event log entries of this event and its organization.
+        Event log entries of this event and its organization, newest first.
         """
         request: HttpRequest = info.context
 
@@ -277,10 +280,13 @@ class InvolvementEventMetaType(DjangoObjectType):
             event=meta.event,
             organization=meta.event.organization,
             filters=EventLogFilters.from_graphql(filters),
+            pagination=PaginationInput.from_graphql(page, page_size),
         )
 
     event_log = graphene.NonNull(
         EventLogType,
         filters=graphene.List(DimensionFilterInput, required=False),
+        page=graphene.Int(required=False),
+        page_size=graphene.Int(required=False),
         description=normalize_whitespace(resolve_event_log.__doc__ or ""),
     )

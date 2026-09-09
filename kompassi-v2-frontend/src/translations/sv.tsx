@@ -151,6 +151,15 @@ const translations: Translations = {
   DataTable: {
     create: "Skapa",
   },
+  Pagination: {
+    title: "Sidor",
+    first: "Första sidan",
+    previous: "Föregående sida",
+    next: "Nästa sida",
+    last: "Sista sidan",
+    pageOf: (page: number, totalPages: number) =>
+      `Sida ${page} av ${totalPages}`,
+  },
   Event: {
     title: "Evenemang",
     headline: "Datum och plats",
@@ -3261,7 +3270,6 @@ const translations: Translations = {
     },
     filters: {
       month: "Månad",
-      currentMonth: "Denna månad",
       type: "Typ",
       actor: "Utförare",
     },

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
 from typing import Self
 
 import pydantic
@@ -35,17 +34,20 @@ class EventLogFilters(pydantic.BaseModel):
         )
 
     @property
-    def year_month(self) -> tuple[int, int]:
-        if self.month:
-            year, month = self.month.split("-")
-            return int(year), int(month)
+    def year_month(self) -> tuple[int, int] | None:
+        if not self.month:
+            return None
 
-        today = datetime.now(UTC).date()
-        return today.year, today.month
+        year, month = self.month.split("-")
+        return int(year), int(month)
+
+    def filter_month(self, queryset: models.QuerySet[Entry]) -> models.QuerySet[Entry]:
+        if year_month := self.year_month:
+            return Entry.year_month_filter(queryset, *year_month)
+        return queryset
 
     def filter(self, queryset: models.QuerySet[Entry]) -> models.QuerySet[Entry]:
-        year, month = self.year_month
-        queryset = Entry.year_month_filter(queryset, year, month)
+        queryset = self.filter_month(queryset)
 
         if self.entry_type:
             queryset = queryset.filter(entry_type__in=self.entry_type)
