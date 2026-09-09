@@ -427,6 +427,7 @@ class Survey(models.Model):
 
         return self
 
+    @transaction.atomic
     def clone(
         self,
         event: Event,
@@ -438,7 +439,10 @@ class Survey(models.Model):
         registry: Registry | None = None,
     ):
         """
-        Clones this survey with its language versions and dimensions (but not responses).
+        Clones this survey with its language versions (but not responses). A stand-alone
+        survey (app=FORMS) gets a fresh clone of this survey's Universe, including its
+        dimensions and values. A program form (app=PROGRAM) uses the target event's shared
+        program Universe as is; no dimension cloning applies there.
         Some fields are not copied over because they make no sense or might cause data leaks.
         """
         survey = Survey(
@@ -453,8 +457,12 @@ class Survey(models.Model):
             retention_period=self.retention_period,
             created_by=created_by,
             registry=self.registry if registry is None else registry,
-        ).with_mandatory_fields()
+        )
 
+        if app == DimensionApp.FORMS:
+            survey.universe = self.universe.clone(scope=event.scope, slug=slug)
+
+        survey.with_mandatory_fields()
         survey.save()
 
         cloned_forms = [form.clone(survey, created_by=created_by) for form in self.languages.all()]

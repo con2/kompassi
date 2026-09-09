@@ -88,6 +88,25 @@ class Universe(models.Model):
             case _:
                 raise ValueError(f"Unknown app type: {self.app}")
 
+    def clone(self, *, scope: Scope, slug: str) -> Universe:
+        """
+        Creates a new Universe in the given scope with a fresh copy of this Universe's
+        dimensions and values. The clone shares nothing with the original: changes to
+        either universe's dimensions and values do not affect the other.
+        """
+        from .dimension_dto import DimensionDTO
+
+        new_universe = Universe.objects.create(scope=scope, slug=slug, app=self.app)
+
+        dimension_dtos = [
+            DimensionDTO.from_dimension(dimension)
+            for dimension in self.dimensions.prefetch_related("values").order_by("order")
+        ]
+        if dimension_dtos:
+            DimensionDTO.save_many(new_universe, dimension_dtos)
+
+        return new_universe
+
     def preload_dimensions(
         self,
         dimension_slugs: Collection[str] | None = None,

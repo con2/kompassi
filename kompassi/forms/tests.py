@@ -1540,3 +1540,73 @@ def test_update_survey_retention_period_days_round_trip(_patched_graphql_check_i
 
     survey.refresh_from_db()
     assert survey.retention_period is None
+
+
+@pytest.mark.django_db
+def test_survey_clone_clones_universe_for_standalone_survey():
+    """
+    Cloning a stand-alone survey (app=FORMS) gives the clone its own independent copy of
+    the original survey's dimensions and values, not a reference to the same Universe.
+    """
+    event, _created = Event.get_or_create_dummy()
+
+    survey = Survey.objects.create(event=event, slug="clone-source")
+
+    dimension = Dimension.objects.create(
+        universe=survey.universe,
+        slug="color",
+        title_en="Color",
+        is_key_dimension=True,
+    )
+    DimensionValue.objects.create(dimension=dimension, slug="red", title_en="Red")
+    DimensionValue.objects.create(dimension=dimension, slug="blue", title_en="Blue")
+
+    clone = survey.clone(
+        event=event,
+        slug="clone-target",
+        app=DimensionApp.FORMS,
+        purpose=SurveyPurpose.DEFAULT,
+    )
+
+    assert clone.universe_id != survey.universe_id
+    assert clone.universe.scope_id == survey.universe.scope_id
+    assert clone.universe.slug == clone.slug
+
+    cloned_dimension = clone.universe.dimensions.get(slug="color")
+    assert cloned_dimension.id != dimension.id
+    assert cloned_dimension.title_en == "Color"
+    assert cloned_dimension.is_key_dimension is True
+    assert set(cloned_dimension.values.values_list("slug", flat=True)) == {"red", "blue"}
+
+    # the two universes are independent: changing one does not affect the other
+    DimensionValue.objects.create(dimension=cloned_dimension, slug="green", title_en="Green")
+    assert set(dimension.values.values_list("slug", flat=True)) == {"red", "blue"}
+
+
+@pytest.mark.django_db
+def test_survey_clone_uses_target_event_program_universe():
+    """
+    Cloning into a program form (app=PROGRAM) uses the target event's shared program
+    Universe as is; no dimensions are cloned from the source survey.
+    """
+    from kompassi.program_v2.models.meta import ProgramV2EventMeta
+
+    event, _created = Event.get_or_create_dummy()
+    meta, _created = ProgramV2EventMeta.get_or_create_dummy()
+    target_event = meta.event
+
+    survey = Survey.objects.create(event=event, slug="clone-source-2")
+    Dimension.objects.create(universe=survey.universe, slug="color")
+
+    dimension_count_before = target_event.program_universe.dimensions.count()
+
+    clone = survey.clone(
+        event=target_event,
+        slug="clone-target-2",
+        app=DimensionApp.PROGRAM,
+        purpose=SurveyPurpose.DEFAULT,
+    )
+
+    assert clone.universe_id == target_event.program_universe.id
+    assert clone.universe.dimensions.count() == dimension_count_before
+    assert not clone.universe.dimensions.filter(slug="color").exists()
