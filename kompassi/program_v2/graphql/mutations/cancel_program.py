@@ -58,7 +58,7 @@ class CancelProgram(graphene.Mutation):
                     raise ValueError("You cannot cancel this program.")
 
                 emit(
-                    "program_v2.programs.cancelled",
+                    "program_v2.program.cancelled",
                     request=request,
                     program=program_slug,
                     organization=event.organization,
@@ -80,7 +80,7 @@ class CancelProgram(graphene.Mutation):
                     raise ValueError("You cannot delete this program.")
 
                 emit(
-                    "program_v2.programs.deleted",
+                    "program_v2.program.deleted",
                     request=request,
                     program=program_slug,
                     organization=event.organization,

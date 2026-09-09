@@ -41,7 +41,7 @@ class RestoreProgram(graphene.Mutation):
         involvement_dimensions_cache = program.event.involvement_universe.preload_dimensions()
 
         emit(
-            "program_v2.programs.restored",
+            "program_v2.program.restored",
             request=request,
             program=program_slug,
             organization=event.organization,
