@@ -2869,10 +2869,9 @@ const translations: Translations = {
       title: "Käyttöoikeudet",
       description: (
         <>
-          Alla luetelluille käyttäjille on myönnetty oikeus hallinnoida
-          nimenomaan tätä kyselyä ja sen ulottuvuuksia, sen lisäksi että
-          käyttäjille on voitu myöntää oikeus kaikkiin tapahtuman tai
-          organisaation kyselyihin.
+          Nämä käyttäjät voivat hallinnoida tätä kyselyä ja sen vastauksia.
+          Lisäksi kyselyä ja sen vastauksia voivat hallinnoida ne käyttäjät,
+          joilla on tähän tapahtumaan kyselytyökalun ylläpitäjäoikeudet.
         </>
       ),
       noGrants: "Kenellekään ei ole myönnetty oikeutta juuri tähän kyselyyn.",

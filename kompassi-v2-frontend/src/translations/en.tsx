@@ -2866,8 +2866,8 @@ const translations = {
       description: (
         <>
           Users listed below have been granted access to manage this survey and
-          its dimensions specifically, in addition to any users who have been
-          granted access to all surveys of this event or organization.
+          its responses. Additionally, users who have survey admin privileges
+          for this event have access.
         </>
       ),
       noGrants: "Nobody has been granted access to this survey specifically.",

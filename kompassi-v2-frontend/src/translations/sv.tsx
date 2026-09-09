@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // Translators: Kirsi Västi, Calle Tengman, Luka Pajukanta, Claude Sonnet 4.6
 
-import { ComponentType, ReactNode, JSX } from "react";
+import { ComponentType, JSX, ReactNode } from "react";
 import en, { Translations } from "./en";
 
 /// Mark untranslated English strings with this
@@ -2814,8 +2814,8 @@ const translations: Translations = {
       description: (
         <>
           Nedan listade användare har beviljats rätt att administrera just denna
-          enkät och dess dimensioner, utöver de användare som har beviljats rätt
-          till alla enkäter för detta evenemang eller denna organisation.
+          enkät och dess svar, utöver de användare som har beviljats rätt till
+          alla enkäter för detta evenemang eller denna organisation.
         </>
       ),
       noGrants: "Ingen har beviljats åtkomst till just denna enkät.",
