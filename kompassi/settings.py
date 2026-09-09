@@ -300,6 +300,7 @@ INSTALLED_APPS = (
     "kompassi.events.ropecon2027",
     "kompassi.events.frostbite2027",
     "kompassi.events.kuplii2027",
+    "kompassi.events.tracon2027",
     # zombies are obsolete apps that can't be removed due to cross-app references in models
     "kompassi.zombies.enrollment",
     "kompassi.zombies.event_log",
