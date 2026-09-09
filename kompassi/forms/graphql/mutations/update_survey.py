@@ -4,7 +4,6 @@ import graphene
 from django import forms as django_forms
 from graphene.types.generic import GenericScalar
 
-from kompassi.access.cbac import graphql_check_instance
 from kompassi.core.utils.form_utils import camel_case_keys_to_snake_case
 from kompassi.core.utils.retention_period import days_to_timedelta
 from kompassi.dimensions.models.enums import DimensionApp
@@ -65,12 +64,7 @@ class UpdateSurvey(graphene.Mutation):
         )
         form_data: dict[str, str] = input.form_data  # type: ignore
 
-        graphql_check_instance(
-            survey,
-            info,
-            app=survey.app,
-            operation="update",
-        )
+        survey.workflow.check_access(info, operation="update")
 
         form = SurveyForm.from_form_data(survey, form_data)
         if not form.is_valid():

@@ -25,6 +25,7 @@ graphql(`
     activeUntil
     responsesEditableUntil
     canRemove
+    canGrantAccess
     purpose
     protectResponses
 

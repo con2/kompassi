@@ -123,10 +123,7 @@ class LimitedResponseType(DjangoObjectType):
                 k: v for (k, v) in cached_dimensions.items() if dimension_cache.dimensions[k].is_public
             }
         else:
-            cache.check_permission(
-                instance=response,
-                app=response.survey.universe.app,
-            )
+            response.survey.workflow.check_access(request, operation="query", instance=response)
 
         if key_dimensions_only:
             cached_dimensions = {

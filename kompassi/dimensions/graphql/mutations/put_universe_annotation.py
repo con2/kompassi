@@ -60,6 +60,7 @@ class PutUniverseAnnotation(graphene.Mutation):
             app=universe.app,
             field="annotations",
             operation="update",
+            **universe.access_root_claims,
         )
 
         annotation = Annotation.objects.get(slug=input.annotation_slug)

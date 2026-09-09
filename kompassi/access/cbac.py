@@ -143,7 +143,8 @@ def is_graphql_allowed_for_model(
     if not app:
         app = instance.__class__._meta.app_label  # type: ignore
     slug = getattr(instance, "slug", None)
-    extra = dict(slug=slug) if slug is not None else {}
+    if slug is not None:
+        extra.setdefault("slug", slug)
 
     claims = make_graphql_claims(
         scope=instance.scope,  # type: ignore
@@ -165,6 +166,7 @@ def graphql_check_model(
     field: str = "self",
     operation: Operation = "query",
     app: str | Enum = "",
+    **extra: str,
 ):
     request: HttpRequest = info.context if isinstance(info, ResolveInfo) else info
     if not app:
@@ -176,6 +178,7 @@ def graphql_check_model(
         app=app,
         model=model.__name__,
         field=field,
+        **extra,
     )
 
     if not CBACEntry.is_allowed(request.user, claims):
@@ -189,6 +192,7 @@ def graphql_check_instance(
     field: str = "self",
     operation: Operation = "query",
     app: str | Enum = "",
+    **extra: str,
 ):
     """
     Check that the user has access to a single object. Pass "self" as the field
@@ -199,7 +203,8 @@ def graphql_check_instance(
     if not app:
         app = instance.__class__._meta.app_label  # type: ignore
     slug = getattr(instance, "slug", None)
-    extra = dict(slug=slug) if slug is not None else {}
+    if slug is not None:
+        extra.setdefault("slug", slug)
 
     claims = make_graphql_claims(
         scope=instance.scope,  # type: ignore

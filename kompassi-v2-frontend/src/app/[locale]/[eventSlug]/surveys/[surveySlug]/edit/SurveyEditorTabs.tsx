@@ -48,6 +48,14 @@ export default function SurveyEditorTabs({
     href: `${url}/dimension-defaults`,
   });
 
+  if (mode === "surveys" && survey.canGrantAccess) {
+    tabs.push({
+      slug: "access",
+      title: t.tabs.access,
+      href: `${url}/access`,
+    });
+  }
+
   for (const languageVersion of survey.languages) {
     // graphql enums are upper case :(
     const languageCode = languageVersion.language.toLowerCase();

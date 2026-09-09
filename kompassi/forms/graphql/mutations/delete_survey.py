@@ -30,6 +30,7 @@ class DeleteSurvey(graphene.Mutation):
         if not survey.can_be_deleted_by(request):
             raise Exception("Cannot delete survey")
 
+        survey.workflow.revoke_all_access(request)
         survey.delete()
 
         return DeleteSurvey(slug=input.survey_slug)  # type: ignore

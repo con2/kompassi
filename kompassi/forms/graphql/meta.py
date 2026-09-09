@@ -3,8 +3,10 @@ from enum import Enum
 import graphene
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
+from django.http import HttpRequest
 
-from kompassi.access.cbac import graphql_check_model, is_graphql_allowed_for_model
+from kompassi.access.cbac import make_graphql_claims, raise_cbac_permission_denied
+from kompassi.access.models.cbac_entry import CBACEntry
 from kompassi.core.utils import get_objects_within_period, normalize_whitespace
 from kompassi.dimensions.graphql.enums import DimensionAppType
 from kompassi.dimensions.models.enums import DimensionApp
@@ -64,7 +66,22 @@ class FormsEventMetaType(graphene.ObjectType):
             qs = qs.filter(purpose=SurveyPurpose.DEFAULT)
 
         if include_inactive:
-            graphql_check_model(Survey, meta.event.scope, info, app=app)
+            request: HttpRequest = info.context
+            claims = make_graphql_claims(
+                scope=meta.event.scope,
+                operation="query",
+                app=app,
+                model=Survey.__name__,
+                field="self",
+            )
+            if not CBACEntry.is_allowed(request.user, claims):
+                if not request.user.is_authenticated:
+                    raise_cbac_permission_denied(request, claims)
+
+                surveys = [survey for survey in qs if survey.workflow.is_allowed(request, operation="query")]
+                if not surveys:
+                    raise_cbac_permission_denied(request, claims)
+                qs = Survey.objects.filter(pk__in=[survey.pk for survey in surveys])
         else:
             qs = get_objects_within_period(qs)
 
@@ -175,15 +192,7 @@ class FormsProfileMetaType(graphene.ObjectType):
 
         # TODO(#324)
         return [
-            survey
-            for survey in surveys
-            if is_graphql_allowed_for_model(
-                meta.person.user,
-                instance=survey,  # type: ignore
-                operation="query",
-                field="self",
-                app=survey.app,
-            )
+            survey for survey in surveys if survey.workflow.is_allowed_for_user(meta.person.user, operation="query")
         ]
 
     surveys = graphene.NonNull(

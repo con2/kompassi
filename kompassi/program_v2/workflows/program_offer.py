@@ -1,6 +1,5 @@
 import logging
 
-from kompassi.access.cbac import is_graphql_allowed_for_model
 from kompassi.forms.models.response import Response
 from kompassi.forms.models.survey import Survey
 from kompassi.forms.models.workflow import Workflow
@@ -17,6 +16,14 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
     """
 
     survey: Survey
+
+    @property
+    def access_root_claims(self):
+        """
+        Program forms are governed by event-wide program_v2 admin rights and
+        cannot be granted access to on a per-survey basis.
+        """
+        return {}
 
     @property
     def protect_responses(self) -> bool:
@@ -95,10 +102,4 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
 
         Old versions of the response are handled when the current version is cancelled.
         """
-        return response.is_current_version and is_graphql_allowed_for_model(
-            request.user,
-            instance=response.survey,
-            app="program_v2",
-            operation="delete",
-            field="responses",
-        )
+        return response.is_current_version and self.is_allowed(request, operation="delete", field="responses")

@@ -18,6 +18,7 @@ graphql(`
     activeFrom
     activeUntil
     canRemove
+    canGrantAccess
     purpose
 
     languages {

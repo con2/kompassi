@@ -1,8 +1,6 @@
 import graphene
 from django.db import transaction
 
-from kompassi.access.cbac import graphql_check_instance
-
 from ...models.survey import Survey
 from ...utils.promote_field_to_dimension import promote_field_to_dimension
 from ..survey_full import FullSurveyType
@@ -36,13 +34,7 @@ class PromoteFieldToDimension(graphene.Mutation):
     ):
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
 
-        graphql_check_instance(
-            survey,
-            info,
-            app=survey.app,
-            field="languages",
-            operation="update",
-        )
+        survey.workflow.check_access(info, operation="update", field="languages")
 
         promote_field_to_dimension(survey, input.field_slug)  # type: ignore
 

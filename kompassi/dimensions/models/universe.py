@@ -55,6 +55,14 @@ class Universe(models.Model):
         return f"{self.scope}/{self.slug} ({self.app})"
 
     @property
+    def access_root_claims(self) -> dict[str, str]:
+        """
+        Claims that root access checks at this universe. Must stay in sync with
+        Workflow.grant_claimses.
+        """
+        return {"universe": self.slug}
+
+    @property
     def active_involvements(self) -> models.QuerySet[Involvement]:
         return self.all_involvements.filter(is_active=True)
 
@@ -126,4 +134,5 @@ class Universe(models.Model):
             operation="create",
             field="dimensions",
             app=self.app,
+            **self.access_root_claims,
         )

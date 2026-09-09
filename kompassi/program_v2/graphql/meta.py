@@ -214,6 +214,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
                 info,
                 field="dimensions",
                 app="program_v2",
+                **meta.universe.access_root_claims,
             )
             dimensions = meta.universe.dimensions.all()
 
@@ -264,6 +265,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
                 info,
                 field="dimensions",
                 app="program_v2",
+                **meta.universe.access_root_claims,
             )
             dimensions = meta.event.involvement_universe.dimensions.all()
 

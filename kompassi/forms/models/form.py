@@ -10,7 +10,6 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.db import models
 from django.http import HttpRequest
 
-from kompassi.access.cbac import is_graphql_allowed_for_model
 from kompassi.core.models.event import Event
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE, get_language_choices
 
@@ -77,14 +76,11 @@ class Form(models.Model):
         super().save(update_fields=update_fields, **kwargs)
 
     def can_be_deleted_by(self, request: HttpRequest):
-        # TODO should we use Survey instead as a privileges root?
         return (
-            is_graphql_allowed_for_model(
-                request.user,
-                instance=self,
+            self.survey.workflow.is_allowed(
+                request,
                 operation="delete",
-                field="self",
-                app=self.survey.app,
+                instance=self,
             )
             and not self.all_responses.exists()
         )

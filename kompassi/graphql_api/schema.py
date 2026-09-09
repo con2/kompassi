@@ -22,6 +22,7 @@ from kompassi.forms.graphql.mutations.init_file_upload import InitFileUpload
 from kompassi.forms.graphql.mutations.promote_field_to_dimension import PromoteFieldToDimension
 from kompassi.forms.graphql.mutations.revoke_key_pair import RevokeKeyPair
 from kompassi.forms.graphql.mutations.subscriptions import SubscribeToSurveyResponses, UnsubscribeFromSurveyResponses
+from kompassi.forms.graphql.mutations.survey_access import GrantSurveyAccess, RevokeSurveyAccess
 from kompassi.forms.graphql.mutations.update_form import UpdateForm
 from kompassi.forms.graphql.mutations.update_form_fields import UpdateFormFields
 from kompassi.forms.graphql.mutations.update_response_dimensions import UpdateResponseDimensions
@@ -160,6 +161,9 @@ class Mutation(graphene.ObjectType):
     create_survey_response = CreateSurveyResponse.Field()
     update_response_dimensions = UpdateResponseDimensions.Field()
     delete_survey_responses = DeleteSurveyResponses.Field()
+
+    grant_survey_access = GrantSurveyAccess.Field()
+    revoke_survey_access = RevokeSurveyAccess.Field()
 
     init_file_upload = InitFileUpload.Field()
 

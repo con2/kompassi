@@ -14,6 +14,14 @@ class ProgramHostInvitationWorkflow(Workflow):
     """
 
     @property
+    def access_root_claims(self):
+        """
+        Program forms are governed by event-wide program_v2 admin rights and
+        cannot be granted access to on a per-survey basis.
+        """
+        return {}
+
+    @property
     def protect_responses(self) -> bool:
         """
         Program form responses are protected by the event-wide ProgramV2EventMeta.protect_responses

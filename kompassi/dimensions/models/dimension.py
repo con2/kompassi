@@ -228,6 +228,7 @@ class Dimension(models.Model):
                 instance=self,
                 operation="delete",
                 app=self.universe.app,
+                **self.universe.access_root_claims,
             )
             and not cache.for_universe(self.universe).is_dimension_in_use(self)
         )
@@ -238,6 +239,7 @@ class Dimension(models.Model):
             operation="create",
             app=self.universe.app,
             field="values",
+            **self.universe.access_root_claims,
         )
 
     def can_be_updated_by(self, request: RequestWithCache) -> bool:
@@ -245,6 +247,7 @@ class Dimension(models.Model):
             instance=self,
             operation="update",
             app=self.universe.app,
+            **self.universe.access_root_claims,
         )
 
     def refresh_dependents(self):
