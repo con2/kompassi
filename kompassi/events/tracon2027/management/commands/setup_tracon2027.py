@@ -274,8 +274,7 @@ class Setup:
 
         for url, link_title, link_group in [
             (
-                # TODO: update to the 2027 Coniteawiki collection URL once it exists
-                "https://wiki.tracon.fi/collection/tracon-2026-KjmfA2T8yT",
+                "https://wiki.tracon.fi/collection/tracon-2027-fTq2SvbQ80",
                 "Coniteawiki",
                 "conitea",
             ),
