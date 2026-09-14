@@ -12,7 +12,7 @@ export const ticketsApiUrl =
   process.env.KOMPASSI_TICKETS_V2_API_URL || `${ticketsBaseUrl}/api/tickets-v2`;
 
 export const kompassiOidc = {
-  wellKnown: `${kompassiBaseUrl}/oidc/.well-known/openid-configuration/`,
+  issuer: `${kompassiBaseUrl}/oidc`,
   clientId:
     process.env.KOMPASSI_OIDC_CLIENT_ID || "kompassi_insecure_test_client_id",
   clientSecret:
@@ -20,7 +20,12 @@ export const kompassiOidc = {
     "kompassi_insecure_test_client_secret",
 };
 
-export const publicUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+export const authSecret =
+  process.env.AUTH_SECRET ||
+  process.env.NEXTAUTH_SECRET ||
+  "kompassi_insecure_test_auth_secret";
+
+export const publicUrl = process.env.AUTH_URL || "http://localhost:3000";
 export const isProduction = publicUrl === "https://kompassi.eu";
 
 export const timezone = process.env.KOMPASSI_TIMEZONE || "Europe/Helsinki";

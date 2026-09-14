@@ -1,20 +1,23 @@
-import { AuthOptions } from "next-auth";
-import { getServerSession } from "next-auth/next";
+import NextAuth, { type NextAuthConfig } from "next-auth";
 import { encode as defaultEncode } from "next-auth/jwt";
 
-import { kompassiOidc } from "@/config";
+import { authSecret, kompassiOidc } from "@/config";
 
 const FALLBACK_MAX_AGE = 10 * 60 * 60; // 10 hours, used only if the Kompassi token response has no expires_in
 
-export const authOptions: AuthOptions = {
+const config: NextAuthConfig = {
+  secret: authSecret,
+  // The app is only ever reached through the cluster ingress, which sets the Host header itself.
+  trustHost: true,
   providers: [
     {
       id: "kompassi",
       name: "Kompassi",
-      type: "oauth",
-      idToken: true,
+      type: "oidc",
+      // PKCE binds the code to this login, nonce binds the ID token to it; PKCE alone is the default.
+      checks: ["pkce", "state", "nonce"],
 
-      profile(profile, _tokens) {
+      profile(profile) {
         return {
           image: null,
           id: profile.sub,
@@ -48,16 +51,16 @@ export const authOptions: AuthOptions = {
 
   // session.maxAge above also governs the session cookie's Max-Age, so the
   // browser drops the cookie once the JWT inside it would be stale, instead
-  // of holding on to it for next-auth's 30-day default and hitting
-  // JWT_SESSION_ERROR on every request in between.
+  // of holding on to it for Auth.js's 30-day default and hitting
+  // JWTSessionError on every request in between.
   logger: {
-    error(code, metadata) {
-      if (code === "JWT_SESSION_ERROR") {
+    error(error) {
+      if (error.name === "JWTSessionError") {
         // Expected once the JWT outlives the Kompassi access token it wraps;
         // the user will simply be prompted to log in again.
         return;
       }
-      console.error(code, metadata);
+      console.error(error);
     },
   },
 
@@ -66,7 +69,7 @@ export const authOptions: AuthOptions = {
     jwt({ token, account }) {
       if (account) {
         token.accessToken = account.access_token;
-        // Kompassi's token endpoint returns expires_in, which next-auth
+        // Kompassi's token endpoint returns expires_in, which Auth.js
         // normalizes into expires_at; mirror it so the session JWT (see
         // jwt.encode above) expires together with the access token instead
         // of the FALLBACK_MAX_AGE guess.
@@ -83,6 +86,4 @@ export const authOptions: AuthOptions = {
   },
 };
 
-export function auth() {
-  return getServerSession(authOptions);
-}
+export const { handlers, auth } = NextAuth(config);

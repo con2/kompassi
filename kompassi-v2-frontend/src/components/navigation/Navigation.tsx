@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { getServerSession } from "next-auth/next";
 
 import NavigationMenus from "./NavigationMenus";
-import { authOptions } from "@/auth";
+import { auth } from "@/auth";
 import { SupportedLanguage, getTranslations } from "@/translations";
 
 interface NavigationProps {
@@ -11,7 +10,7 @@ interface NavigationProps {
 
 export default async function Navigation({ locale }: NavigationProps) {
   const translations = getTranslations(locale);
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   const messages = {
     LanguageSwitcher: translations.LanguageSwitcher,
