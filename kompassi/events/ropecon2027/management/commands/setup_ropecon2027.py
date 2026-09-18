@@ -16,7 +16,6 @@ from kompassi.access.models.email_alias_domain import EmailAliasDomain
 from kompassi.access.models.email_alias_type import EmailAliasVariant
 from kompassi.badges.models import BadgesEventMeta
 from kompassi.core.models import Event, Organization, Person, Venue
-from kompassi.core.utils.log_utils import log_get_or_create
 from kompassi.forms.models.meta import FormsEventMeta
 from kompassi.intra.models import IntraEventMeta, Team
 from kompassi.involvement.models import Registry
@@ -280,17 +279,14 @@ class Setup:
             logger.warning("setup_ropecon2027.setup_access: user ropecon-aliases not found, skipping CBAC grant")
         else:
             assert self.event.end_time
-            entry, created = CBACEntry.objects.get_or_create(
-                user=ropecon_aliases,
+            CBACEntry.grant_access(
+                ropecon_aliases,
                 claims=dict(
                     view="access_admin_group_members_api",
                     group_name=cc_group.name,
                 ),
-                defaults=dict(
-                    valid_until=self.event.end_time + timedelta(days=CBAC_VALID_AFTER_EVENT_DAYS),
-                ),
+                expires_at=self.event.end_time + timedelta(days=CBAC_VALID_AFTER_EVENT_DAYS),
             )
-            log_get_or_create(logger, entry, created)
 
     def setup_program_v2(self):
         (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])

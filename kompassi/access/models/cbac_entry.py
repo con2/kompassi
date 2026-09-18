@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from typing import Any, Self
 
 from django.conf import settings
-from django.contrib.auth.models import AbstractBaseUser, AnonymousUser
+from django.contrib.auth.models import AbstractBaseUser, AnonymousUser, Group
 from django.contrib.postgres.fields import HStoreField
 from django.db import models
 from django.utils.timezone import now
@@ -100,6 +100,46 @@ class CBACEntry(models.Model):
         ).exists()
 
     @classmethod
+    def grant_access(
+        cls,
+        user: AbstractBaseUser,
+        claims: Claims,
+        expires_at: datetime,
+        *,
+        valid_from: datetime | None = None,
+        created_by: AbstractBaseUser | None = None,
+        granted_by_group: Group | None = None,
+    ) -> tuple[Self | None, bool]:
+        """
+        Grant `user` access matching `claims` until `expires_at`. No-ops (logging a
+        warning instead of granting anything) if `expires_at` has already passed, so
+        callers can compute an event-relative expiry without checking it against
+        `now()` themselves.
+        """
+        if expires_at < now():
+            logger.warning(
+                "CBAC: not granting %r access to claims=%r because expires_at=%s is already in the past",
+                user,
+                claims,
+                expires_at,
+            )
+            return None, False
+
+        entry, created = cls.objects.get_or_create(
+            user=user,
+            claims=claims,
+            defaults=dict(
+                valid_from=valid_from or now(),
+                valid_until=expires_at,
+                created_by=created_by,
+                granted_by_group=granted_by_group,
+            ),
+        )
+        log_get_or_create(logger, entry, created)
+
+        return entry, created
+
+    @classmethod
     def ensure_admin_group_privileges(cls, t: datetime | None = None):
         from kompassi.core.models import Event
 
@@ -141,23 +181,20 @@ class CBACEntry(models.Model):
 
             # add access to those who should have it but do not yet have
             for user in admin_group_members:
-                cbac_entry, created = cls.objects.get_or_create(
-                    user=user,
+                cbac_entry, created = cls.grant_access(
+                    user,
+                    claims={
+                        "organization": event.organization.slug,
+                        # omit "event" to give permissions also to other events of same organizer
+                        # "event": event.slug,
+                        "app": app_name,
+                    },
+                    expires_at=event.end_time + timedelta(CBAC_VALID_AFTER_EVENT_DAYS),
+                    valid_from=t,
+                    created_by=request.user if request else None,
                     granted_by_group=admin_group,
-                    defaults=dict(
-                        valid_from=t,
-                        valid_until=event.end_time + timedelta(CBAC_VALID_AFTER_EVENT_DAYS),
-                        claims={
-                            "organization": event.organization.slug,
-                            # omit "event" to give permissions also to other events of same organizer
-                            # "event": event.slug,
-                            "app": app_name,
-                        },
-                        created_by=request.user if request else None,
-                    ),
                 )
-                log_get_or_create(logger, cbac_entry, created)
-                if created:
+                if created and cbac_entry is not None:
                     emit(
                         "access.cbacentry.created",
                         request=request,

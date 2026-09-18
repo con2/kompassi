@@ -2,6 +2,7 @@ import logging
 from datetime import timedelta
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
@@ -46,14 +47,9 @@ class Command(BaseCommand):
             Person.get_or_create_dummy()
 
             # NOTE: claims={} effectively means "all privileges"
-            entry, created = CBACEntry.objects.get_or_create(
-                # ask Japsu why this is 1 and not a reference to the dummy user
-                user_id=1,
+            # ask Japsu why this is 1 and not a reference to the dummy user
+            CBACEntry.grant_access(
+                get_user_model().objects.get(pk=1),
                 claims={},
-                defaults=dict(
-                    valid_from=now(),
-                    valid_until=now() + timedelta(days=100 * 365),
-                ),
+                expires_at=now() + timedelta(days=100 * 365),
             )
-
-            log_get_or_create(logger, entry, created)

@@ -827,36 +827,30 @@ class Setup:
                 continue
 
             for app_label in app_labels:
-                entry, created = CBACEntry.objects.get_or_create(
-                    user=person.user,  # type: ignore
+                CBACEntry.grant_access(
+                    person.user,  # type: ignore
                     claims=dict(
                         event=self.event.slug,
                         app=app_label,
                     ),
-                    defaults=dict(
-                        valid_from=temp_permission_valid_from,
-                        valid_until=temp_permission_valid_until,
-                    ),
+                    expires_at=temp_permission_valid_until,
+                    valid_from=temp_permission_valid_from,
                 )
-                log_get_or_create(logger, entry, created)
 
         # Lipunvaihto-oikeudet lipunvaihdon ja sisäänkirjauksen tunnuksille
         for id in [20672, 20675]:
             person = Person.objects.filter(id=id).first()
             if person and person.user:
-                entry, created = CBACEntry.objects.get_or_create(
-                    user=person.user,
+                CBACEntry.grant_access(
+                    person.user,
                     claims=dict(
                         event=self.event.slug,
                         app="tickets_v2",
                         view="pos_view",
                     ),
-                    defaults=dict(
-                        valid_from=temp_permission_valid_from,
-                        valid_until=temp_permission_valid_until,
-                    ),
+                    expires_at=temp_permission_valid_until,
+                    valid_from=temp_permission_valid_from,
                 )
-                log_get_or_create(logger, entry, created)
             else:
                 logger.warning(
                     "setup_tracon2027.setup_access: Tickets POS user with person id %d not found, skipping", id
@@ -892,8 +886,8 @@ class Setup:
         user = User.objects.filter(id=user_id).first()
         projection = Projection.objects.filter(scope=self.event.scope, slug="vikailmoitus").first()
         if user and projection:
-            entry, created = CBACEntry.objects.get_or_create(
-                user=user,
+            CBACEntry.grant_access(
+                user,
                 claims=dict(
                     event=self.event.slug,
                     app="forms",
@@ -901,12 +895,9 @@ class Setup:
                     operation="query",
                     slug=projection.slug,
                 ),
-                defaults=dict(
-                    valid_from=temp_permission_valid_from,
-                    valid_until=temp_permission_valid_until,
-                ),
+                expires_at=temp_permission_valid_until,
+                valid_from=temp_permission_valid_from,
             )
-            log_get_or_create(logger, entry, created)
 
     def setup_intra(self):
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
