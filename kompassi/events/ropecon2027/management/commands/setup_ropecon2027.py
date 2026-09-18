@@ -4,16 +4,19 @@ from datetime import datetime, timedelta
 
 from dateutil.tz import tzlocal
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
-from kompassi.access.models import GroupEmailAliasGrant
+from kompassi.access.constants import CBAC_VALID_AFTER_EVENT_DAYS
+from kompassi.access.models import CBACEntry, GroupEmailAliasGrant
 from kompassi.access.models.email_alias_domain import EmailAliasDomain
 from kompassi.access.models.email_alias_type import EmailAliasVariant
 from kompassi.badges.models import BadgesEventMeta
 from kompassi.core.models import Event, Organization, Person, Venue
+from kompassi.core.utils.log_utils import log_get_or_create
 from kompassi.forms.models.meta import FormsEventMeta
 from kompassi.intra.models import IntraEventMeta, Team
 from kompassi.involvement.models import Registry
@@ -268,6 +271,26 @@ class Setup:
                 EmailAliasVariant.NICK,
             ],
         )
+
+        # Lets ropecon-aliases read conitea's members for Google Workspace account sync,
+        # without granting it every group via the same API endpoint.
+        User = get_user_model()
+        ropecon_aliases = User.objects.filter(username="ropecon-aliases").first()
+        if ropecon_aliases is None:
+            logger.warning("setup_ropecon2027.setup_access: user ropecon-aliases not found, skipping CBAC grant")
+        else:
+            assert self.event.end_time
+            entry, created = CBACEntry.objects.get_or_create(
+                user=ropecon_aliases,
+                claims=dict(
+                    view="access_admin_group_members_api",
+                    group_name=cc_group.name,
+                ),
+                defaults=dict(
+                    valid_until=self.event.end_time + timedelta(days=CBAC_VALID_AFTER_EVENT_DAYS),
+                ),
+            )
+            log_get_or_create(logger, entry, created)
 
     def setup_program_v2(self):
         (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])

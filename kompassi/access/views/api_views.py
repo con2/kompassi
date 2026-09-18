@@ -5,13 +5,14 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_safe
 
-from kompassi.api.utils import api_login_required, cbac_api_view, handle_api_errors
+from kompassi.access.cbac import get_default_claims, raise_cbac_permission_denied
+from kompassi.api.utils import api_login_required, api_view, cbac_api_view, handle_api_errors
 from kompassi.core.models import Person
 from kompassi.core.utils import pick_attrs
 from kompassi.involvement.models import Involvement
 from kompassi.labour.helpers import labour_event_required
 
-from ..models import EmailAliasDomain, InternalEmailAlias
+from ..models import CBACEntry, EmailAliasDomain, InternalEmailAlias
 
 logger = logging.getLogger(__name__)
 
@@ -57,8 +58,15 @@ def access_admin_group_emails_api(request, group_name):
 
 
 @require_safe
-@cbac_api_view
+@api_view
+@api_login_required
 def access_admin_group_members_api(request, group_name):
+    # Unlike default_cbac_required, this includes group_name in the claims so that
+    # access can be granted for one specific group instead of every group.
+    claims = get_default_claims(request, group_name=group_name)
+    if not CBACEntry.is_allowed(request.user, claims):
+        raise_cbac_permission_denied(request, claims)
+
     group = get_object_or_404(Group, name=group_name)
 
     return [
