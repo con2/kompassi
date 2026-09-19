@@ -4,37 +4,65 @@ block title
 block content
   h1 Statistics about Kompassi
   table.table.table-bordered.table-striped
+    thead
+      tr
+        th
+        th V1
+        th V2
+        th Total
     tbody
       tr
         th Events
         td= events_count
+        td
+        td= events_count
       tr
         th Program offers
-        td= program_count
+        td= program_count_v1
+        td= program_count_v2
+        td= program_count_total
       tr
         th Accepted program offers
-        td= accepted_program_count
+        td= accepted_program_count_v1
+        td= accepted_program_count_v2
+        td= accepted_program_count_total
       tr
         th Volunteer signups
+        td= signup_count
+        td
         td= signup_count
       tr
         th Accepted volunteer signups
         td= accepted_signup_count
+        td
+        td= accepted_signup_count
       tr
         th Confirmed ticket orders
         td= confirmed_order_count
+        td
+        td= confirmed_order_count
       tr
         th Paid ticket orders
-        td= paid_order_count
+        td= paid_order_count_v1
+        td= paid_order_count_v2
+        td= paid_order_count_total
       tr
         th E-tickets issued
+        td
+        td
         td= etickets_issued
       tr
         th E-tickets used
+        td
+        td
         td= etickets_used
       tr
         th Seat reservations issued
+        td
+        td
         td= seat_reservations_issued
       tr
         th Ticket sales revenue
-        td= formatted_revenue
+        td= formatted_revenue_v1
+        td= formatted_revenue_v2
+        td= formatted_revenue_total

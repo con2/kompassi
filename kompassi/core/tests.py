@@ -274,6 +274,12 @@ def test_person_form_program_role_retention_policy():
     assert submit("").program_role_retention_policy is None
 
 
+@pytest.mark.django_db
+def test_core_stats_view(client):
+    response = client.get("/stats")
+    assert response.status_code == 200
+
+
 def test_retention_reference_time():
     """
     Retention is counted from the turn of the year after the anchor, in the default time zone:
