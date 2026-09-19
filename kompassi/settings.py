@@ -537,7 +537,8 @@ OAUTH2_PROVIDER = dict(
         openid="Kirjautua sisään muihin sovelluksiin",
         # some oidc apps assume email and profile scopes
         email="Tietää sähköpostiosoitteesi",
-        profile="Tietää nimesi, sähköpostiosoitteesi, puhelinnumerosi ja syntymäaikasi",
+        phone="Tietää puhelinnumerosi",
+        profile="Tietää nimesi ja sähköpostiosoitteesi",
         # legacy oauth2 scopes
         read="Tietää nimesi, sähköpostiosoitteesi, puhelinnumerosi ja syntymäaikasi",
         write="Muokata käyttäjä- ja henkilötietojasi",
