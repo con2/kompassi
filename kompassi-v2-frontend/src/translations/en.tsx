@@ -436,6 +436,10 @@ const translations = {
     title: "Events",
   },
 
+  StatsView: {
+    title: "Statistics",
+  },
+
   Tickets: {
     title: "Purchase tickets",
     forEvent: (eventName: string) => <>for {eventName}</>,

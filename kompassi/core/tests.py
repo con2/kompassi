@@ -275,9 +275,46 @@ def test_person_form_program_role_retention_policy():
 
 
 @pytest.mark.django_db
-def test_core_stats_view(client):
+def test_core_stats_view_redirects_to_v2(client, settings):
+    settings.KOMPASSI_V2_BASE_URL = "https://v2.example.com"
     response = client.get("/stats")
-    assert response.status_code == 200
+    assert response.status_code == 302
+    assert response["Location"] == "https://v2.example.com/stats"
+
+
+@pytest.mark.django_db
+def test_kompassi_stats_reports():
+    from kompassi.core.reports.kompassi_stats import kompassi_stats_reports
+
+    reports = kompassi_stats_reports()
+    assert [report.slug for report in reports] == ["kompassi_stats_counts", "kompassi_stats_revenue"]
+
+    counts_report, revenue_report = reports
+    assert len(counts_report.rows) == 10
+    assert len(revenue_report.rows) == 1
+    assert revenue_report.rows[0][1:] == [0.0, 0.0, 0.0]
+
+
+@pytest.mark.django_db
+def test_kompassi_stats_graphql_query():
+    from kompassi.graphql_api.schema import schema
+
+    result = schema.execute("""
+        {
+            kompassiStats(lang: "fi") {
+                slug
+                title
+                columns { slug title type }
+                rows
+            }
+        }
+    """)
+
+    assert result.errors is None
+    assert [report["slug"] for report in result.data["kompassiStats"]] == [
+        "kompassi_stats_counts",
+        "kompassi_stats_revenue",
+    ]
 
 
 def test_retention_reference_time():

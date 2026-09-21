@@ -5,6 +5,7 @@ from kompassi.core.graphql.event_full import FullEventType
 from kompassi.core.graphql.mutations.confirm_email import ConfirmEmail
 from kompassi.core.graphql.profile_own import OwnProfileType
 from kompassi.core.models import Event, Person
+from kompassi.core.reports.kompassi_stats import kompassi_stats_reports
 from kompassi.core.utils import normalize_whitespace
 from kompassi.dimensions.graphql.mutations.delete_dimension import DeleteDimension
 from kompassi.dimensions.graphql.mutations.delete_dimension_value import DeleteDimensionValue
@@ -70,6 +71,7 @@ from kompassi.program_v2.graphql.mutations.update_program_annotations import Upd
 from kompassi.program_v2.graphql.mutations.update_program_dimensions import UpdateProgramDimensions
 from kompassi.program_v2.graphql.mutations.update_program_form import UpdateProgramForm
 from kompassi.program_v2.graphql.mutations.update_program_preferences import UpdateProgramPreferences
+from kompassi.reports.graphql.report import ReportType
 from kompassi.tickets_v2.graphql.mutations.cancel_and_refund_order import CancelAndRefundOrder
 from kompassi.tickets_v2.graphql.mutations.cancel_own_unpaid_order import CancelOwnUnpaidOrder
 from kompassi.tickets_v2.graphql.mutations.confirm_order_cancellation import ConfirmOrderCancellation
@@ -136,6 +138,19 @@ class Query(graphene.ObjectType):
     user_registry = graphene.NonNull(
         LimitedRegistryType,
         description=normalize_whitespace(resolve_user_registry.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_kompassi_stats(root, info, lang: str = DEFAULT_LANGUAGE):
+        """
+        Site-wide statistics about Kompassi, combining V1 and V2 figures.
+        """
+        return kompassi_stats_reports(lang)
+
+    kompassi_stats = graphene.NonNull(
+        graphene.List(graphene.NonNull(ReportType)),
+        lang=graphene.String(default_value=DEFAULT_LANGUAGE),
+        description=normalize_whitespace(resolve_kompassi_stats.__doc__ or ""),
     )
 
 
