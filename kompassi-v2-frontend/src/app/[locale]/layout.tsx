@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { hasLocale } from "next-intl";
 
-import { toSupportedLanguage } from "@/translations";
+import { routing } from "@/i18n/routing";
 import Navigation from "../../components/navigation/Navigation";
 
 import "./globals.scss";
@@ -24,13 +26,13 @@ export default async function RootLayout(props: Props) {
 
   const { children } = props;
 
-  const supportedLanguage = toSupportedLanguage(locale);
+  if (!hasLocale(routing.locales, locale)) notFound();
 
   // TODO implement bootstrap dark mode toggle (<html data-bs-theme="dark">)
   return (
-    <html lang={supportedLanguage} data-scroll-behavior="smooth">
+    <html lang={locale} data-scroll-behavior="smooth">
       <body>
-        <Navigation locale={supportedLanguage} />
+        <Navigation locale={locale} />
         {children}
       </body>
     </html>
