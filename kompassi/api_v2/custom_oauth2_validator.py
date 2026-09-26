@@ -11,6 +11,7 @@ class CustomOAuth2Validator(OAuth2Validator):
     def get_additional_claims(self, request):
         return dict(
             email=request.user.person.email,
+            email_verified=request.user.person.is_email_verified,
             family_name=request.user.person.surname,
             given_name=request.user.person.first_name,
             groups=[group.name for group in request.user.groups.all()],
