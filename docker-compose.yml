@@ -128,7 +128,7 @@ services:
     volumes:
       - redis-data:/data
   garage:
-    image: dxflrs/garage:v2.3.0
+    image: dxflrs/garage:v2.4.1
     init: true
     network_mode: service:router
     volumes:
