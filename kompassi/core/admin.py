@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.auth.admin import GroupAdmin
 from django.contrib.auth.models import Group, User
 
@@ -31,10 +31,13 @@ def merge_selected_people(modeladmin, request, queryset):
     if queryset.count() < 2:
         return
 
-    from kompassi.core.merge_people import find_best_candidate, merge_people
+    from kompassi.core.merge_people import MergeConflictError, find_best_candidate, merge_people
 
     person_to_spare, people_to_merge = find_best_candidate(queryset)
-    merge_people(people_to_merge, into=person_to_spare)
+    try:
+        merge_people(person_to_spare, people_to_merge, request=request)
+    except MergeConflictError as e:
+        modeladmin.message_user(request, str(e), level=messages.ERROR)
 
 
 @admin.register(Person)

@@ -9,3 +9,7 @@ CBAC_SUDO_CLAIMS = ["organization", "event", "app"]
 
 # machine-readable code on CBACPermissionDenied.extensions, for GraphQL clients to branch on
 CBAC_PERMISSION_DENIED = "CBAC_PERMISSION_DENIED"
+
+# the `app` claim of the site-wide V2 admin (user admin etc.). No group, event or organization
+# grant ever produces this claim, so the only way to satisfy it is a superuser sudo.
+ADMIN_CBAC_APP = "admin"

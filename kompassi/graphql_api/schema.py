@@ -1,8 +1,10 @@
 import graphene
 
 from kompassi.access.graphql.mutations.sudo_cbac import SudoCbac
+from kompassi.core.graphql.admin import AdminType
 from kompassi.core.graphql.event_full import FullEventType
 from kompassi.core.graphql.mutations.confirm_email import ConfirmEmail
+from kompassi.core.graphql.mutations.merge_people import MergePeople
 from kompassi.core.graphql.profile_own import OwnProfileType
 from kompassi.core.models import Event, Person
 from kompassi.core.reports.kompassi_stats import kompassi_stats_reports
@@ -153,6 +155,19 @@ class Query(graphene.ObjectType):
         description=normalize_whitespace(resolve_kompassi_stats.__doc__ or ""),
     )
 
+    @staticmethod
+    def resolve_admin(root, info):
+        """
+        Site-wide administration. Reachable only with admin CBAC claims, which
+        a superuser obtains via sudo.
+        """
+        return AdminType()
+
+    admin = graphene.NonNull(
+        AdminType,
+        description=normalize_whitespace(resolve_admin.__doc__ or ""),
+    )
+
 
 class Mutation(graphene.ObjectType):
     # Access
@@ -160,6 +175,7 @@ class Mutation(graphene.ObjectType):
 
     # Core
     confirm_email = ConfirmEmail.Field()
+    merge_people = MergePeople.Field()
 
     # Forms
     create_survey = CreateSurvey.Field()

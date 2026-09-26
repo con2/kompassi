@@ -229,6 +229,11 @@ type Documents = {
     "\n  query OwnFormResponses($locale: String!) {\n    profile {\n      forms {\n        responses {\n          ...ProfileResponsesTableRow\n        }\n      }\n    }\n  }\n": typeof types.OwnFormResponsesDocument,
     "\n  query StatsPage($locale: String) {\n    kompassiStats(lang: $locale) {\n      ...Report\n    }\n  }\n": typeof types.StatsPageDocument,
     "\n  mutation SudoCbac($input: SudoCbacInput!) {\n    sudoCbac(input: $input) {\n      validUntil\n    }\n  }\n": typeof types.SudoCbacDocument,
+    "\n  query UserAdminPersonPage($personId: Int!) {\n    admin {\n      person(id: $personId) {\n        ...AdminPerson\n      }\n    }\n  }\n": typeof types.UserAdminPersonPageDocument,
+    "\n  fragment AdminPerson on AdminPersonType {\n    id\n    firstName\n    lastName\n    nick\n    displayName\n    email\n    phoneNumber\n    discordHandle\n    username\n    isSuperuser\n    isActive\n    emailVerifiedAt\n    dateJoined\n    lastLogin\n    notes\n    groups\n  }\n": typeof types.AdminPersonFragmentDoc,
+    "\n  mutation MergePeople($input: MergePeopleInput!) {\n    mergePeople(input: $input) {\n      person {\n        id\n      }\n    }\n  }\n": typeof types.MergePeopleDocument,
+    "\n  query UserAdminMergePage($personIds: [Int!]!, $intoPersonId: Int) {\n    admin {\n      mergePreview(personIds: $personIds, intoPersonId: $intoPersonId) {\n        into {\n          id\n        }\n        people {\n          ...AdminPerson\n        }\n        references {\n          model\n          field\n          count\n        }\n        conflicts {\n          model\n          field\n          personId\n          description\n        }\n        canMerge\n      }\n    }\n  }\n": typeof types.UserAdminMergePageDocument,
+    "\n  query UserAdminPage($search: String, $returnNone: Boolean = false) {\n    admin {\n      people(search: $search, returnNone: $returnNone) {\n        ...AdminPerson\n      }\n    }\n  }\n": typeof types.UserAdminPageDocument,
     "\n  fragment AnnotationsFormAnnotation on AnnotationType {\n    slug\n    type\n    title(lang: $locale)\n    description(lang: $locale)\n    isComputed\n  }\n": typeof types.AnnotationsFormAnnotationFragmentDoc,
     "\n  mutation UpdateProgramAnnotations($input: UpdateProgramAnnotationsInput!) {\n    updateProgramAnnotations(input: $input) {\n      program {\n        slug\n        cachedAnnotations\n      }\n    }\n  }\n": typeof types.UpdateProgramAnnotationsDocument,
     "\n  query GetProgramAnnotationSchema(\n    $locale: String!\n    $eventSlug: String!\n    $annotationSlugs: [String!]\n    $publicOnly: Boolean = true\n  ) {\n    event(slug: $eventSlug) {\n      program {\n        annotations(slug: $annotationSlugs, publicOnly: $publicOnly) {\n          ...AnnotationsFormAnnotation\n        }\n      }\n    }\n  }\n": typeof types.GetProgramAnnotationSchemaDocument,
@@ -473,6 +478,11 @@ const documents: Documents = {
     "\n  query OwnFormResponses($locale: String!) {\n    profile {\n      forms {\n        responses {\n          ...ProfileResponsesTableRow\n        }\n      }\n    }\n  }\n": types.OwnFormResponsesDocument,
     "\n  query StatsPage($locale: String) {\n    kompassiStats(lang: $locale) {\n      ...Report\n    }\n  }\n": types.StatsPageDocument,
     "\n  mutation SudoCbac($input: SudoCbacInput!) {\n    sudoCbac(input: $input) {\n      validUntil\n    }\n  }\n": types.SudoCbacDocument,
+    "\n  query UserAdminPersonPage($personId: Int!) {\n    admin {\n      person(id: $personId) {\n        ...AdminPerson\n      }\n    }\n  }\n": types.UserAdminPersonPageDocument,
+    "\n  fragment AdminPerson on AdminPersonType {\n    id\n    firstName\n    lastName\n    nick\n    displayName\n    email\n    phoneNumber\n    discordHandle\n    username\n    isSuperuser\n    isActive\n    emailVerifiedAt\n    dateJoined\n    lastLogin\n    notes\n    groups\n  }\n": types.AdminPersonFragmentDoc,
+    "\n  mutation MergePeople($input: MergePeopleInput!) {\n    mergePeople(input: $input) {\n      person {\n        id\n      }\n    }\n  }\n": types.MergePeopleDocument,
+    "\n  query UserAdminMergePage($personIds: [Int!]!, $intoPersonId: Int) {\n    admin {\n      mergePreview(personIds: $personIds, intoPersonId: $intoPersonId) {\n        into {\n          id\n        }\n        people {\n          ...AdminPerson\n        }\n        references {\n          model\n          field\n          count\n        }\n        conflicts {\n          model\n          field\n          personId\n          description\n        }\n        canMerge\n      }\n    }\n  }\n": types.UserAdminMergePageDocument,
+    "\n  query UserAdminPage($search: String, $returnNone: Boolean = false) {\n    admin {\n      people(search: $search, returnNone: $returnNone) {\n        ...AdminPerson\n      }\n    }\n  }\n": types.UserAdminPageDocument,
     "\n  fragment AnnotationsFormAnnotation on AnnotationType {\n    slug\n    type\n    title(lang: $locale)\n    description(lang: $locale)\n    isComputed\n  }\n": types.AnnotationsFormAnnotationFragmentDoc,
     "\n  mutation UpdateProgramAnnotations($input: UpdateProgramAnnotationsInput!) {\n    updateProgramAnnotations(input: $input) {\n      program {\n        slug\n        cachedAnnotations\n      }\n    }\n  }\n": types.UpdateProgramAnnotationsDocument,
     "\n  query GetProgramAnnotationSchema(\n    $locale: String!\n    $eventSlug: String!\n    $annotationSlugs: [String!]\n    $publicOnly: Boolean = true\n  ) {\n    event(slug: $eventSlug) {\n      program {\n        annotations(slug: $annotationSlugs, publicOnly: $publicOnly) {\n          ...AnnotationsFormAnnotation\n        }\n      }\n    }\n  }\n": types.GetProgramAnnotationSchemaDocument,
@@ -1376,6 +1386,26 @@ export function graphql(source: "\n  query StatsPage($locale: String) {\n    kom
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation SudoCbac($input: SudoCbacInput!) {\n    sudoCbac(input: $input) {\n      validUntil\n    }\n  }\n"): (typeof documents)["\n  mutation SudoCbac($input: SudoCbacInput!) {\n    sudoCbac(input: $input) {\n      validUntil\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query UserAdminPersonPage($personId: Int!) {\n    admin {\n      person(id: $personId) {\n        ...AdminPerson\n      }\n    }\n  }\n"): (typeof documents)["\n  query UserAdminPersonPage($personId: Int!) {\n    admin {\n      person(id: $personId) {\n        ...AdminPerson\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment AdminPerson on AdminPersonType {\n    id\n    firstName\n    lastName\n    nick\n    displayName\n    email\n    phoneNumber\n    discordHandle\n    username\n    isSuperuser\n    isActive\n    emailVerifiedAt\n    dateJoined\n    lastLogin\n    notes\n    groups\n  }\n"): (typeof documents)["\n  fragment AdminPerson on AdminPersonType {\n    id\n    firstName\n    lastName\n    nick\n    displayName\n    email\n    phoneNumber\n    discordHandle\n    username\n    isSuperuser\n    isActive\n    emailVerifiedAt\n    dateJoined\n    lastLogin\n    notes\n    groups\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation MergePeople($input: MergePeopleInput!) {\n    mergePeople(input: $input) {\n      person {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation MergePeople($input: MergePeopleInput!) {\n    mergePeople(input: $input) {\n      person {\n        id\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query UserAdminMergePage($personIds: [Int!]!, $intoPersonId: Int) {\n    admin {\n      mergePreview(personIds: $personIds, intoPersonId: $intoPersonId) {\n        into {\n          id\n        }\n        people {\n          ...AdminPerson\n        }\n        references {\n          model\n          field\n          count\n        }\n        conflicts {\n          model\n          field\n          personId\n          description\n        }\n        canMerge\n      }\n    }\n  }\n"): (typeof documents)["\n  query UserAdminMergePage($personIds: [Int!]!, $intoPersonId: Int) {\n    admin {\n      mergePreview(personIds: $personIds, intoPersonId: $intoPersonId) {\n        into {\n          id\n        }\n        people {\n          ...AdminPerson\n        }\n        references {\n          model\n          field\n          count\n        }\n        conflicts {\n          model\n          field\n          personId\n          description\n        }\n        canMerge\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query UserAdminPage($search: String, $returnNone: Boolean = false) {\n    admin {\n      people(search: $search, returnNone: $returnNone) {\n        ...AdminPerson\n      }\n    }\n  }\n"): (typeof documents)["\n  query UserAdminPage($search: String, $returnNone: Boolean = false) {\n    admin {\n      people(search: $search, returnNone: $returnNone) {\n        ...AdminPerson\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -125,19 +125,29 @@ class CBACEntry(models.Model):
             )
             return None, False
 
-        entry, created = cls.objects.get_or_create(
+        # (user, claims) is not unique in the database, so a production dump can hold
+        # duplicates. Any one of them grants the access, so the newest is reused.
+        existing = cls.objects.filter(user=user, claims=claims).order_by("-valid_until", "-id")
+        entries = list(existing[:2])
+        if len(entries) > 1:
+            logger.warning(
+                "CBAC: duplicate entries for user and claims, reusing the newest",
+                extra=dict(user=user.pk, claims=claims, entry=entries[0].pk),
+            )
+        if entries:
+            return entries[0], False
+
+        entry = cls.objects.create(
             user=user,
             claims=claims,
-            defaults=dict(
-                valid_from=valid_from or now(),
-                valid_until=expires_at,
-                created_by=created_by,
-                granted_by_group=granted_by_group,
-            ),
+            valid_from=valid_from or now(),
+            valid_until=expires_at,
+            created_by=created_by,
+            granted_by_group=granted_by_group,
         )
-        log_get_or_create(logger, entry, created)
+        log_get_or_create(logger, entry, True)
 
-        return entry, created
+        return entry, True
 
     @classmethod
     def ensure_admin_group_privileges(cls, t: datetime | None = None):

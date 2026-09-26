@@ -3320,6 +3320,70 @@ const translations: Translations = {
     confirm: "Åsidosätt",
   },
 
+  UserAdmin: {
+    listTitle: "Användaradministration",
+    personTitle: "Användare",
+    yes: "Ja",
+    no: "Nej",
+    filters: {
+      searchPlaceholder: "Sök med namn, e-post, användarnamn eller ID",
+    },
+    noFiltersApplied: (
+      ForceLink: ({ children }: { children: ReactNode }) => ReactNode,
+    ) => (
+      <>
+        Den ofiltrerade listan är dold. Avgränsa sökningen eller{" "}
+        <ForceLink>använd Kraften</ForceLink> för att visa resultat.
+      </>
+    ),
+    combineHint:
+      "För att slå ihop dubblettkonton, välj dem i användarlistan och välj Slå ihop valda.",
+    attributes: {
+      id: "ID",
+      username: "Användarnamn",
+      noUser: "Inget användarkonto",
+      isActive: "Aktiv",
+      isSuperuser: "Superanvändare",
+      emailVerifiedAt: "E-post bekräftad",
+      dateJoined: "Gick med",
+      lastLogin: "Senaste inloggning",
+      groups: "Grupper",
+      noGroups: "Inga grupper",
+      notes: "Anteckningar",
+      count: (numPeople: number) =>
+        numPeople === 1 ? "1 person." : `${numPeople} personer.`,
+    },
+    actions: {
+      select: "Välj",
+      combineSelected: "Slå ihop valda",
+      backToList: "Tillbaka till användarlistan",
+    },
+    merge: {
+      title: "Slå ihop dubblettkonton",
+      explanation:
+        "Allt som hänvisar till de andra kontona flyttas till det kvarvarande kontot, och de andra kontona raderas inklusive deras inloggning.",
+      survivor: "Kvarvarande",
+      survivorMarker: "Behålls",
+      chooseSurvivor: "Välj som kvarvarande",
+      references: "Poster som flyttas",
+      noReferences: "De andra kontona har inga poster att flytta.",
+      model: "Modell",
+      field: "Fält",
+      count: "Antal",
+      description: "Post",
+      conflicts: "Konflikter",
+      cannotMerge:
+        "Kontona kan inte slås ihop eftersom posterna nedan finns på båda. Lös dem för hand först.",
+      warning: "Detta kan inte ångras. Åtgärden loggas i händelseloggen.",
+      confirm: "Slå ihop konton",
+    },
+    messages: {
+      merged: "Kontona slogs ihop.",
+      mergeConflict:
+        "Kontona kunde inte slås ihop på grund av motstridiga poster.",
+    },
+  },
+
   Brand: {
     appName: (
       <>

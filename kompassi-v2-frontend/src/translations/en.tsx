@@ -3374,6 +3374,71 @@ const translations = {
     confirm: "Override",
   },
 
+  UserAdmin: {
+    listTitle: "User admin",
+    personTitle: "User",
+    yes: "Yes",
+    no: "No",
+    filters: {
+      searchPlaceholder: "Search by name, email, username or ID",
+    },
+    noFiltersApplied: (
+      ForceLink: ({ children }: { children: ReactNode }) => ReactNode,
+    ) => (
+      <>
+        Unfiltered list hidden. To show results, please narrow down your search
+        or <ForceLink>use the Force</ForceLink>.
+      </>
+    ),
+    combineHint:
+      "To combine duplicate accounts, select them in the user list and choose Combine selected.",
+    attributes: {
+      id: "ID",
+      username: "Username",
+      noUser: "No user account",
+      isActive: "Active",
+      isSuperuser: "Superuser",
+      emailVerifiedAt: "Email verified",
+      dateJoined: "Joined",
+      lastLogin: "Last login",
+      groups: "Groups",
+      noGroups: "No groups",
+      notes: "Notes",
+      count: (numPeople: number) =>
+        numPeople === 1 ? "1 person." : `${numPeople} people.`,
+    },
+    actions: {
+      select: "Select",
+      combineSelected: "Combine selected",
+      backToList: "Back to user list",
+    },
+    merge: {
+      title: "Combine duplicate accounts",
+      explanation:
+        "Everything that refers to the other accounts will be moved onto the surviving account, and the other accounts will be deleted, including their login.",
+      survivor: "Survivor",
+      survivorMarker: "Survives",
+      chooseSurvivor: "Choose as survivor",
+      references: "Records that will be moved",
+      noReferences: "The other accounts have no records to move.",
+      model: "Model",
+      field: "Field",
+      count: "Count",
+      description: "Record",
+      conflicts: "Conflicts",
+      cannotMerge:
+        "These accounts cannot be combined because the records below exist on both. Resolve them by hand first.",
+      warning:
+        "This cannot be undone. The operation is recorded in the event log.",
+      confirm: "Combine accounts",
+    },
+    messages: {
+      merged: "The accounts were combined.",
+      mergeConflict:
+        "The accounts could not be combined because of conflicting records.",
+    },
+  },
+
   Brand: {
     appName: (
       <>

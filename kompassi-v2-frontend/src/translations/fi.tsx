@@ -3385,6 +3385,71 @@ const translations: Translations = {
     confirm: "Ohita",
   },
 
+  UserAdmin: {
+    listTitle: "Käyttäjähallinta",
+    personTitle: "Käyttäjä",
+    yes: "Kyllä",
+    no: "Ei",
+    filters: {
+      searchPlaceholder:
+        "Hae nimellä, sähköpostilla, käyttäjätunnuksella tai ID:llä",
+    },
+    noFiltersApplied: (
+      ForceLink: ({ children }: { children: ReactNode }) => ReactNode,
+    ) => (
+      <>
+        Rajaamaton lista piilotettu. Näyttääksesi tulokset rajaa hakua tai{" "}
+        <ForceLink>käytä Voimaa</ForceLink>.
+      </>
+    ),
+    combineHint:
+      "Yhdistääksesi tuplatilit valitse ne käyttäjälistassa ja valitse Yhdistä valitut.",
+    attributes: {
+      id: "ID",
+      username: "Käyttäjätunnus",
+      noUser: "Ei käyttäjätiliä",
+      isActive: "Aktiivinen",
+      isSuperuser: "Pääkäyttäjä",
+      emailVerifiedAt: "Sähköposti vahvistettu",
+      dateJoined: "Liittynyt",
+      lastLogin: "Viimeisin kirjautuminen",
+      groups: "Ryhmät",
+      noGroups: "Ei ryhmiä",
+      notes: "Merkinnät",
+      count: (numPeople: number) =>
+        numPeople === 1 ? "1 henkilö." : `${numPeople} henkilöä.`,
+    },
+    actions: {
+      select: "Valitse",
+      combineSelected: "Yhdistä valitut",
+      backToList: "Takaisin käyttäjälistaan",
+    },
+    merge: {
+      title: "Yhdistä tuplatilit",
+      explanation:
+        "Kaikki muihin tileihin viittaava siirretään säilyvälle tilille, ja muut tilit poistetaan kirjautumistunnuksineen.",
+      survivor: "Säilyvä",
+      survivorMarker: "Säilyy",
+      chooseSurvivor: "Valitse säilyväksi",
+      references: "Siirrettävät tietueet",
+      noReferences: "Muilla tileillä ei ole siirrettäviä tietueita.",
+      model: "Malli",
+      field: "Kenttä",
+      count: "Lukumäärä",
+      description: "Tietue",
+      conflicts: "Ristiriidat",
+      cannotMerge:
+        "Tilejä ei voi yhdistää, koska alla olevat tietueet ovat olemassa molemmilla. Selvitä ne ensin käsin.",
+      warning: "Tätä ei voi perua. Toimenpide kirjataan tapahtumalokiin.",
+      confirm: "Yhdistä tilit",
+    },
+    messages: {
+      merged: "Tilit yhdistettiin.",
+      mergeConflict:
+        "Tilejä ei voitu yhdistää ristiriitaisten tietueiden vuoksi.",
+    },
+  },
+
   Brand: {
     appName: (
       <>

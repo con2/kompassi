@@ -13,6 +13,7 @@ from kompassi.core.utils.view_utils import get_event_and_organization
 from kompassi.dimensions.models.scope import Scope
 from kompassi.event_log_v2.utils.emit import emit
 
+from .constants import ADMIN_CBAC_APP
 from .exceptions import CBACPermissionDenied
 from .models.cbac_entry import CBACEntry, Claims
 
@@ -236,3 +237,30 @@ def graphql_query_cbac_required(func: Callable):
         return func(instance, info, *args, **kwargs)
 
     return wrapper
+
+
+def graphql_check_admin(
+    info: ResolveInfo | HttpRequest,
+    *,
+    model: str,
+    operation: Operation = "query",
+    field: str = "self",
+):
+    """
+    Check access to the site-wide admin, which has no scope. The claims carry
+    app=ADMIN_CBAC_APP, which is only ever granted by sudo (see grant_sudo). The Django
+    admin URL namespace is also called "admin", but Django admin views are never CBAC
+    checked, so a sudo entry for this app does not leak there.
+    """
+    request: HttpRequest = info.context if isinstance(info, ResolveInfo) else info
+
+    claims: Claims = dict(
+        operation=operation,
+        app=ADMIN_CBAC_APP,
+        model=model,
+        field=field,
+        view="graphql",
+    )
+
+    if not CBACEntry.is_allowed(request.user, claims):
+        raise_cbac_permission_denied(request, claims)

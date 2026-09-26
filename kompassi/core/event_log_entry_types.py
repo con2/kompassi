@@ -27,3 +27,8 @@ registry.register(
     name="core.cleanup.performed",
     message="Cleanup for {model_name} deleted: {deleted}",
 )
+
+registry.register(
+    name="core.person.merged",
+    message="User {actor} merged duplicate accounts into {person}: {merged}",
+)

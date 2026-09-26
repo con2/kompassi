@@ -1,7 +1,9 @@
+from datetime import timedelta
 from unittest import TestCase as NonDatabaseTestCase
 
 import pytest
 from django.test import RequestFactory, TestCase
+from django.utils.timezone import now
 
 from kompassi.core.models import Person
 from kompassi.core.models.event import Event
@@ -276,3 +278,83 @@ def test_sudo_cbac_mutation_grants_temporary_access():
 
     assert Entry.objects.filter(entry_type="access.cbac.sudo").exists()
     assert Entry.objects.filter(entry_type="access.cbacentry.created").exists()
+
+
+ADMIN_PEOPLE_QUERY = """
+  query AdminPeople($search: String!) {
+    admin {
+      people(search: $search) {
+        id
+        username
+      }
+    }
+  }
+"""
+
+
+@pytest.mark.django_db
+def test_admin_namespace_requires_sudo():
+    """
+    The site-wide admin is gated by claims no group grant produces, so an event
+    admin's entries never satisfy it, a plain user gets no claims back, and a
+    superuser gets exactly the app claim that sudo then honours.
+    """
+    from kompassi.graphql_api.schema import schema
+
+    from .constants import ADMIN_CBAC_APP
+
+    Entry.ensure_partitions()
+
+    event, _created = Event.get_or_create_dummy()
+    normal, _created = Person.get_or_create_dummy(superuser=False)
+    CBACEntry.grant_access(
+        normal.user,
+        dict(event=event.slug, organization=event.organization.slug),
+        expires_at=now() + timedelta(days=1),
+    )
+    denied = schema.execute(ADMIN_PEOPLE_QUERY, None, _graphql_request(normal.user), variable_values=dict(search="x"))
+    assert denied.errors
+    assert denied.errors[0].extensions["code"] == CBAC_PERMISSION_DENIED
+    assert "claims" not in denied.errors[0].extensions
+
+    superuser, _created = Person.get_or_create_dummy(superuser=True, another=True)
+    request = _graphql_request(superuser.user)
+    denied = schema.execute(ADMIN_PEOPLE_QUERY, None, request, variable_values=dict(search="x"))
+    assert denied.errors
+    claims = denied.errors[0].extensions["claims"]
+    assert claims == {"app": ADMIN_CBAC_APP}
+
+    sudo_result = schema.execute(
+        """
+          mutation SudoCbac($input: SudoCbacInput!) {
+            sudoCbac(input: $input) { validUntil }
+          }
+        """,
+        None,
+        request,
+        variable_values=dict(input=dict(claims=claims)),
+    )
+    assert not sudo_result.errors
+
+    allowed = schema.execute(ADMIN_PEOPLE_QUERY, None, request, variable_values=dict(search="mahti"))
+    assert not allowed.errors
+    assert allowed.data is not None
+    assert [row["username"] for row in allowed.data["admin"]["people"]] == ["mahti"]
+
+
+@pytest.mark.django_db
+def test_grant_access_tolerates_duplicate_entries():
+    """
+    (user, claims) is not unique, and production data has duplicates. grant_access must
+    reuse one of them instead of failing on get_or_create.
+    """
+    person, _created = Person.get_or_create_dummy()
+    claims = dict(event="dummy-event", app="labour")
+    for _ in range(2):
+        CBACEntry.objects.create(user=person.user, claims=claims, valid_until=now() + timedelta(days=1))
+
+    entry, created = CBACEntry.grant_access(person.user, claims, expires_at=now() + timedelta(days=1))
+
+    assert entry is not None
+    assert not created
+    assert CBACEntry.objects.filter(user=person.user, claims=claims).count() == 2

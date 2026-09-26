@@ -328,3 +328,136 @@ def test_retention_reference_time():
         2027, 1, 1, tzinfo=helsinki
     )
     assert retention_reference_time(datetime(2026, 12, 31, 22, 30, tzinfo=UTC)) == datetime(2028, 1, 1, tzinfo=helsinki)
+
+
+@pytest.mark.django_db
+def test_merge_people_moves_references_and_deletes_duplicate():
+    """
+    Everything referring to the duplicate Person or its User ends up on the survivor,
+    identical group memberships collapse into one, and the duplicate is gone.
+    """
+    from django.contrib.auth.models import Group
+    from django.utils.timezone import now
+
+    from kompassi.access.models import CBACEntry
+    from kompassi.core.merge_people import merge_people
+    from kompassi.core.models import Person
+    from kompassi.event_log_v2.models import Entry
+    from kompassi.event_log_v2.utils.emit import emit
+    from kompassi.labour.models import Signup
+
+    Entry.ensure_partitions()
+    survivor, _ = Person.get_or_create_dummy()
+    duplicate, _ = Person.get_or_create_dummy(another=True)
+    duplicate_id = duplicate.pk
+    duplicate_user = duplicate.user
+    assert duplicate_user is not None
+
+    group, _ = Group.objects.get_or_create(name="merge-test-group")
+    survivor.user.groups.add(group)
+    duplicate_user.groups.add(group)
+
+    signup, _ = Signup.get_or_create_dummy(person=duplicate)
+    cbac_entry, _ = CBACEntry.grant_access(
+        duplicate_user, dict(event="dummy-event"), expires_at=now().replace(year=2999)
+    )
+    emit("core.person.viewed", person=duplicate.pk, actor=duplicate_user)
+
+    plan = merge_people(survivor, [duplicate])
+
+    assert plan.can_merge
+    assert not Person.objects.filter(pk=duplicate_id).exists()
+    assert not duplicate_user.__class__.objects.filter(username="another").exists()
+
+    signup.refresh_from_db()
+    assert signup.person == survivor
+    assert cbac_entry is not None
+    cbac_entry.refresh_from_db()
+    assert cbac_entry.user == survivor.user
+    assert survivor.user.groups.filter(pk=group.pk).count() == 1
+
+    viewed = Entry.objects.get(entry_type="core.person.viewed")
+    assert viewed.other_fields["person"] == survivor.pk
+    assert viewed.actor == survivor.user
+
+    merged = Entry.objects.get(entry_type="core.person.merged")
+    assert merged.other_fields["merged"] == [duplicate_id]
+
+
+@pytest.mark.django_db
+def test_merge_people_refuses_on_conflict():
+    """
+    Two signups to the same event cannot both belong to one person, so the merge
+    must refuse and leave both accounts untouched.
+    """
+    from kompassi.core.merge_people import MergeConflictError, merge_people, plan_merge
+    from kompassi.core.models import Person
+    from kompassi.labour.models import Signup
+
+    survivor, _ = Person.get_or_create_dummy()
+    duplicate, _ = Person.get_or_create_dummy(another=True)
+    Signup.get_or_create_dummy(person=survivor)
+    Signup.get_or_create_dummy(person=duplicate)
+
+    plan = plan_merge(survivor, [duplicate])
+    assert not plan.can_merge
+    assert any(conflict.model == "labour.Signup" for conflict in plan.conflicts)
+
+    with pytest.raises(MergeConflictError):
+        merge_people(survivor, [duplicate])
+
+    assert Person.objects.filter(pk=duplicate.pk).exists()
+    assert Signup.objects.filter(person=duplicate).exists()
+
+
+@pytest.mark.django_db
+def test_merge_people_survivor_without_user_adopts_duplicate_user():
+    from django.contrib.auth.models import Group
+
+    from kompassi.core.merge_people import merge_people
+    from kompassi.core.models import Person
+    from kompassi.event_log_v2.models import Entry
+
+    Entry.ensure_partitions()
+    Group.objects.get_or_create(name=settings.KOMPASSI_MAY_SEND_INFO_GROUP_NAME)
+    duplicate, _ = Person.get_or_create_dummy(another=True)
+    duplicate_id = duplicate.pk
+    duplicate_user = duplicate.user
+    survivor = Person.objects.create(first_name="Matti", surname="Meikäläinen", email="matti@example.com")
+
+    merge_people(survivor, [duplicate])
+
+    survivor.refresh_from_db()
+    assert survivor.user == duplicate_user
+    assert not Person.objects.filter(pk=duplicate_id).exists()
+
+
+@pytest.mark.django_db
+def test_merge_people_collapses_shared_qualifications():
+    """
+    Holding the same qualification on both accounts only says the person has it,
+    so the merge keeps one row instead of refusing.
+    """
+    from django.contrib.auth.models import Group
+
+    from kompassi.core.merge_people import merge_people, plan_merge
+    from kompassi.core.models import Person
+    from kompassi.event_log_v2.models import Entry
+    from kompassi.labour.models import PersonQualification, Qualification
+
+    Entry.ensure_partitions()
+    Group.objects.get_or_create(name=settings.KOMPASSI_MAY_SEND_INFO_GROUP_NAME)
+    survivor, _ = Person.get_or_create_dummy()
+    duplicate, _ = Person.get_or_create_dummy(another=True)
+    shared, _ = Qualification.objects.get_or_create(slug="shared", defaults=dict(name="Shared"))
+    only_duplicate, _ = Qualification.objects.get_or_create(slug="only-dup", defaults=dict(name="Only duplicate"))
+    PersonQualification.objects.create(person=survivor, qualification=shared)
+    PersonQualification.objects.create(person=duplicate, qualification=shared)
+    PersonQualification.objects.create(person=duplicate, qualification=only_duplicate)
+
+    assert plan_merge(survivor, [duplicate]).can_merge
+
+    merge_people(survivor, [duplicate])
+
+    assert set(survivor.qualifications.values_list("qualification__slug", flat=True)) == {"shared", "only-dup"}
+    assert survivor.qualifications.count() == 2
