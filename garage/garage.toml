@@ -1,0 +1,20 @@
+# Single-node Garage for docker-compose development. Not for production use:
+# the RPC secret is public and there is no replication.
+metadata_dir = "/var/lib/garage/meta"
+data_dir = "/var/lib/garage/data"
+db_engine = "lmdb"
+replication_factor = 1
+
+rpc_bind_addr = "127.0.0.1:3901"
+rpc_public_addr = "127.0.0.1:3901"
+rpc_secret = "5d2a3a1fbbd4a5fbb2f6f4c6a1b8e5d2c0f7a9e3b4d6c8a2f1e0d9c7b5a3f2e1"
+
+[s3_api]
+# Must match AWS_DEFAULT_REGION in docker-compose.yml: Garage rejects SigV4
+# requests whose credential scope names any other region.
+s3_region = "garage"
+api_bind_addr = "0.0.0.0:9000"
+root_domain = ".s3.localhost"
+
+[admin]
+api_bind_addr = "127.0.0.1:3903"

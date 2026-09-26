@@ -86,7 +86,7 @@ GraphQL types are auto-generated into `src/__generated__/`. After changing any G
 To run codegen + build against the local backend via docker-compose (e.g. to verify types after schema changes):
 
 ```bash
-docker compose up -d router backend postgres redis minio
+docker compose up -d router backend postgres redis garage garage-init
 docker compose run --rm frontend sh -c "graphql-codegen && next build"
 ```
 

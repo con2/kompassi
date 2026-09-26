@@ -3,8 +3,8 @@ services:
     image: busybox
     command: "sleep infinity"
     init: true
-    # note: frontend, backend and minio have network_mode: service:router
-    # because they to reach backend and minio at same address as browser
+    # note: frontend, backend and garage have network_mode: service:router
+    # because they to reach backend and garage at same address as browser
     # cannot publish ports from container that has this network_mode
     # also need to use separate router container so backend can restart
     # without breaking connectivity
@@ -14,8 +14,6 @@ services:
       - 7998:7998
       - 8000:8000
       - 9000:9000
-      # minio console, uncomment if you need it
-      # - 9001:9001
   backend:
     build: .
     init: true
@@ -38,8 +36,9 @@ services:
       ALLOWED_HOSTS: "*"
       MINIO_BUCKET_NAME: kompassi
       MINIO_ACCESS_KEY_ID: kompassi
-      MINIO_SECRET_ACCESS_KEY: kompassi
+      MINIO_SECRET_ACCESS_KEY: kompassikompassi
       MINIO_ENDPOINT_URL: http://localhost:9000
+      AWS_DEFAULT_REGION: garage
       KOMPASSI_GENERATE_OIDC_RSA_PRIVATE_KEY_PATH: dev-secrets/id_rsa.key
       SECRET_KEY: The SECRET_KEY setting must not be empty.
       KOMPASSI_BASE_URL: http://localhost:8000
@@ -128,18 +127,30 @@ services:
     init: true
     volumes:
       - redis-data:/data
-  minio:
-    image: minio/minio
-    entrypoint: /usr/bin/env
-    command: sh -c 'mkdir -p /data/kompassi && minio server /data --console-address ":9001"'
+  garage:
+    image: dxflrs/garage:v2.3.0
+    init: true
     network_mode: service:router
     volumes:
-      - minio-data:/data
+      - ./garage/garage.toml:/etc/garage.toml:ro
+      - garage-meta:/var/lib/garage/meta
+      - garage-data:/var/lib/garage/data
+  garage-init:
+    build: garage
+    network_mode: service:router
+    depends_on:
+      - garage
+    volumes:
+      - ./garage/garage.toml:/etc/garage.toml:ro
+      # the garage CLI authenticates to the node with the node key stored here
+      - garage-meta:/var/lib/garage/meta:ro
     environment:
-      MINIO_ROOT_USER: kompassi
-      MINIO_ROOT_PASSWORD: kompassi
+      BUCKET_NAME: kompassi
+      ACCESS_KEY_ID: kompassi
+      SECRET_ACCESS_KEY: kompassikompassi
 
 volumes:
   postgres-data: {}
   redis-data: {}
-  minio-data: {}
+  garage-meta: {}
+  garage-data: {}
