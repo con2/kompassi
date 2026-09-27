@@ -8,6 +8,13 @@ logger = logging.getLogger(__name__)
 class CustomOAuth2Validator(OAuth2Validator):
     oidc_claim_scope = None
 
+    def get_userinfo_claims(self, request):
+        claims = super().get_userinfo_claims(request)
+        # Additional properties returned from /oidc/userinfo/
+        if "phone" in request.scopes:
+            claims["phone"] = request.user.person.normalized_phone_number
+        return claims
+
     def get_additional_claims(self, request):
         return dict(
             email=request.user.person.email,
