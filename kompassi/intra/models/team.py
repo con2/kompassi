@@ -9,6 +9,8 @@ from kompassi.core.models.constants import EMAIL_LENGTH
 from kompassi.core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, pick_attrs, slugify
 
 if TYPE_CHECKING:
+    from django.contrib.auth.models import Group
+
     from .team_member import TeamMember
 
 
@@ -29,7 +31,7 @@ class Team(models.Model):
         help_text=_("What is the team responsible for?"),
     )
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
-    group = models.ForeignKey("auth.Group", on_delete=models.CASCADE)
+    group: models.ForeignKey[Group] = models.ForeignKey("auth.Group", on_delete=models.CASCADE)
 
     email = models.EmailField(
         blank=True,

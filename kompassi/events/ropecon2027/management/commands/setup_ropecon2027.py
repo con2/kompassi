@@ -282,14 +282,16 @@ class Setup:
             logger.warning("setup_ropecon2027.setup_access: user ropecon-aliases not found, skipping CBAC grant")
         else:
             assert self.event.end_time
-            CBACEntry.grant_access(
-                ropecon_aliases,
-                claims=dict(
-                    view="access_admin_group_members_api",
-                    group_name=cc_group.name,
-                ),
-                expires_at=self.event.end_time + timedelta(days=CBAC_VALID_AFTER_EVENT_DAYS),
-            )
+
+            for group in [cc_group, *(team.group for team in Team.objects.filter(event=self.event))]:
+                CBACEntry.grant_access(
+                    ropecon_aliases,
+                    claims=dict(
+                        view="access_admin_group_members_api",
+                        group_name=group.name,
+                    ),
+                    expires_at=self.event.end_time + timedelta(days=CBAC_VALID_AFTER_EVENT_DAYS),
+                )
 
     def setup_program_v2(self):
         (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
