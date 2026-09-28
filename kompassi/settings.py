@@ -363,7 +363,7 @@ LOGGING = {
         },
         "celery": {
             "handlers": ["console"],
-            "level": "DEBUG" if DEBUG else "WARNING",
+            "level": "DEBUG" if DEBUG else "INFO",
             "propagate": True,
         },
         "kompassi": {
@@ -507,6 +507,8 @@ LIPPUKALA_PRINT_LOGO_SIZE_CM = (3.0, 3.0)
 
 if env("BROKER_URL", default=""):
     CELERY_BROKER_URL = env("BROKER_URL")
+    CELERY_BROKER_TRANSPORT = "kompassi.celery_redis_transport:Transport"
+    CELERY_BROKER_TRANSPORT_OPTIONS = {"health_check_interval": 25}
     CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 else:
     CELERY_BROKER_URL = "memory://"
@@ -522,6 +524,7 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 
 CELERY_REDIS_SOCKET_KEEPALIVE = True
+CELERY_WORKER_CANCEL_LONG_RUNNING_TASKS_ON_CONNECTION_LOSS = True
 
 # kompassi.api
 KOMPASSI_APPLICATION_USER_GROUP = f"{KOMPASSI_INSTALLATION_SLUG}-apps"

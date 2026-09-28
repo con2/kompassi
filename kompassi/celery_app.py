@@ -1,6 +1,8 @@
+import logging.config
 import os
 
 from celery import Celery
+from celery.signals import setup_logging
 from django.conf import settings
 
 # set the default Django settings module for the 'celery' program.
@@ -12,3 +14,8 @@ app = Celery("kompassi")
 # pickle the object when using Windows.
 app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+
+
+@setup_logging.connect
+def configure_logging_from_django_settings(**kwargs):
+    logging.config.dictConfig(settings.LOGGING)

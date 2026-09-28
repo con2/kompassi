@@ -475,8 +475,6 @@ const celeryDeployment = {
               "-A",
               "kompassi.celery_app:app",
               "worker",
-              "-l",
-              "DEBUG",
             ],
             env: kompassiEnvironment,
             volumeMounts: kompassiVolumeMounts,
