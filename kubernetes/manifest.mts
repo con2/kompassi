@@ -78,6 +78,7 @@ const environments: Record<EnvironmentName, Environment> = {
       "dev.larpit.fi",
     ],
     minioBucketName: "kompassidev",
+    postgresSsl: false,
   },
   production: {
     ...base,
@@ -169,7 +170,7 @@ const kompassiEnvironment = Object.entries({
   POSTGRES_DATABASE: secretKeyRef("postgres", "database"),
   POSTGRES_USERNAME: secretKeyRef("postgres", "username"),
   POSTGRES_PASSWORD: secretKeyRef("postgres", "password"),
-  POSTGRES_SSLMODE: env.postgresSsl ? "require" : "allow",
+  POSTGRES_SSLMODE: env.postgresSsl ? "require" : "disable",
   REDIS_HOSTNAME: env.redisHostname,
   REDIS_BROKER_DATABASE: String(env.redisBrokerDatabase),
   REDIS_CACHE_DATABASE: String(env.redisCacheDatabase),
