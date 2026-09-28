@@ -10,7 +10,6 @@ dependencies = [
     "aiohttp[speedups]",
     "Babel",
     "boto3",
-    "celery",
     "crispy-bootstrap3",
     "django_csp",
     "django-bootstrap3",

@@ -1,10 +1,8 @@
-from uuid import UUID
-
-from kompassi.celery_app import app
+from django.tasks import task
 
 
-@app.task(ignore_result=True)
-def response_notify_subscribers(response_id: UUID, old_version_id: UUID | None = None):
+@task
+def response_notify_subscribers(response_id: str, old_version_id: str | None = None):
     from .models.response import Response
 
     response = Response.objects.get(id=response_id)

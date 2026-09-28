@@ -64,7 +64,7 @@ class OneTimeCodeMixin:
 
         opts.update(kwargs)
 
-        send_email.delay(**opts)  # type: ignore
+        send_email.enqueue(**opts)
 
     def mark_used(self):
         if self.state != "valid":

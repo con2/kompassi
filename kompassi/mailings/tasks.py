@@ -1,7 +1,7 @@
-from kompassi.celery_app import app
+from django.tasks import task
 
 
-@app.task(ignore_result=True)
+@task
 def message_send(message_id, recipient_ids=None, resend=False):
     from kompassi.core.models import Person
 

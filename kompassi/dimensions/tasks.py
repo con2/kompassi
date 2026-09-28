@@ -1,8 +1,7 @@
 import logging
 
 from django.db import transaction
-
-from kompassi.celery_app import app
+from django.tasks import task
 
 from .models.enums import DimensionApp
 from .models.universe import Universe
@@ -11,7 +10,7 @@ from .models.universe_annotation import UniverseAnnotation
 logger = logging.getLogger(__name__)
 
 
-@app.task(ignore_result=True)
+@task(max_attempts=3)
 def universe_annotation_refresh_values(universe_id: int, annotation_id: int):
     from kompassi.program_v2.models.program import Program
 
@@ -22,10 +21,10 @@ def universe_annotation_refresh_values(universe_id: int, annotation_id: int):
             if event is None:
                 raise ValueError("cannot be!")
             for program_id in Program.objects.filter(event=event).order_by("id").values_list("id", flat=True):
-                universe_annotation_refresh_values_program.delay(universe_id, annotation_id, program_id)  # type: ignore
+                universe_annotation_refresh_values_program.enqueue(universe_id, annotation_id, program_id)
 
 
-@app.task(ignore_result=True)
+@task(max_attempts=3)
 def universe_annotation_refresh_values_program(universe_id: int, annotation_id: int, program_id: int):
     from kompassi.forms.utils.extract_annotations import extract_annotations_from_responses
     from kompassi.program_v2.models.program import Program

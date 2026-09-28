@@ -193,6 +193,7 @@ INSTALLED_APPS = (
     "kompassi.labour",
     "kompassi.labour_common_qualifications",
     "kompassi.tickets_v2",
+    "kompassi.task_queue",
     "kompassi.payments",
     "kompassi.mailings",
     "kompassi.api",
@@ -361,10 +362,10 @@ LOGGING = {
             "level": "ERROR",
             "propagate": True,
         },
-        "celery": {
-            "handlers": ["console"],
+        "django.tasks": {
+            "handlers": ["console", "mail_admins"],
             "level": "DEBUG" if DEBUG else "INFO",
-            "propagate": True,
+            "propagate": False,
         },
         "kompassi": {
             "handlers": ["console"],
@@ -505,26 +506,11 @@ LIPPUKALA_PRINT_LOGO_PATH = Path(__file__).parent / "core" / "static" / "jean_vi
 LIPPUKALA_PRINT_LOGO_SIZE_CM = (3.0, 3.0)
 
 
-if env("BROKER_URL", default=""):
-    CELERY_BROKER_URL = env("BROKER_URL")
-    CELERY_BROKER_TRANSPORT = "kompassi.celery_redis_transport:Transport"
-    CELERY_BROKER_TRANSPORT_OPTIONS = {"health_check_interval": 25}
-    CELERY_RESULT_BACKEND = CELERY_BROKER_URL
-else:
-    CELERY_BROKER_URL = "memory://"
-    CELERY_RESULT_BACKEND = "cache+memory://"
-    CELERY_TASK_ALWAYS_EAGER = True
-
-CELERY_ACCEPT_CONTENT = ["json"]
-
-CELERY_SEND_TASK_ERROR_EMAILS = not DEBUG
-CELERY_SERVER_EMAIL = DEFAULT_FROM_EMAIL
-
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
-
-CELERY_REDIS_SOCKET_KEEPALIVE = True
-CELERY_WORKER_CANCEL_LONG_RUNNING_TASKS_ON_CONNECTION_LOSS = True
+TASKS = {
+    "default": {
+        "BACKEND": env("TASKS_BACKEND", default="kompassi.task_queue.backend.PostgresTaskBackend"),
+    },
+}
 
 # kompassi.api
 KOMPASSI_APPLICATION_USER_GROUP = f"{KOMPASSI_INSTALLATION_SLUG}-apps"

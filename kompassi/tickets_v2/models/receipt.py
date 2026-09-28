@@ -60,8 +60,9 @@ ETICKET_FILENAME = "e-ticket.pdf"
 class Receipt(EventPartitionsMixin, UUID7Mixin, models.Model):
     """
     Receipt stamps are created for paid orders to indicate various stages of
-    receipt and electronic ticket delivery. The table is strictly insert only;
-    no updates or deletes will ever be made.
+    receipt and electronic ticket delivery. Rows are inserted by database triggers
+    on tickets_v2_paymentstamp and by the admin resend mutation; only `status`
+    is ever updated, by the send_receipt task.
 
     Partitioned by event_id.
     Primary key is (event_id, id).
@@ -95,11 +96,7 @@ class Receipt(EventPartitionsMixin, UUID7Mixin, models.Model):
     batch_id = models.UUIDField(
         null=True,
         blank=True,
-        help_text=(
-            "The ID of the batch this receipt was sent processed in. "
-            "This is an UUIDv7 that is generated when the batch is created. "
-            "If the receipt is stuck in PROCESSING and the batch ID is old, then the batch has probably failed and needs to be retried."
-        ),
+        help_text="Unused since receipts moved to the generic task queue; kept because the table is partitioned.",
     )
 
     type = PostgresEnumField(
@@ -138,7 +135,7 @@ class Receipt(EventPartitionsMixin, UUID7Mixin, models.Model):
 class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
     """
     Responsible for sending email receipts and generating eticket PDFs.
-    Also as such represents an item of work to be done by the receipt worker.
+    Also as such represents an item of work to be done by the send_receipt task.
     It results in a receipt being sent to the customer, with or without e-tickets.
     Should contain all the information it needs to do its job (save for easily cacheable stuff).
     """
@@ -159,8 +156,7 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
     has_used_etickets: bool = False
 
     # NOTE: fields and their order must match fields returned by the query
-    query: ClassVar[str] = (Path(__file__).parent / "sql" / "claim_pending_receipts.sql").read_text()
-    batch_size: ClassVar[int] = 100
+    query: ClassVar[str] = (Path(__file__).parent / "sql" / "get_pending_receipt.sql").read_text()
 
     # The cached Event also reaches TicketsV2EventMeta (eg. cancellation_period_days),
     # which the admin can change at any time, so the cache needs to expire on its own.
@@ -248,31 +244,15 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
         )
 
     @classmethod
-    def claim_pending_receipts(cls, event_id: int, batch_size: int = batch_size) -> tuple[list[Self], bool]:
-        """
-        Iterate this to find orders for which a receipt needs to be sent.
-        You'll get a batch of `ReceiptPending.batch_size` orders at a time, and
-        a boolean telling if there's more orders to process
-        (ie. a subsequent call to this method will return more orders).
-        """
+    def get(cls, event_id: int, receipt_id: UUID | str) -> Self:
         with connection.cursor() as cursor:
-            cursor.execute(
-                cls.query,
-                dict(
-                    batch_id=uuid7(),
-                    batch_size=batch_size + 1,
-                    event_id=event_id,
-                ),
-            )
-            results = [
-                cls(**dict(zip(cls.model_fields, row, strict=True)))  # type: ignore
-                for row in cursor
-            ]
+            cursor.execute(cls.query, dict(event_id=event_id, receipt_id=receipt_id))
+            row = cursor.fetchone()
 
-        if have_more := len(results) > batch_size:
-            results.pop(batch_size)
+        if row is None:
+            raise Receipt.DoesNotExist(f"Receipt {receipt_id} of event {event_id} not found")
 
-        return results, have_more
+        return cls(**dict(zip(cls.model_fields, row, strict=True)))  # type: ignore
 
     @staticmethod
     def make_code(lippukala_order: LippukalaOrder, product: Product) -> Code:

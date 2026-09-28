@@ -195,7 +195,7 @@ class Membership(models.Model, CsvExportMixin):
     def apply_state(self):
         from .tasks import membership_apply_state
 
-        membership_apply_state.delay(self.pk)  # type: ignore
+        membership_apply_state.enqueue(self.pk)
 
     def _apply_state(self):
         self._apply_state_group_membership()

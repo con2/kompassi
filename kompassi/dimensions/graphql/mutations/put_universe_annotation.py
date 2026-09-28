@@ -93,7 +93,7 @@ class PutUniverseAnnotation(graphene.Mutation):
                 pass
             case PutUniverseAnnotationAction.SAVE_AND_REFRESH:
                 if universe_annotation.is_active:
-                    universe_annotation_refresh_values.delay(universe.id, annotation.id)  # type: ignore
+                    universe_annotation_refresh_values.enqueue(universe.id, annotation.id)
             case _:
                 raise NotImplementedError(action)
 

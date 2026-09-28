@@ -20,7 +20,7 @@ class Subscription(models.Model):
     def send_update_for_entry(self, entry: Entry):
         from ..tasks import subscription_send_update_for_entry
 
-        subscription_send_update_for_entry.delay(self.id, entry.id)  # type: ignore
+        subscription_send_update_for_entry.enqueue(self.id, str(entry.id))
 
     def _send_update_for_entry(self, entry: Entry):
         if not self.user.is_active:

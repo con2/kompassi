@@ -402,7 +402,7 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
     ):
         from ..tasks import response_notify_subscribers
 
-        response_notify_subscribers.delay(response.id, old_version.id if old_version else None)  # type: ignore
+        response_notify_subscribers.enqueue(str(response.id), str(old_version.id) if old_version else None)
 
     def _notify_subscribers(
         self,

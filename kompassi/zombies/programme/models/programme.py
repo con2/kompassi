@@ -1778,7 +1778,7 @@ class Programme(models.Model, CsvExportMixin):
     def apply_state_async(self):
         from ..tasks import programme_apply_state_async
 
-        programme_apply_state_async.delay(self.pk)  # type: ignore
+        programme_apply_state_async.enqueue(self.pk)
 
     def _apply_state_async(self):
         self.apply_state_group_membership()

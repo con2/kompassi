@@ -61,7 +61,7 @@ class SMTPServer(models.Model):
     def push_smtppasswd_file(self):
         from ..tasks import smtp_server_push_smtppasswd_file
 
-        smtp_server_push_smtppasswd_file.delay(self.id)  # type: ignore
+        smtp_server_push_smtppasswd_file.enqueue(self.id)
 
     def _push_smtppasswd_file(self):
         logger.info("Pushing smtppasswd file for %s", self)

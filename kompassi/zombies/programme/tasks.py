@@ -1,7 +1,7 @@
-from kompassi.celery_app import app
+from django.tasks import task
 
 
-@app.task(ignore_result=True)
+@task(max_attempts=3)
 def programme_apply_state_async(programme_pk):
     from .models import Programme
 

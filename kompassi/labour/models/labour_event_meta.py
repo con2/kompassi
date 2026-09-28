@@ -184,7 +184,7 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
     def create_groups_async(self):
         from ..tasks import labour_event_meta_create_groups
 
-        labour_event_meta_create_groups.delay(self.pk)  # type: ignore
+        labour_event_meta_create_groups.enqueue(self.pk)
 
     def create_groups(self):
         from .job_category import JobCategory

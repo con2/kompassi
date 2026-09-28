@@ -28,7 +28,6 @@ interface Environment {
   livenessProbeEnabled: boolean;
   postgresSsl: boolean;
   redisHostname: string;
-  redisBrokerDatabase: number;
   redisCacheDatabase: number;
   minioBucketName: string;
   minioEndpointUrl: string;
@@ -61,7 +60,6 @@ const environments: Record<EnvironmentName, Environment> = {
   staging: {
     ...base,
     ingressPublicHostnames: ["dev.kompassi.eu"],
-    redisBrokerDatabase: 7,
     redisCacheDatabase: 7,
     installationName: "Kompassi (DEV)",
     installationSlug: "turskadev",
@@ -88,7 +86,6 @@ const environments: Record<EnvironmentName, Environment> = {
   production: {
     ...base,
     ingressPublicHostnames: ["kompassi.eu", "conit.fi"],
-    redisBrokerDatabase: 9,
     redisCacheDatabase: 9,
     installationName: "Kompassi",
     installationSlug: "turska",
@@ -168,7 +165,7 @@ function podAffinity(componentName: string) {
   };
 }
 
-// Common environment variables for the kompassi, celery, worker, uvicorn and
+// Common environment variables for the kompassi, worker, uvicorn and
 // cron-nightly pods.
 const kompassiEnvironment = Object.entries({
   POSTGRES_HOSTNAME: secretKeyRef("postgres", "hostname"),
@@ -177,7 +174,6 @@ const kompassiEnvironment = Object.entries({
   POSTGRES_PASSWORD: secretKeyRef("postgres", "password"),
   POSTGRES_SSLMODE: env.postgresSsl ? "require" : "disable",
   REDIS_HOSTNAME: env.redisHostname,
-  REDIS_BROKER_DATABASE: String(env.redisBrokerDatabase),
   REDIS_CACHE_DATABASE: String(env.redisCacheDatabase),
   SECRET_KEY: secretKeyRef("kompassi", "secretKey"),
   ALLOWED_HOSTS: env.ingressPublicHostnames.join(" "),
@@ -454,39 +450,6 @@ const cronFrequent = {
   },
 };
 
-const celeryDeployment = {
-  apiVersion: "apps/v1",
-  kind: "Deployment",
-  metadata: { name: "celery" },
-  spec: {
-    selector: { matchLabels: labels("celery") },
-    template: {
-      metadata: { labels: labels("celery") },
-      spec: {
-        affinity: podAffinity("celery"),
-        enableServiceLinks: false,
-        securityContext: kompassiPodSecurityContext,
-        containers: [
-          {
-            name: "master",
-            image: kompassiImage,
-            args: [
-              "celery",
-              "-A",
-              "kompassi.celery_app:app",
-              "worker",
-            ],
-            env: kompassiEnvironment,
-            volumeMounts: kompassiVolumeMounts,
-            securityContext: kompassiContainerSecurityContext,
-          },
-        ],
-        volumes: kompassiVolumes,
-      },
-    },
-  },
-};
-
 const workerDeployment = {
   apiVersion: "apps/v1",
   kind: "Deployment",
@@ -503,7 +466,7 @@ const workerDeployment = {
           {
             name: "main",
             image: kompassiImage,
-            args: ["python", "manage.py", "tickets_v2_worker"],
+            args: ["python", "manage.py", "worker"],
             env: kompassiEnvironment,
             volumeMounts: kompassiVolumeMounts,
             securityContext: kompassiContainerSecurityContext,
@@ -569,8 +532,6 @@ function main() {
 
   writeManifest("cron-nightly.json", cronNightly);
   writeManifest("cron-frequent.json", cronFrequent);
-
-  writeManifest("celery.deployment.json", celeryDeployment);
 
   writeManifest("worker.deployment.json", workerDeployment);
 

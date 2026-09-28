@@ -122,7 +122,7 @@ class OrderCancellationToken(models.Model, OneTimeCodeMixin):
         reply_to = (contact_email,) if (contact_email := meta.contact_email) else ()
         to = (f"{order.first_name} {order.last_name} <{order.email}>",)
 
-        send_email.delay(  # type: ignore
+        send_email.enqueue(
             subject=subject,
             body=body,
             from_email=tickets_from_email(event),

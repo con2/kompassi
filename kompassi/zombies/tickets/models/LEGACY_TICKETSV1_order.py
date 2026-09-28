@@ -316,9 +316,7 @@ class Order(models.Model):
         return printer.finish()
 
     def send_confirmation_message(self, msgtype):
-        # from ..tasks import order_send_confirmation_message
 
-        # order_send_confirmation_message.delay(self.pk, msgtype)  # type: ignore
         pass
 
     def _send_confirmation_message(self, msgtype: str):
