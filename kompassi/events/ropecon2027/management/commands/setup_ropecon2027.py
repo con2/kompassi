@@ -238,20 +238,22 @@ class Setup:
             ),
         )
 
-        for team_slug, team_name in [
-            ("myyntijatalous", "Myynti ja talous"),
-            ("peliohjelma", "Peliohjelma"),
-            ("sisainenohjelma", "Sisäinen ohjelma"),
-            ("ulkoinenohjelma", "Ulkoinen ohjelma"),
-            ("tekniikka", "Tekniikka"),
-            ("tilat", "Tilat"),
-            ("viestinta", "Viestintä"),
-            ("vapaaehtoiset", "Vapaaehtoiset"),
-            ("kavijapalvelut", "Kävijäpalvelut"),
-            ("etkot", "Etkot"),
-            ("hupikeisarit", "Hupikeisarit"),
+        for team_slug, team_name, email_start in [
+            ("myyntijatalous", "Myynti ja talous", "taloustiimi"),
+            ("peliohjelma", "Peliohjelma", "peliohjelma"),
+            ("sisainenohjelma", "Sisäinen ohjelma", "ohjelma-sisainen"),
+            ("ulkoinenohjelma", "Ulkoinen ohjelma", "ohjelma-ulkoinen"),
+            ("tekniikka", "Tekniikka", "tekniikka"),
+            ("tilat", "Tilat", "tilat"),
+            ("viestinta", "Viestintä", "viestinta"),
+            ("vapaaehtoiset", "Vapaaehtoiset", "vapaaehtoistiimi"),
+            ("kavijapalvelut", "Kävijäpalvelut", "kavijapalvelut"),
+            ("etkot", "Etkot", "etkot"),
+            ("hupikeisarit", "Hupikeisarit", "hupikeisarit"),
         ]:
             (team_group,) = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
+            email = f"{email_start}@ropecon.fi"
+
             Team.objects.update_or_create(
                 event=self.event,
                 slug=team_slug,
@@ -259,6 +261,7 @@ class Setup:
                     name=team_name,
                     order=self.get_ordering_number(),
                     group=team_group,
+                    email=email,
                 ),
             )
 
