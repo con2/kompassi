@@ -32,6 +32,8 @@ interface Environment {
   redisCacheDatabase: number;
   minioBucketName: string;
   minioEndpointUrl: string;
+  // SigV4 credential scope; Garage rejects any region other than its configured one.
+  s3Region: string;
   smtpServer: string;
   smtpDefaultFromEmail: string;
 }
@@ -50,6 +52,7 @@ const base = {
   postgresSsl: true,
   redisHostname: "redis-ha-haproxy.redis-ha.svc.cluster.local",
   minioEndpointUrl: "https://minio.con2.fi",
+  s3Region: "us-east-1",
   smtpServer: "sr1.pahaip.fi",
   smtpDefaultFromEmail: "suunnistajat@kompassi.eu",
 };
@@ -78,6 +81,8 @@ const environments: Record<EnvironmentName, Environment> = {
       "dev.larpit.fi",
     ],
     minioBucketName: "kompassidev",
+    minioEndpointUrl: "https://garage.con2.fi",
+    s3Region: "garage",
     postgresSsl: false,
   },
   production: {
@@ -204,6 +209,8 @@ const kompassiEnvironment = Object.entries({
   MINIO_ACCESS_KEY_ID: secretKeyRef("kompassi", "minioAccessKeyId"),
   MINIO_SECRET_ACCESS_KEY: secretKeyRef("kompassi", "minioSecretAccessKey"),
   MINIO_ENDPOINT_URL: env.minioEndpointUrl,
+  // Read by every boto3 client in the app (django-storages and forms/utils/s3_presign.py).
+  AWS_DEFAULT_REGION: env.s3Region,
   OIDC_RSA_PRIVATE_KEY: secretKeyRef("kompassi", "oidcRsaPrivateKey"),
   XDG_CACHE_HOME: "/tmp",
 }).map(([name, value]) =>
