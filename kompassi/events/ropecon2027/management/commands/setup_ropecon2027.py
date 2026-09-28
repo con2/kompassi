@@ -238,8 +238,6 @@ class Setup:
             ),
         )
 
-
-
         for team_slug, team_name, email_start in [
             ("myyntijatalous", "Myynti ja talous", "taloustiimi"),
             ("peliohjelma", "Peliohjelma", "peliohjelma"),
