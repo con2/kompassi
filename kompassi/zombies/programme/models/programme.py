@@ -1766,21 +1766,10 @@ class Programme(models.Model, CsvExportMixin):
     def apply_state(self, deleted_programme_roles=None):
         if deleted_programme_roles is None:
             deleted_programme_roles = []
-        self.apply_state_sync(deleted_programme_roles)
-        self.apply_state_async()
-
-    def apply_state_sync(self, deleted_programme_roles):
         self.paikkalize()
         self.apply_state_update_programme_roles()
         self.apply_state_update_signup_extras()
         self.apply_state_create_badges(deleted_programme_roles)
-
-    def apply_state_async(self):
-        from ..tasks import programme_apply_state_async
-
-        programme_apply_state_async.enqueue(self.pk)
-
-    def _apply_state_async(self):
         self.apply_state_group_membership()
         self.apply_state_send_messages()
 
