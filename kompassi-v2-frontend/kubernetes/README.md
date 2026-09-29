@@ -10,7 +10,7 @@ Test with Skaffold (with Docker Desktop or similar local Kubernetes cluster):
 
     npm run k8s:dev
 
-Assuming you have an [ingress controller set up](https://outline.con2.fi/doc/ingress-controller-XfVUOHtp2t#h-installing-an-ingress-controller-for-local-development), you should now be able to view the UI at http://kompassi2.localhost.
+Assuming you have an [ingress controller set up](https://outline.con2.fi/doc/ingress-controller-XfVUOHtp2t#h-installing-an-ingress-controller-for-local-development) that serves the Gateway API with a `traefik` GatewayClass (the manifests create a `Gateway` and `HTTPRoute`, not an `Ingress`), you should now be able to view the UI at http://kompassi2.localhost.
 
 For staging and production, deployment is done in two steps using Skaffold:
 

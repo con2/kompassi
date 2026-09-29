@@ -55,9 +55,10 @@ export const stack = "kompassi2";
 const image = "kompassi2";
 const nodeServiceName = "node";
 const clusterIssuer = "letsencrypt-prod";
+// Same Secret name the Ingress used, so the existing certificate is adopted.
 const tlsSecretName = "ingress-letsencrypt";
 const port = 3000;
-const ingressClassName = "traefik";
+const gatewayClassName = "traefik";
 
 const {
   hostname,
@@ -152,6 +153,14 @@ const deployment = {
     labels: labels(nodeServiceName),
   },
   spec: {
+    // Roll one pod at a time, never below the current count. Traefik keeps a
+    // terminating pod in its backend list for a few seconds after Kubernetes
+    // starts removing its endpoint; the preStop sleep keeps the pod serving
+    // through that window instead of returning 502s on every deploy.
+    strategy: {
+      type: "RollingUpdate",
+      rollingUpdate: { maxSurge: 1, maxUnavailable: 0 },
+    },
     selector: {
       matchLabels: labels(nodeServiceName),
     },
@@ -161,6 +170,7 @@ const deployment = {
       },
       spec: {
         enableServiceLinks: false,
+        terminationGracePeriodSeconds: 45,
         securityContext: {
           runAsUser: 1000,
           runAsGroup: 1000,
@@ -178,6 +188,7 @@ const deployment = {
               readOnlyRootFilesystem: false,
               allowPrivilegeEscalation: false,
             },
+            lifecycle: { preStop: { sleep: { seconds: 10 } } },
             startupProbe,
             livenessProbe: livenessProbeEnabled ? probe : undefined,
             volumeMounts,
@@ -206,53 +217,112 @@ const service = {
   },
 };
 
-const tls = tlsEnabled
-  ? [{ hosts: [hostname], secretName: tlsSecretName }]
-  : [];
-
-// Traefik middleware chain. The https-redirect middleware must only be attached where
-// TLS is actually configured - see infrastructure/kubernetes/traefik-middlewares.yaml
-// for why this is a per-app opt-in Middleware rather than a global entrypoint redirect
-// (ACME HTTP-01 safety).
-const traefikMiddlewares = tlsEnabled
-  ? "default-https-redirect@kubernetescrd,default-body-100m@kubernetescrd"
-  : "default-body-100m@kubernetescrd";
-
-const ingressAnnotations = {
-  "traefik.ingress.kubernetes.io/router.middlewares": traefikMiddlewares,
-  ...(tlsEnabled ? { "cert-manager.io/cluster-issuer": clusterIssuer } : {}),
-};
-
-const ingress = {
-  apiVersion: "networking.k8s.io/v1",
-  kind: "Ingress",
+// One Gateway per namespace. With TLS, cert-manager issues the certificate for the
+// https listener from the cluster-issuer annotation into tlsSecretName. Without TLS
+// (local dev) there is only the http listener and no redirect.
+const gateway = {
+  apiVersion: "gateway.networking.k8s.io/v1",
+  kind: "Gateway",
   metadata: {
     name: stack,
     labels: labels(),
-    annotations: ingressAnnotations,
+    ...(tlsEnabled
+      ? { annotations: { "cert-manager.io/cluster-issuer": clusterIssuer } }
+      : {}),
   },
   spec: {
-    ingressClassName,
-    tls,
+    gatewayClassName,
+    listeners: [
+      {
+        name: "http",
+        protocol: "HTTP",
+        port: 80,
+        hostname,
+        allowedRoutes: { namespaces: { from: "Same" } },
+      },
+      ...(tlsEnabled
+        ? [
+            {
+              name: "https",
+              protocol: "HTTPS",
+              port: 443,
+              hostname,
+              tls: {
+                mode: "Terminate",
+                certificateRefs: [{ kind: "Secret", name: tlsSecretName }],
+              },
+              allowedRoutes: { namespaces: { from: "Same" } },
+            },
+          ]
+        : []),
+    ],
+  },
+};
+
+// An HTTPRoute can only reference Middlewares in its own namespace, so the ones
+// shared in `default` for Ingress apps are duplicated here.
+const bodyLimitMiddleware = {
+  apiVersion: "traefik.io/v1alpha1",
+  kind: "Middleware",
+  metadata: { name: "body-100m", labels: labels() },
+  spec: { buffering: { maxRequestBodyBytes: 100_000_000 } },
+};
+
+// Retries only when the backend never answered (connection refused/reset) and
+// only for idempotent methods, covering the moment a pod stops accepting
+// connections during a rollout.
+const retryMiddleware = {
+  apiVersion: "traefik.io/v1alpha1",
+  kind: "Middleware",
+  metadata: { name: "retry", labels: labels() },
+  spec: { retry: { attempts: 3, initialInterval: "100ms" } },
+};
+
+function middlewareFilter(name: string) {
+  return {
+    type: "ExtensionRef",
+    extensionRef: { group: "traefik.io", kind: "Middleware", name },
+  };
+}
+
+// Redirects are done per app instead of at the Traefik entrypoint so cert-manager's
+// plain-HTTP solver Ingress keeps working. Attached to the http listener by name:
+// without sectionName it would also attach to the https listener and loop.
+const httpsRedirectRoute = {
+  apiVersion: "gateway.networking.k8s.io/v1",
+  kind: "HTTPRoute",
+  metadata: { name: "redirect-https", labels: labels() },
+  spec: {
+    parentRefs: [{ name: stack, sectionName: "http" }],
+    hostnames: [hostname],
     rules: [
       {
-        host: hostname,
-        http: {
-          paths: [
-            {
-              pathType: "Prefix",
-              path: "/",
-              backend: {
-                service: {
-                  name: nodeServiceName,
-                  port: {
-                    number: port,
-                  },
-                },
-              },
-            },
-          ],
-        },
+        filters: [
+          {
+            type: "RequestRedirect",
+            requestRedirect: { scheme: "https", statusCode: 301 },
+          },
+        ],
+      },
+    ],
+  },
+};
+
+const httpRoute = {
+  apiVersion: "gateway.networking.k8s.io/v1",
+  kind: "HTTPRoute",
+  metadata: { name: stack, labels: labels() },
+  spec: {
+    parentRefs: [{ name: stack, sectionName: tlsEnabled ? "https" : "http" }],
+    hostnames: [hostname],
+    rules: [
+      {
+        matches: [{ path: { type: "PathPrefix", value: "/" } }],
+        filters: [
+          middlewareFilter(bodyLimitMiddleware.metadata.name),
+          middlewareFilter(retryMiddleware.metadata.name),
+        ],
+        backendRefs: [{ name: nodeServiceName, port }],
       },
     ],
   },
@@ -285,16 +355,34 @@ export function writeManifest(filename: string, manifest: unknown) {
   });
 }
 
+// Removes a stale file from an earlier run with a different ENV, since
+// skaffold deploys every JSON file in this directory.
+function writeManifestIf(
+  condition: boolean,
+  filename: string,
+  manifest: unknown,
+) {
+  if (condition) {
+    writeManifest(filename, manifest);
+  } else if (existsSync(filename)) {
+    unlinkSync(filename);
+  }
+}
+
 function main() {
   writeManifest("deployment.json", deployment);
   writeManifest("service.json", service);
-  writeManifest("ingress.json", ingress);
+  writeManifest("gateway.json", gateway);
+  writeManifest("middleware-body-100m.json", bodyLimitMiddleware);
+  writeManifest("middleware-retry.json", retryMiddleware);
+  writeManifest("httproute-kompassi2.json", httpRoute);
 
-  if (secretManaged) {
-    writeManifest("secret.json", secret);
-  } else if (existsSync("secret.json")) {
-    unlinkSync("secret.json");
-  }
+  writeManifestIf(
+    tlsEnabled,
+    "httproute-redirect-https.json",
+    httpsRedirectRoute,
+  );
+  writeManifestIf(secretManaged, "secret.json", secret);
 }
 
 if (import.meta.url === "file://" + process.argv[1]) {
