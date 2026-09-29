@@ -80,7 +80,8 @@ trap 'rm -f "$partial"; kubectl -n "$namespace" delete pod "$pod" --wait=false >
 
 log "Waiting for pod $namespace/$pod"
 kubectl -n "$namespace" wait --for=condition=Ready "pod/$pod" --timeout=300s >/dev/null
-until kubectl -n "$namespace" exec "$pod" -c postgres -- pg_isready -q -h "$socket"; do
+# kubectl reports each failed attempt on stderr while initdb is still running.
+until kubectl -n "$namespace" exec "$pod" -c postgres -- pg_isready -q -h "$socket" 2>/dev/null; do
   sleep 2
 done
 
