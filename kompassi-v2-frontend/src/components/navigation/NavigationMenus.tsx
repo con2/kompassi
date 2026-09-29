@@ -8,12 +8,12 @@ import { signIn, signOut } from "next-auth/react";
 import Nav from "react-bootstrap/Nav";
 import NavDropdown from "react-bootstrap/NavDropdown";
 
-import { kompassiBaseUrl } from "@/config";
 import type { Translations } from "@/translations/en";
 
 interface Props {
   session: Session | null;
   locale: string;
+  kompassiBaseUrl: string;
   messages: {
     LanguageSwitcher: Translations["LanguageSwitcher"];
     UserMenu: Translations["UserMenu"];
@@ -25,7 +25,12 @@ interface ProfileLink {
   href: string;
 }
 
-export default function NavigationMenus({ session, locale, messages }: Props) {
+export default function NavigationMenus({
+  session,
+  locale,
+  kompassiBaseUrl,
+  messages,
+}: Props) {
   const { switchTo: supportedLanguages } = messages.LanguageSwitcher;
   let pathname = usePathname();
 
@@ -87,7 +92,7 @@ export default function NavigationMenus({ session, locale, messages }: Props) {
           <NavDropdown.Item
             onClick={async () => {
               await signOut({ redirect: false });
-              window.location.href = `${kompassiBaseUrl}/logout`;
+              window.location.href = new URL("/logout", kompassiBaseUrl).href;
             }}
           >
             {messages.UserMenu.signOut}

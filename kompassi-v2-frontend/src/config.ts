@@ -1,3 +1,6 @@
+// Server code reads NEXT_PUBLIC_* at runtime, but Next.js bakes them into client bundles at build
+// time, and the image is built once for every environment. Client components must get these
+// values as props from a server component instead of importing them.
 export const kompassiBaseUrl =
   process.env.NEXT_PUBLIC_KOMPASSI_BASE_URL || "https://dev.kompassi.eu";
 

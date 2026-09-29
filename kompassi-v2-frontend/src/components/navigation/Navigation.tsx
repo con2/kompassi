@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import NavigationMenus from "./NavigationMenus";
 import { auth } from "@/auth";
+import { kompassiBaseUrl } from "@/config";
 import { SupportedLanguage, getTranslations } from "@/translations";
 
 interface NavigationProps {
@@ -32,6 +33,7 @@ export default async function Navigation({ locale }: NavigationProps) {
           key={locale}
           session={session}
           locale={locale}
+          kompassiBaseUrl={kompassiBaseUrl}
           messages={messages}
         />
       </div>
