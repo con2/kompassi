@@ -1,7 +1,7 @@
-from kompassi.celery_app import app
+from django.tasks import task
 
 
-@app.task(ignore_result=True)
+@task(max_attempts=3)
 def signup_apply_state(signup_pk):
     from .models import Signup
 
@@ -9,7 +9,7 @@ def signup_apply_state(signup_pk):
     signup._apply_state()
 
 
-@app.task(ignore_result=True)
+@task
 def labour_event_meta_create_groups(meta_pk):
     from .models import LabourEventMeta
 

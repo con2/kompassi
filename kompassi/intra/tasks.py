@@ -1,7 +1,7 @@
-from kompassi.celery_app import app
+from django.tasks import task
 
 
-@app.task(ignore_result=True)
+@task
 def privileges_form_save(event_id, data):
     from django.contrib.auth import get_user_model
 

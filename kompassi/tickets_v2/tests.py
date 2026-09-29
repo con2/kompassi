@@ -11,6 +11,8 @@ import pydantic
 import pytest
 import requests
 from django.core import mail
+from django.test import override_settings
+from django.utils import timezone
 
 from kompassi.core.models.enums import ProgramRoleRetentionPolicy
 from kompassi.core.models.event import Event
@@ -2272,3 +2274,100 @@ def test_check_products_admin_policy_ignores_availability_window():
     never_on_sale = {1: ProductValidationRow(superseded_by_id=None, available_from=None, available_until=None)}
 
     _check_products({1: 1}, never_on_sale, enforce_availability=False, now=now)  # must not raise
+
+
+# ---------------------------------------------------------------------------
+# Receipt delivery through the task queue
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+@override_settings(TASKS={"default": {"BACKEND": "kompassi.task_queue.backend.PostgresTaskBackend"}})
+def test_paid_order_receipt_is_sent_via_task_queue(cancellation_event: Event):
+    """
+    A provider PAID stamp makes the database triggers request a receipt, and the
+    receipt request in turn enqueues a send_receipt task for the generic worker.
+    """
+    from kompassi.task_queue.models import QueuedTask
+    from kompassi.task_queue.worker import Worker
+    from kompassi.tickets_v2.models.receipt import Receipt
+
+    event = cancellation_event
+    order_id = _make_order(event, datetime.now(UTC), {}, status=PaymentStatus.PENDING, total_price=Decimal(10))
+
+    _add_provider_paid_stamp(event, order_id)
+
+    receipt = Receipt.objects.get(event=event, order_id=order_id)
+    assert receipt.status == ReceiptStatus.REQUESTED
+    queued_task = QueuedTask.objects.get(func_path="kompassi.tickets_v2.tasks.send_receipt")
+    assert queued_task.args == [event.id, str(receipt.id)]
+    assert queued_task.max_attempts == 3
+
+    PendingReceipt.event_cache_refreshed_at = None
+    Worker().run_until_empty()
+
+    receipt.refresh_from_db()
+    assert receipt.status == ReceiptStatus.SUCCESS
+    queued_task.refresh_from_db()
+    assert queued_task.status == "SUCCESSFUL"
+    assert len(mail.outbox) == 1
+    assert mail.outbox[0].to == ["Test Customer <test@example.com>"]
+    assert "Order confirmation" in mail.outbox[0].subject
+
+
+@pytest.mark.django_db
+@override_settings(TASKS={"default": {"BACKEND": "kompassi.task_queue.backend.PostgresTaskBackend"}})
+def test_receipt_is_marked_failed_when_its_task_lease_expires(cancellation_event: Event):
+    """
+    A worker that dies mid-send leaves the receipt PROCESSING and the task RUNNING.
+    Once the task's final attempt is written off by lease expiry, the receipt must
+    not stay PROCESSING forever.
+    """
+    from kompassi.task_queue.models import QueuedTask
+    from kompassi.task_queue.worker import Worker
+    from kompassi.tickets_v2.models.receipt import Receipt
+
+    event = cancellation_event
+    order_id = _make_order(event, datetime.now(UTC), {}, status=PaymentStatus.PENDING, total_price=Decimal(10))
+    _add_provider_paid_stamp(event, order_id)
+    receipt = Receipt.objects.get(event=event, order_id=order_id)
+    Receipt.objects.filter(id=receipt.id).update(status=ReceiptStatus.PROCESSING)
+    QueuedTask.objects.filter(func_path="kompassi.tickets_v2.tasks.send_receipt").update(
+        status="RUNNING",
+        attempts=3,
+        lease_expires_at=timezone.now() - timedelta(minutes=1),
+    )
+
+    Worker().reclaim_stale()
+
+    receipt.refresh_from_db()
+    assert receipt.status == ReceiptStatus.FAILURE
+    assert len(mail.outbox) == 0
+
+
+@pytest.mark.django_db
+@override_settings(TASKS={"default": {"BACKEND": "kompassi.task_queue.backend.PostgresTaskBackend"}})
+def test_receipt_is_marked_failed_after_last_attempt(cancellation_event: Event, monkeypatch: pytest.MonkeyPatch):
+    from kompassi.task_queue.models import QueuedTask
+    from kompassi.task_queue.worker import Worker
+    from kompassi.tickets_v2.models.receipt import Receipt
+
+    event = cancellation_event
+    order_id = _make_order(event, datetime.now(UTC), {}, status=PaymentStatus.PENDING, total_price=Decimal(10))
+    _add_provider_paid_stamp(event, order_id)
+    receipt = Receipt.objects.get(event=event, order_id=order_id)
+    monkeypatch.setattr(PendingReceipt, "send_receipt", lambda self: (_ for _ in ()).throw(RuntimeError("smtp down")))
+
+    Worker().run_until_empty()
+    receipt.refresh_from_db()
+    assert receipt.status == ReceiptStatus.PROCESSING
+
+    # Postgres now() is frozen for the duration of the test transaction, so retries
+    # must be moved clearly into the past to become due.
+    for _ in range(2):
+        QueuedTask.objects.update(run_after=timezone.now() - timedelta(minutes=1))
+        Worker().run_until_empty()
+
+    receipt.refresh_from_db()
+    assert receipt.status == ReceiptStatus.FAILURE
+    assert QueuedTask.objects.get().status == "FAILED"

@@ -194,7 +194,7 @@ class PrivilegesForm(django_forms.Form):
 
         event = forms[0].event
         data = [(form.user.id, form.cleaned_data) for form in forms]
-        privileges_form_save.delay(event.id, data)  # type: ignore
+        privileges_form_save.enqueue(event.id, data)
 
     @classmethod
     def _save(cls, event: Event, data: list[tuple[AbstractUser, dict[str, bool]]]):

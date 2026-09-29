@@ -4,8 +4,6 @@ services:
     build:
       context: .
       target: test
-    # NOTE: do not use entrypoint as it sets BROKER_URL making Kompassi expect there is a background worker, hanging tests
-    entrypoint: []
     command: scripts/wait-for-it.sh -s -t 60 postgres:5432 -- pytest --reuse-db
     init: true
     links:
@@ -19,6 +17,7 @@ services:
       DEBUG: "1"
       ALLOWED_HOSTS: "*"
       PYTHONDEVMODE: "1"
+      TASKS_BACKEND: kompassi.task_queue.backend.ImmediateTaskBackend
   postgres:
     # image: postgres
     build: sql

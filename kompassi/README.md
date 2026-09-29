@@ -14,7 +14,7 @@ Now open http://localhost:8000 in your browser. A superuser `mahti` with passwor
 
 When the dependencies change, you need to add `--build` to `docker compose up` to rebuild the Docker image.
 
-On first start-up the `web` and `celery` containers may fail on start-up due to a race condition between them and the `postgres` container. To work around this, just stop all the containers by hitting `Ctrl+C` and run `docker-compose up` again.
+On first start-up the `backend` and `worker` containers may fail on start-up due to a race condition between them and the `postgres` container. To work around this, just stop all the containers by hitting `Ctrl+C` and run `docker-compose up` again.
 
 #### Compiling internationalization files
 

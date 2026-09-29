@@ -31,7 +31,6 @@ services:
     environment: &environment
       PYTHONUNBUFFERED: 1
       DEBUG: 1
-      BROKER_URL: redis://redis/1
       CACHE_URL: rediscache://redis/1
       ALLOWED_HOSTS: "*"
       MINIO_BUCKET_NAME: kompassi
@@ -60,19 +59,6 @@ services:
       - postgres
     volumes: *volumes
     environment: *environment
-  celery:
-    build: .
-    init: true
-    command: celery -A kompassi.celery_app:app worker
-    depends_on:
-      - redis
-      - postgres
-    volumes: *volumes
-    tmpfs:
-      - /tmp
-    environment: *environment
-  # TODO replace celery with a more sensible solution
-  # until then, tickets_v2 has its own worker
   worker:
     build: .
     init: true
@@ -80,7 +66,7 @@ services:
     command:
       - python
       - manage.py
-      - tickets_v2_worker
+      - worker
     network_mode: service:router
     depends_on:
       - postgres

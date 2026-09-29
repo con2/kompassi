@@ -1,10 +1,10 @@
-from kompassi.celery_app import app
+from django.tasks import task
 
 from .models import Entry, Subscription
 
 
-@app.task(ignore_result=True)
-def subscription_send_update_for_entry(subscription_id, entry_id):
+@task
+def subscription_send_update_for_entry(subscription_id: int, entry_id: str):
     subscription = Subscription.objects.get(id=subscription_id)
     entry = Entry.objects.get(id=entry_id)
 

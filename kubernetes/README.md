@@ -33,8 +33,8 @@ and, after a manual gate, into production (https://kompassi.eu). See
 See `kompassi-v2-frontend/kubernetes/manifest.ts` for a smaller sibling
 example of the same approach (see https://github.com/japsu/depleten for the
 underlying philosophy) — this one has more moving parts because the Django
-backend has more workloads (gunicorn, celery, the newer background worker,
-uvicorn for tickets_v2, the nightly cron job) and supports both a
+backend has more workloads (gunicorn, the background task worker,
+uvicorn for tickets_v2, the cron jobs) and supports both a
 self-managed (local dev) and externally-managed (staging, production)
 Postgres/Redis/Secret. Static files are served by WhiteNoise from within the
 Django process, so there is no separate static-file workload.

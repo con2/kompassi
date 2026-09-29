@@ -149,7 +149,7 @@ class Message(models.Model):
             self.sent_at = timezone.now()
             self.save()
 
-        message_send.delay(self.pk, [person.pk for person in recipients] if recipients is not None else None, resend)  # type: ignore
+        message_send.enqueue(self.pk, [person.pk for person in recipients] if recipients is not None else None, resend)
 
     def _send(self, recipients, resend):
         if recipients is None:

@@ -164,7 +164,7 @@ class Message(models.Model):
             self.sent_at = now()
             self.save(update_fields=["sent_at"])
 
-        send_message.delay(str(self.id))
+        send_message.enqueue(str(self.id))
 
     def expire(self):
         self.expired_at = now()

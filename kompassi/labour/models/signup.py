@@ -554,7 +554,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         from ..tasks import signup_apply_state
 
         self.apply_state_sync()
-        signup_apply_state.delay(self.pk)  # type: ignore
+        signup_apply_state.enqueue(self.pk)
 
     def apply_state_sync(self):
         self.apply_state_ensure_job_categories_accepted_is_set()

@@ -817,7 +817,7 @@ class Involvement(models.Model):
         if not has_active_message:
             return
 
-        send_matching_messages.delay(self.id)
+        send_matching_messages.enqueue(self.id)
 
     @cached_property
     def dimensions_pairs(self) -> set[tuple[str, str]]:

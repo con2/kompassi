@@ -4,15 +4,14 @@ import logging
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-
-from kompassi.celery_app import app
+from django.tasks import task
 
 from .models.enums import MessageDispatch
 
 logger = logging.getLogger(__name__)
 
 
-@app.task(ignore_result=True)
+@task(max_attempts=3)
 def send_message(message_id: str, involvement_ids: list[int] | None = None):
     """
     Sends `message` to all currently matching recipients, or, if `involvement_ids` is
@@ -98,7 +97,7 @@ def send_message(message_id: str, involvement_ids: list[int] | None = None):
     logger.info("Sent message %s to %s recipients", message.id, num_sent)
 
 
-@app.task(ignore_result=True)
+@task(max_attempts=3)
 def send_matching_messages(involvement_id: int):
     """
     Called whenever an involvement is created or its dimensions/is_active change.
@@ -146,4 +145,4 @@ def send_matching_messages(involvement_id: int):
                 break
 
         if matches:
-            send_message.delay(str(message.id), involvement_ids=[involvement.id])
+            send_message.enqueue(str(message.id), involvement_ids=[involvement.id])
