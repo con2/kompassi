@@ -21,6 +21,7 @@ interface Environment {
   allowedLoginRedirects: string[];
   admins: string[];
   workers: number;
+  kompassiReplicas: number;
   timeoutSeconds: number;
   cronNightlySuspended: boolean;
   cronFrequentSuspended: boolean;
@@ -42,6 +43,7 @@ const environmentNames: EnvironmentName[] = ["staging", "production"];
 
 const base = {
   workers: 4,
+  kompassiReplicas: 1,
   timeoutSeconds: 120,
   cronNightlySuspended: false,
   cronFrequentSuspended: false,
@@ -104,6 +106,7 @@ const environments: Record<EnvironmentName, Environment> = {
       "larpit.fi",
     ],
     workers: 12,
+    kompassiReplicas: 3,
     s3BucketName: "kompassi",
   },
 };
@@ -234,6 +237,23 @@ const kompassiVolumes = [
   { name: "kompassi-media", emptyDir: {} }, // media goes to S3
 ];
 
+// Roll one pod at a time and never below the current count. The old pod keeps
+// serving through the preStop sleep because endpoint removal and SIGTERM start
+// at the same instant, and Traefik needs a few seconds (its 2 s provider
+// throttle plus API propagation) to stop routing to the pod. Gunicorn and
+// uvicorn stop accepting connections immediately on SIGTERM, so without the
+// sleep every rollout returned 502s for that window.
+const rollingUpdate = {
+  type: "RollingUpdate",
+  rollingUpdate: { maxSurge: 1, maxUnavailable: 0 },
+};
+const preStopSleepSeconds = 10;
+const gracefulShutdown = {
+  lifecycle: { preStop: { sleep: { seconds: preStopSleepSeconds } } },
+};
+// Leaves the server's own 30 s graceful timeout intact after the preStop sleep.
+const terminationGracePeriodSeconds = preStopSleepSeconds + 35;
+
 function probe(path: string, port: number) {
   return {
     httpGet: {
@@ -259,6 +279,8 @@ const kompassiDeployment = {
   kind: "Deployment",
   metadata: { name: "kompassi" },
   spec: {
+    replicas: env.kompassiReplicas,
+    strategy: rollingUpdate,
     selector: { matchLabels: labels("kompassi") },
     template: {
       metadata: { labels: labels("kompassi") },
@@ -266,6 +288,7 @@ const kompassiDeployment = {
         affinity: podAffinity("kompassi"),
         enableServiceLinks: false,
         securityContext: kompassiPodSecurityContext,
+        terminationGracePeriodSeconds,
         initContainers: [
           {
             name: "setup",
@@ -290,6 +313,7 @@ const kompassiDeployment = {
               `--timeout=${env.timeoutSeconds}`,
               "kompassi.wsgi",
             ],
+            ...gracefulShutdown,
             startupProbe: {
               ...probe("/api/v1/status", 8000),
               periodSeconds: 2,
@@ -329,6 +353,7 @@ const uvicornDeployment = {
   kind: "Deployment",
   metadata: { name: "uvicorn" },
   spec: {
+    strategy: rollingUpdate,
     selector: { matchLabels: labels("uvicorn") },
     template: {
       metadata: { labels: labels("uvicorn") },
@@ -336,6 +361,7 @@ const uvicornDeployment = {
         affinity: podAffinity("uvicorn"),
         enableServiceLinks: false,
         securityContext: kompassiPodSecurityContext,
+        terminationGracePeriodSeconds,
         containers: [
           {
             name: "master",
@@ -351,6 +377,7 @@ const uvicornDeployment = {
               `--workers=${env.workers}`,
               "kompassi.tickets_v2.optimized_server.app:app",
             ],
+            ...gracefulShutdown,
             startupProbe: {
               ...probe("/api/tickets-v2/status", 7998),
               periodSeconds: 2,
@@ -476,42 +503,127 @@ const workerDeployment = {
   },
 };
 
-const ingress = {
-  apiVersion: "networking.k8s.io/v1",
-  kind: "Ingress",
+// One Gateway per namespace with a listener pair per public hostname. cert-manager
+// issues the certificate from the cluster-issuer annotation into the Secret the
+// https listeners reference; the Secret name is the one the old Ingress used so the
+// existing certificate is reused instead of reissued.
+const tlsSecretName = "ingress-letsencrypt";
+
+function listenerName(protocol: "http" | "https", hostname: string) {
+  return `${protocol}-${hostname.replace(/\./g, "-")}`;
+}
+
+const gateway = {
+  apiVersion: "gateway.networking.k8s.io/v1",
+  kind: "Gateway",
   metadata: {
     name: "kompassi",
-    annotations: {
-      "traefik.ingress.kubernetes.io/router.middlewares":
-        "default-https-redirect@kubernetescrd,default-body-100m@kubernetescrd",
-      "cert-manager.io/cluster-issuer": clusterIssuer,
-    },
+    annotations: { "cert-manager.io/cluster-issuer": clusterIssuer },
   },
   spec: {
-    ingressClassName,
-    tls: [
+    gatewayClassName: "traefik",
+    listeners: env.ingressPublicHostnames.flatMap((hostname) => [
       {
-        secretName: "ingress-letsencrypt",
-        hosts: env.ingressPublicHostnames,
+        name: listenerName("http", hostname),
+        protocol: "HTTP",
+        port: 80,
+        hostname,
+        allowedRoutes: { namespaces: { from: "Same" } },
       },
-    ],
-    rules: env.ingressPublicHostnames.map((hostname) => ({
-      host: hostname,
-      http: {
-        paths: [
+      {
+        name: listenerName("https", hostname),
+        protocol: "HTTPS",
+        port: 443,
+        hostname,
+        tls: {
+          mode: "Terminate",
+          certificateRefs: [{ kind: "Secret", name: tlsSecretName }],
+        },
+        allowedRoutes: { namespaces: { from: "Same" } },
+      },
+    ]),
+  },
+};
+
+// An HTTPRoute can only reference Middlewares in its own namespace, so the ones
+// shared cluster-wide in `default` for Ingress apps are duplicated here.
+const bodyLimitMiddleware = {
+  apiVersion: "traefik.io/v1alpha1",
+  kind: "Middleware",
+  metadata: { name: "body-100m" },
+  spec: { buffering: { maxRequestBodyBytes: 100_000_000 } },
+};
+
+// Retries only when the backend never answered (connection refused/reset), never
+// on a response of any status, and not for POST/PATCH. This covers the moment a
+// pod stops accepting connections during a rollout, like ingress-nginx's default
+// proxy_next_upstream did. Not attached to the tickets-v2 route: a ticket order
+// POST that reached uvicorn but lost its connection must not be sent twice.
+const retryMiddleware = {
+  apiVersion: "traefik.io/v1alpha1",
+  kind: "Middleware",
+  metadata: { name: "retry" },
+  spec: { retry: { attempts: 3, initialInterval: "100ms" } },
+};
+
+function middlewareFilter(name: string) {
+  return {
+    type: "ExtensionRef",
+    extensionRef: { group: "traefik.io", kind: "Middleware", name },
+  };
+}
+
+// Redirects are done per app instead of at the Traefik entrypoint so cert-manager's
+// plain-HTTP solver Ingress keeps working. Attached to the http listeners by name:
+// a parentRef without sectionName would also attach to the https listeners and loop.
+const httpsRedirectRoute = {
+  apiVersion: "gateway.networking.k8s.io/v1",
+  kind: "HTTPRoute",
+  metadata: { name: "redirect-https" },
+  spec: {
+    parentRefs: env.ingressPublicHostnames.map((hostname) => ({
+      name: gateway.metadata.name,
+      sectionName: listenerName("http", hostname),
+    })),
+    hostnames: env.ingressPublicHostnames,
+    rules: [
+      {
+        filters: [
           {
-            pathType: "Prefix",
-            path: "/api/tickets-v2",
-            backend: { service: { name: "uvicorn", port: { number: 7998 } } },
-          },
-          {
-            pathType: "Prefix",
-            path: "/",
-            backend: { service: { name: "kompassi", port: { number: 8000 } } },
+            type: "RequestRedirect",
+            requestRedirect: { scheme: "https", statusCode: 301 },
           },
         ],
       },
+    ],
+  },
+};
+
+const httpRoute = {
+  apiVersion: "gateway.networking.k8s.io/v1",
+  kind: "HTTPRoute",
+  metadata: { name: "kompassi" },
+  spec: {
+    parentRefs: env.ingressPublicHostnames.map((hostname) => ({
+      name: gateway.metadata.name,
+      sectionName: listenerName("https", hostname),
     })),
+    hostnames: env.ingressPublicHostnames,
+    rules: [
+      {
+        matches: [{ path: { type: "PathPrefix", value: "/api/tickets-v2" } }],
+        filters: [middlewareFilter(bodyLimitMiddleware.metadata.name)],
+        backendRefs: [{ name: uvicornService.metadata.name, port: 7998 }],
+      },
+      {
+        matches: [{ path: { type: "PathPrefix", value: "/" } }],
+        filters: [
+          middlewareFilter(bodyLimitMiddleware.metadata.name),
+          middlewareFilter(retryMiddleware.metadata.name),
+        ],
+        backendRefs: [{ name: kompassiService.metadata.name, port: 8000 }],
+      },
+    ],
   },
 };
 
@@ -533,7 +645,11 @@ function main() {
 
   writeManifest("worker.deployment.json", workerDeployment);
 
-  writeManifest("ingress.json", ingress);
+  writeManifest("gateway.json", gateway);
+  writeManifest("middleware-body-100m.json", bodyLimitMiddleware);
+  writeManifest("middleware-retry.json", retryMiddleware);
+  writeManifest("httproute-redirect-https.json", httpsRedirectRoute);
+  writeManifest("httproute-kompassi.json", httpRoute);
 }
 
 if (import.meta.url === "file://" + process.argv[1]) {
