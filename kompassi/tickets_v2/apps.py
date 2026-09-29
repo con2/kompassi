@@ -6,4 +6,4 @@ class TicketsV2Config(AppConfig):
     verbose_name = "Tickets V2"
 
     def ready(self):
-        from . import event_log_entry_types  # noqa: F401
+        from . import event_log_entry_types, tasks  # noqa: F401

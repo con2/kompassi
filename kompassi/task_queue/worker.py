@@ -10,7 +10,6 @@ Several replicas may run at once: claiming uses FOR UPDATE SKIP LOCKED.
 
 from __future__ import annotations
 
-import json
 import logging
 import signal
 from datetime import timedelta
@@ -39,7 +38,6 @@ LEASE = timedelta(minutes=30)
 RETRY_BASE_DELAY = timedelta(seconds=30)
 
 CLAIM_SQL = (Path(__file__).parent / "sql" / "claim_tasks.sql").read_text()
-RECLAIM_SQL = (Path(__file__).parent / "sql" / "reclaim_stale_tasks.sql").read_text()
 
 OUTCOME_FIELDS = ["status", "run_after", "finished_at", "lease_expires_at", "errors"]
 
@@ -103,13 +101,15 @@ class Worker:
             pass
 
     def reclaim_stale(self):
-        error = make_error(LeaseExpired("Lease expired before the worker reported an outcome"))
-        with connection.cursor() as cursor:
-            cursor.execute(RECLAIM_SQL, dict(error=json.dumps([error])))
-            reclaimed = cursor.fetchall()
-
-        for task_id, status in reclaimed:
-            logger.warning("Task id=%s had an expired lease, now %s", task_id, status)
+        with transaction.atomic():
+            stale_rows = list(
+                QueuedTask.objects.filter(
+                    status=TaskResultStatus.RUNNING,
+                    lease_expires_at__lt=timezone.now(),
+                ).select_for_update(skip_locked=True)
+            )
+            for row in stale_rows:
+                self.fail(row, LeaseExpired("Lease expired before the worker reported an outcome"))
 
     def claim_batch(self) -> list[QueuedTask]:
         with transaction.atomic():
@@ -148,14 +148,23 @@ class Worker:
 
         return len(rows) == BATCH_SIZE
 
-    def run_task(self, row: QueuedTask):
+    def load_task(self, row: QueuedTask) -> Task | None:
         try:
             task = import_string(row.func_path)
-            if not isinstance(task, Task):
-                raise TypeError(f"{row.func_path} is not a Task")
-        except (ImportError, AttributeError, TypeError) as e:
-            logger.exception("Task id=%s path=%s cannot be loaded", row.id, row.func_path)
-            self.record_failure(row, e, retry=False)
+        except ImportError as e:
+            logger.error("Task cannot be loaded", extra=dict(task_id=row.id, func_path=row.func_path), exc_info=e)
+            return None
+
+        if not isinstance(task, Task):
+            logger.error("Task path does not point to a Task", extra=dict(task_id=row.id, func_path=row.func_path))
+            return None
+
+        return task
+
+    def run_task(self, row: QueuedTask):
+        task = self.load_task(row)
+        if task is None:
+            self.record_failure(row, TypeError(f"{row.func_path} is not a Task"), retry=False)
             return
 
         task_result = self.to_task_result(task, row)
@@ -171,21 +180,7 @@ class Worker:
         except BaseException as e:
             if not connection.in_atomic_block:
                 connection.close_if_unusable_or_obsolete()
-            self.record_failure(row, e, retry=row.attempts < row.max_attempts)
-            if row.status == TaskResultStatus.FAILED:
-                object.__setattr__(task_result, "status", TaskResultStatus.FAILED)
-                object.__setattr__(task_result, "finished_at", row.finished_at)
-                task_finished.send(sender=type(self), task_result=task_result)
-            else:
-                logger.warning(
-                    "Task id=%s path=%s failed on attempt %s/%s, retrying at %s",
-                    row.id,
-                    row.func_path,
-                    row.attempts,
-                    row.max_attempts,
-                    row.run_after,
-                    exc_info=e,
-                )
+            self.fail(row, e, task=task)
         else:
             row.status = TaskResultStatus.SUCCESSFUL
             row.finished_at = timezone.now()
@@ -194,6 +189,34 @@ class Worker:
             object.__setattr__(task_result, "status", TaskResultStatus.SUCCESSFUL)
             object.__setattr__(task_result, "finished_at", row.finished_at)
             task_finished.send(sender=type(self), task_result=task_result)
+
+    def fail(self, row: QueuedTask, exception: BaseException, task: Task | None = None):
+        """
+        Records a failed attempt, scheduling a retry if attempts remain.
+        A final failure is announced through the task_finished signal.
+        """
+        self.record_failure(row, exception, retry=row.attempts < row.max_attempts)
+
+        if row.status == TaskResultStatus.READY:
+            logger.warning(
+                "Task failed, retrying",
+                extra=dict(
+                    task_id=row.id,
+                    func_path=row.func_path,
+                    attempts=row.attempts,
+                    max_attempts=row.max_attempts,
+                    run_after=row.run_after,
+                ),
+                exc_info=exception,
+            )
+            return
+
+        task = task or self.load_task(row)
+        if task is None:
+            return
+
+        task_result = self.to_task_result(task, row)
+        task_finished.send(sender=type(self), task_result=task_result)
 
     def record_failure(self, row: QueuedTask, exception: BaseException, retry: bool):
         row.errors = [*row.errors, make_error(exception)]
