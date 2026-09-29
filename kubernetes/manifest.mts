@@ -50,8 +50,8 @@ const base = {
   admins: ["Luka Pajukanta <santtu@pajukanta.fi>"],
   postgresSsl: true,
   redisHostname: "redis-ha-haproxy.redis-ha.svc.cluster.local",
-  minioEndpointUrl: "https://minio.con2.fi",
-  s3Region: "us-east-1",
+  minioEndpointUrl: "https://garage.con2.fi",
+  s3Region: "garage",
   smtpServer: "sr1.pahaip.fi",
   smtpDefaultFromEmail: "suunnistajat@kompassi.eu",
 };
@@ -79,8 +79,6 @@ const environments: Record<EnvironmentName, Environment> = {
       "dev.larpit.fi",
     ],
     minioBucketName: "kompassidev",
-    minioEndpointUrl: "https://garage.con2.fi",
-    s3Region: "garage",
     postgresSsl: false,
   },
   production: {
