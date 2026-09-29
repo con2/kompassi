@@ -1,7 +1,7 @@
 #!/bin/sh
 # Replaces the docker compose development database with a dump from scripts/pseudonymized-dump.sh:
 #
-#     scripts/load-dump.sh kompassi.pgdump
+#     scripts/load-dump.sh kompassi-production-20260929.pgdump
 #
 # Pseudonymization leaves no usable passwords or OAuth2 client secrets, so afterwards this
 # recreates the dev superuser mahti/mahti and the OAuth2 client of the local V2 frontend.

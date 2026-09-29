@@ -1,8 +1,9 @@
 #!/bin/sh
-# Writes a pseudonymized pg_dump (custom format) of a deployed Kompassi database to stdout:
+# Writes a pseudonymized pg_dump (custom format) of a deployed Kompassi database to
+# NAMESPACE-YYYYMMDD.pgdump in the current directory:
 #
-#     scripts/pseudonymized-dump.sh > kompassi.pgdump
-#     scripts/pseudonymized-dump.sh kompassi-staging > kompassi-staging.pgdump
+#     scripts/pseudonymized-dump.sh                     # kompassi-production-YYYYMMDD.pgdump
+#     scripts/pseudonymized-dump.sh kompassi-staging    # kompassi-staging-YYYYMMDD.pgdump
 #
 # The personal data never leaves the cluster. A short-lived pod copies the database into a
 # Postgres of its own, runs `manage.py pseudonymize_db` there, and only the result is streamed
@@ -16,11 +17,10 @@ postgres_image=postgres:18
 database=kompassi_pseudo
 socket=/var/run/postgresql
 pod="kompassi-pseudonymize-$(date +%Y%m%d%H%M%S)"
-
-if [ -t 1 ]; then
-  echo "$0: refusing to write a binary dump to a terminal; redirect stdout to a file" >&2
-  exit 2
-fi
+output="$namespace-$(date +%Y%m%d).pgdump"
+# Written under another name until complete, so an interrupted run never leaves a truncated
+# dump that looks finished.
+partial="$output.partial"
 
 log() {
   echo "==> $*" >&2
@@ -76,7 +76,7 @@ printf '%s' "$deployment" | jq \
     }
 ' | kubectl -n "$namespace" apply -f - >/dev/null
 
-trap 'kubectl -n "$namespace" delete pod "$pod" --wait=false >/dev/null' EXIT
+trap 'rm -f "$partial"; kubectl -n "$namespace" delete pod "$pod" --wait=false >/dev/null' EXIT
 
 log "Waiting for pod $namespace/$pod"
 kubectl -n "$namespace" wait --for=condition=Ready "pod/$pod" --timeout=300s >/dev/null
@@ -99,6 +99,8 @@ log "Pseudonymizing"
 kubectl -n "$namespace" exec "$pod" -c pseudonymize -- python manage.py pseudonymize_db --yes >&2
 
 log "Streaming the pseudonymized dump"
-kubectl -n "$namespace" exec "$pod" -c postgres -- pg_dump -Fc --no-owner --no-acl -h "$socket" "$database"
+kubectl -n "$namespace" exec "$pod" -c postgres -- pg_dump -Fc --no-owner --no-acl -h "$socket" "$database" \
+  >"$partial"
+mv "$partial" "$output"
 
-log "Done"
+log "Wrote $output"
