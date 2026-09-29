@@ -5,6 +5,7 @@
 
 # set !*.sql in folders where you want to include sql files
 *.sql
+*.pgdump
 
 dev-secrets/
 # Byte-compiled / optimized / DLL files
