@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--yes",
+            "--really",
             action="store_true",
             help="Confirm that you want to pseudonymize this database.",
         )
@@ -35,8 +35,8 @@ class Command(BaseCommand):
         database_name = settings.DATABASES["default"]["NAME"]
         if "pseudo" not in database_name:
             raise CommandError(f"Database name {database_name!r} does not contain 'pseudo'.")
-        if not options["yes"]:
-            raise CommandError(f"Pass --yes to confirm you want to pseudonymize {database_name!r}.")
+        if not options["really"]:
+            raise CommandError(f"Pass --really to confirm you want to pseudonymize {database_name!r}.")
 
         with transaction.atomic():
             for model_label, summary in pseudonymize():

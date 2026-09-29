@@ -97,7 +97,7 @@ kubectl -n "$namespace" exec "$pod" -c postgres -- sh -c '
 ' sh "$socket" "$database" /var/lib/postgresql/source.pgdump >&2
 
 log "Pseudonymizing"
-kubectl -n "$namespace" exec "$pod" -c pseudonymize -- python manage.py pseudonymize_db --yes >&2
+kubectl -n "$namespace" exec "$pod" -c pseudonymize -- python manage.py pseudonymize_db --really >&2
 
 log "Streaming the pseudonymized dump"
 kubectl -n "$namespace" exec "$pod" -c postgres -- pg_dump -Fc --no-owner --no-acl -h "$socket" "$database" \
