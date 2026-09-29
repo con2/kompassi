@@ -18,8 +18,8 @@ const env = {
   postgresDatabase: "kompassi",
   postgresPassword: "secret",
   kompassiSecretKey: "not a very secret key",
-  minioAccessKeyId: "minio-access-key-kompassi",
-  minioSecretAccessKey: "minio-secret-access-key-kompassi",
+  s3AccessKeyId: "s3-access-key-kompassi",
+  s3SecretAccessKey: "s3-secret-access-key-kompassi",
 };
 
 const postgresSecret = {
@@ -49,8 +49,8 @@ const kompassiSecret = {
     sshPrivateKey: b64("bogus"),
     sshKnownHosts: b64("bogus"),
     secretKey: b64(env.kompassiSecretKey),
-    minioAccessKeyId: b64(env.minioAccessKeyId),
-    minioSecretAccessKey: b64(env.minioSecretAccessKey),
+    s3AccessKeyId: b64(env.s3AccessKeyId),
+    s3SecretAccessKey: b64(env.s3SecretAccessKey),
     oidcRsaPrivateKey: "",
     ticketsApiKey: b64("secret"),
   },

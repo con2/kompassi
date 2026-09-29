@@ -417,10 +417,10 @@ LOGIN_URL = "/login"
 
 CRISPY_TEMPLATE_PACK = "bootstrap3"
 
-AWS_STORAGE_BUCKET_NAME = env("MINIO_BUCKET_NAME", default="kompassi")
-AWS_ACCESS_KEY_ID = env("MINIO_ACCESS_KEY_ID", default="kompassi")
-AWS_SECRET_ACCESS_KEY = env("MINIO_SECRET_ACCESS_KEY", default="kompassi")
-AWS_S3_ENDPOINT_URL = env("MINIO_ENDPOINT_URL", default="http://localhost:9000")
+AWS_STORAGE_BUCKET_NAME = env("S3_BUCKET_NAME", default="kompassi")
+AWS_ACCESS_KEY_ID = env("S3_ACCESS_KEY_ID", default="kompassi")
+AWS_SECRET_ACCESS_KEY = env("S3_SECRET_ACCESS_KEY", default="kompassi")
+AWS_S3_ENDPOINT_URL = env("S3_ENDPOINT_URL", default="http://localhost:9000")
 
 KOMPASSI_BASE_URL = env("KOMPASSI_BASE_URL", default="http://localhost:8000")
 KOMPASSI_V2_BASE_URL = env("KOMPASSI_V2_BASE_URL", default="http://localhost:3000")

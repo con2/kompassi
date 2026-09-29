@@ -7,7 +7,7 @@ manifest and the URL rewrite command from that move are already on `main`.
 
 ## What uses the bucket
 
-Two code paths, both configured by the same `MINIO_*` environment variables in
+Two code paths, both configured by the same `S3_*` environment variables (`MINIO_*` until 2026-09-29) in
 `kubernetes/manifest.mts` and both building their own boto3 client:
 
 - **Django media storage** (`STORAGES["default"]`, django-storages `S3Boto3Storage`): event
@@ -59,7 +59,7 @@ with connection.cursor() as c:
 All `kubectl` commands use the qb kubeconfig. `garage` below means
 `kubectl -n garage exec garage-0 -- /garage`.
 
-1. **Bucket and key on Garage.** Same bucket name keeps `MINIO_BUCKET_NAME` unchanged:
+1. **Bucket and key on Garage.** Same bucket name keeps `S3_BUCKET_NAME` unchanged:
 
    ```
    garage bucket create kompassi
@@ -88,10 +88,10 @@ All `kubectl` commands use the qb kubeconfig. `garage` below means
    deploy:
 
    ```
-   kubectl -n kompassi-production patch secret kompassi -p '{"data":{"minioAccessKeyId":"'"$(printf <key id> | base64)"'","minioSecretAccessKey":"'"$(printf %s <secret> | base64)"'"}}'
+   kubectl -n kompassi-production patch secret kompassi -p '{"data":{"s3AccessKeyId":"'"$(printf <key id> | base64)"'","s3SecretAccessKey":"'"$(printf %s <secret> | base64)"'"}}'
    ```
 
-4. **Manifest.** In `kubernetes/manifest.mts`, move `minioEndpointUrl: "https://garage.con2.fi"`
+4. **Manifest.** In `kubernetes/manifest.mts`, move `s3EndpointUrl: "https://garage.con2.fi"`
    and `s3Region: "garage"` from the staging override into `base` and drop the Minio values (or
    set them on `production` explicitly). Render both environments to check
    (`ENV=production node --experimental-strip-types manifest.mts` in a scratch dir) and commit.
@@ -122,8 +122,8 @@ All `kubectl` commands use the qb kubeconfig. `garage` below means
    - `kubectl -n kompassi-production logs deploy/kompassi -c master` shows no `botocore` errors.
 
 9. **Afterwards.** Leave the Minio bucket in place for a couple of weeks as a fallback, then delete
-   it together with the rest of Minio's decommissioning. Rename the `MINIO_*` variables and
-   `minio*` Secret keys to something neutral in a separate change once nothing points at Minio.
+   it together with the rest of Minio's decommissioning. The `MINIO_*` variables and `minio*`
+   Secret keys were renamed to `S3_*` and `s3*` afterwards.
 
 ## Rollback
 

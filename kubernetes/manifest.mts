@@ -29,8 +29,8 @@ interface Environment {
   postgresSsl: boolean;
   redisHostname: string;
   redisCacheDatabase: number;
-  minioBucketName: string;
-  minioEndpointUrl: string;
+  s3BucketName: string;
+  s3EndpointUrl: string;
   // SigV4 credential scope; Garage rejects any region other than its configured one.
   s3Region: string;
   smtpServer: string;
@@ -50,7 +50,7 @@ const base = {
   admins: ["Luka Pajukanta <santtu@pajukanta.fi>"],
   postgresSsl: true,
   redisHostname: "redis-ha-haproxy.redis-ha.svc.cluster.local",
-  minioEndpointUrl: "https://garage.con2.fi",
+  s3EndpointUrl: "https://garage.con2.fi",
   s3Region: "garage",
   smtpServer: "sr1.pahaip.fi",
   smtpDefaultFromEmail: "suunnistajat@kompassi.eu",
@@ -78,7 +78,7 @@ const environments: Record<EnvironmentName, Environment> = {
       "wp.ropecon.fi",
       "dev.larpit.fi",
     ],
-    minioBucketName: "kompassidev",
+    s3BucketName: "kompassidev",
     postgresSsl: false,
   },
   production: {
@@ -104,7 +104,7 @@ const environments: Record<EnvironmentName, Environment> = {
       "larpit.fi",
     ],
     workers: 12,
-    minioBucketName: "kompassi",
+    s3BucketName: "kompassi",
   },
 };
 
@@ -199,10 +199,10 @@ const kompassiEnvironment = Object.entries({
   KOMPASSI_SETUP_RUN_ID: {
     fieldRef: { fieldPath: "metadata.labels['pod-template-hash']" },
   },
-  MINIO_BUCKET_NAME: env.minioBucketName,
-  MINIO_ACCESS_KEY_ID: secretKeyRef("kompassi", "minioAccessKeyId"),
-  MINIO_SECRET_ACCESS_KEY: secretKeyRef("kompassi", "minioSecretAccessKey"),
-  MINIO_ENDPOINT_URL: env.minioEndpointUrl,
+  S3_BUCKET_NAME: env.s3BucketName,
+  S3_ACCESS_KEY_ID: secretKeyRef("kompassi", "s3AccessKeyId"),
+  S3_SECRET_ACCESS_KEY: secretKeyRef("kompassi", "s3SecretAccessKey"),
+  S3_ENDPOINT_URL: env.s3EndpointUrl,
   // Read by every boto3 client in the app (django-storages and forms/utils/s3_presign.py).
   AWS_DEFAULT_REGION: env.s3Region,
   OIDC_RSA_PRIVATE_KEY: secretKeyRef("kompassi", "oidcRsaPrivateKey"),
@@ -231,7 +231,7 @@ const kompassiVolumes = [
     },
   },
   { name: "kompassi-temp", emptyDir: {} },
-  { name: "kompassi-media", emptyDir: {} }, // media goes to minio
+  { name: "kompassi-media", emptyDir: {} }, // media goes to S3
 ];
 
 function probe(path: string, port: number) {
