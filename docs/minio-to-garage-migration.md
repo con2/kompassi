@@ -1,7 +1,7 @@
 # Migrate Kompassi production media from Minio to Garage
 
 Runbook for moving the `kompassi` bucket from `minio.con2.fi` (MinIO, discontinued upstream) to
-`garage.con2.fi` (Garage on the qb cluster, see `infrastructure/kubernetes/garage.README.md`).
+`garage.con2.fi` (Garage on the qb cluster, see `infrastructure/kubernetes/garage/README.md`).
 Staging (`dev.kompassi.eu`, bucket `kompassidev`) went through the same steps on 2026-09-28; the
 manifest and the URL rewrite command from that move are already on `main`.
 
@@ -44,10 +44,11 @@ with connection.cursor() as c:
 
 ## Prerequisites
 
-1. **Backup coverage.** `infrastructure/kubernetes/garage-backup.cronjob-sync.yaml` copies only the
-   `pictures/` prefix of the edegal site buckets. Add a whole-bucket copy of `kompassi` to it (and
-   to the prune job's site loop) before the switch, so the bucket is never without an off-site
-   copy. Until then `minio-backup` keeps covering the Minio side.
+1. **Backup coverage.** `infrastructure/kubernetes/garage/backup.cronjob-sync.yaml` and the prune job
+   list `kompassi` next to `kompassidev`. Before the switch, apply both CronJobs, grant the reader
+   key read on the bucket (`garage bucket allow --read kompassi --key garage-backup-reader`, see
+   `garage/backup.README.md`) and trigger a manual sync, so the bucket is never without an
+   off-site copy. Until then `minio-backup` keeps covering the Minio side.
 2. **Capacity.** qb's Garage has 1.1 TiB effective; 2.2 GB is nothing, but check
    `kubectl -n garage exec garage-0 -- /garage status` shows all four nodes healthy.
 3. A quiet moment: uploads made between the copy and the switch are caught by the delta sync in
