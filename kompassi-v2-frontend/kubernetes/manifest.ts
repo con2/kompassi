@@ -7,6 +7,7 @@ interface Environment {
   tlsEnabled: boolean;
   ticketsApiUrl: string;
   livenessProbeEnabled: boolean;
+  replicas: number;
 }
 
 type EnvironmentName = "dev" | "staging" | "production";
@@ -21,6 +22,7 @@ const environmentConfigurations: Record<EnvironmentName, Environment> = {
     // as an optimization, access the tickets API directly without going through the ingress
     ticketsApiUrl: "http://uvicorn.default.svc.cluster.local:7998",
     livenessProbeEnabled: true,
+    replicas: 1,
   },
   staging: {
     hostname: "v2.dev.kompassi.eu",
@@ -29,6 +31,7 @@ const environmentConfigurations: Record<EnvironmentName, Environment> = {
     tlsEnabled: true,
     ticketsApiUrl: "http://uvicorn.kompassi-staging.svc.cluster.local:7998",
     livenessProbeEnabled: true,
+    replicas: 1,
   },
   production: {
     hostname: "v2.kompassi.eu",
@@ -37,6 +40,7 @@ const environmentConfigurations: Record<EnvironmentName, Environment> = {
     tlsEnabled: true,
     ticketsApiUrl: "http://uvicorn.kompassi-production.svc.cluster.local:7998",
     livenessProbeEnabled: false, // TODO re-enable after Hunger Games
+    replicas: 3,
   },
 };
 
@@ -67,6 +71,7 @@ const {
   tlsEnabled,
   ticketsApiUrl,
   livenessProbeEnabled,
+  replicas,
 } = environmentConfiguration;
 
 const ingressProtocol = tlsEnabled ? "https" : "http";
@@ -153,6 +158,7 @@ const deployment = {
     labels: labels(nodeServiceName),
   },
   spec: {
+    replicas,
     // Roll one pod at a time, never below the current count. Traefik keeps a
     // terminating pod in its backend list for a few seconds after Kubernetes
     // starts removing its endpoint; the preStop sleep keeps the pod serving

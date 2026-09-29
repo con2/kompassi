@@ -22,6 +22,7 @@ interface Environment {
   admins: string[];
   workers: number;
   kompassiReplicas: number;
+  uvicornReplicas: number;
   timeoutSeconds: number;
   cronNightlySuspended: boolean;
   cronFrequentSuspended: boolean;
@@ -44,6 +45,7 @@ const environmentNames: EnvironmentName[] = ["staging", "production"];
 const base = {
   workers: 4,
   kompassiReplicas: 1,
+  uvicornReplicas: 1,
   timeoutSeconds: 120,
   cronNightlySuspended: false,
   cronFrequentSuspended: false,
@@ -107,6 +109,7 @@ const environments: Record<EnvironmentName, Environment> = {
     ],
     workers: 12,
     kompassiReplicas: 3,
+    uvicornReplicas: 3,
     s3BucketName: "kompassi",
   },
 };
@@ -353,6 +356,7 @@ const uvicornDeployment = {
   kind: "Deployment",
   metadata: { name: "uvicorn" },
   spec: {
+    replicas: env.uvicornReplicas,
     strategy: rollingUpdate,
     selector: { matchLabels: labels("uvicorn") },
     template: {
