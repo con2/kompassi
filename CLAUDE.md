@@ -34,6 +34,15 @@ export NEXT_PUBLIC_KOMPASSI_BASE_URL=http://localhost:8000
 npm run dev   # starts Next.js at localhost:3000 with GraphQL codegen watch
 ```
 
+To develop against production data, fetch a pseudonymized copy and load it into the docker compose database (replaces it; `mahti`/`mahti` is recreated):
+
+```bash
+scripts/pseudonymized-dump.sh > kompassi.pgdump   # needs kubectl access to kompassi-production
+scripts/load-dump.sh kompassi.pgdump
+```
+
+Never load a raw production dump locally. The pseudonymization rules live in `kompassi/core/pseudonymization.py`; a new model field that could hold personal data fails `kompassi/core/test_pseudonymization.py` until it has a rule or an entry in `NOT_PERSONAL` (`python manage.py pseudonymize_db --check` lists them).
+
 ## Backend commands
 
 All backend commands assume the virtualenv is active (`source .venv/bin/activate`) or are run via Docker.
