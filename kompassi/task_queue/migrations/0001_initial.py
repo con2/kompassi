@@ -47,7 +47,6 @@ class Migration(migrations.Migration):
                 ("last_attempted_at", models.DateTimeField(blank=True, null=True)),
                 ("finished_at", models.DateTimeField(blank=True, null=True)),
                 ("lease_expires_at", models.DateTimeField(blank=True, null=True)),
-                ("worker_ids", models.JSONField(blank=True, default=list)),
                 ("errors", models.JSONField(blank=True, default=list)),
             ],
             options={

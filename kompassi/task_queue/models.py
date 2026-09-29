@@ -42,7 +42,6 @@ class QueuedTask(models.Model):
     finished_at = models.DateTimeField(null=True, blank=True)
     lease_expires_at = models.DateTimeField(null=True, blank=True)
 
-    worker_ids = models.JSONField(default=list, blank=True)
     errors = models.JSONField(default=list, blank=True)
 
     class Meta:

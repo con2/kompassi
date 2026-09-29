@@ -120,7 +120,6 @@ class Worker:
                     CLAIM_SQL,
                     dict(
                         lease=LEASE,
-                        worker_id=json.dumps([self.worker_id]),
                         batch_size=BATCH_SIZE,
                     ),
                 )
@@ -135,8 +134,7 @@ class Worker:
             row.status = TaskResultStatus.READY
             row.attempts -= 1
             row.lease_expires_at = None
-            row.worker_ids = [worker_id for worker_id in row.worker_ids if worker_id != self.worker_id]
-            row.save(update_fields=["status", "attempts", "lease_expires_at", "worker_ids"])
+            row.save(update_fields=["status", "attempts", "lease_expires_at"])
 
     def run_batch(self) -> bool:
         """
@@ -162,7 +160,7 @@ class Worker:
             self.record_failure(row, e, retry=False)
             return
 
-        task_result = to_task_result(task, row)
+        task_result = self.to_task_result(task, row)
         task_started.send(sender=type(self), task_result=task_result)
 
         try:
@@ -210,19 +208,20 @@ class Worker:
             row.finished_at = timezone.now()
         row.save(update_fields=OUTCOME_FIELDS)
 
-
-def to_task_result(task: Task, row: QueuedTask) -> TaskResult:
-    return TaskResult(
-        task=task,
-        id=str(row.id),
-        status=TaskResultStatus(row.status),
-        enqueued_at=uuid7_to_datetime(row.id),
-        started_at=row.started_at,
-        last_attempted_at=row.last_attempted_at,
-        finished_at=row.finished_at,
-        args=row.args,
-        kwargs=row.kwargs,
-        backend=task.backend,
-        errors=[TaskError(**error) for error in row.errors],
-        worker_ids=list(row.worker_ids),
-    )
+    def to_task_result(self, task: Task, row: QueuedTask) -> TaskResult:
+        return TaskResult(
+            task=task,
+            id=str(row.id),
+            status=TaskResultStatus(row.status),
+            enqueued_at=uuid7_to_datetime(row.id),
+            started_at=row.started_at,
+            last_attempted_at=row.last_attempted_at,
+            finished_at=row.finished_at,
+            args=row.args,
+            kwargs=row.kwargs,
+            backend=task.backend,
+            errors=[TaskError(**error) for error in row.errors],
+            # TaskResult.attempts is len(worker_ids), which tasks rely on to know
+            # whether this is their last try. Earlier workers are not recorded.
+            worker_ids=[self.worker_id] * row.attempts,
+        )

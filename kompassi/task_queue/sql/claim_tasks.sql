@@ -4,8 +4,7 @@ set
   attempts = t.attempts + 1,
   started_at = coalesce(t.started_at, now()),
   last_attempted_at = now(),
-  lease_expires_at = now() + %(lease)s,
-  worker_ids = t.worker_ids || %(worker_id)s::jsonb
+  lease_expires_at = now() + %(lease)s
 where t.id in (
   select id
   from task_queue_queuedtask

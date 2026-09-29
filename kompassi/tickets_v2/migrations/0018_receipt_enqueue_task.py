@@ -9,6 +9,8 @@ create or replace function tickets_v2_receipt_notify_requested() returns trigger
     return null;
   end;
 $$ language plpgsql;
+
+alter table tickets_v2_receipt add column batch_id uuid;
 """
 
 

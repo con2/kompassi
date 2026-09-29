@@ -93,12 +93,6 @@ class Receipt(EventPartitionsMixin, UUID7Mixin, models.Model):
         ),
     )
 
-    batch_id = models.UUIDField(
-        null=True,
-        blank=True,
-        help_text="Unused since receipts moved to the generic task queue; kept because the table is partitioned.",
-    )
-
     type = PostgresEnumField(
         enum=ReceiptType,
         db_type_name="tickets_v2_receipttype",
