@@ -33,13 +33,10 @@ logger = logging.getLogger(__name__)
 NOTIFY_CHANNEL = "task_queue"
 POLL_INTERVAL_SECONDS = 30
 STOP_CHECK_INTERVAL_SECONDS = 1
-BATCH_SIZE = 10
 LEASE = timedelta(minutes=30)
 RETRY_BASE_DELAY = timedelta(seconds=30)
 
 CLAIM_SQL = (Path(__file__).parent / "sql" / "claim_tasks.sql").read_text()
-
-OUTCOME_FIELDS = ["status", "run_after", "finished_at", "lease_expires_at", "errors"]
 
 
 class LeaseExpired(Exception):
@@ -97,8 +94,8 @@ class Worker:
 
     def run_until_empty(self):
         self.reclaim_stale()
-        while not self.stop_requested and self.run_batch():
-            pass
+        while not self.stop_requested and (row := self.claim()) is not None:
+            self.run_task(row)
 
     def reclaim_stale(self):
         with transaction.atomic():
@@ -111,42 +108,33 @@ class Worker:
             for row in stale_rows:
                 self.fail(row, LeaseExpired("Lease expired before the worker reported an outcome"))
 
-    def claim_batch(self) -> list[QueuedTask]:
+    def claim(self) -> QueuedTask | None:
         with transaction.atomic():
-            return list(
-                QueuedTask.objects.raw(
-                    CLAIM_SQL,
-                    dict(
-                        lease=LEASE,
-                        batch_size=BATCH_SIZE,
-                    ),
-                )
+            rows = list(QueuedTask.objects.raw(CLAIM_SQL, dict(lease=LEASE)))
+        return rows[0] if rows else None
+
+    def write_outcome(self, row: QueuedTask, **fields) -> bool:
+        """
+        The lease timestamp set at claim time identifies this claim. If it no longer
+        matches, the row was reclaimed after the lease expired and its state now
+        belongs to whoever reclaimed it.
+        """
+        updated = QueuedTask.objects.filter(
+            id=row.id,
+            status=TaskResultStatus.RUNNING,
+            lease_expires_at=row.lease_expires_at,
+        ).update(**fields)
+
+        if not updated:
+            logger.warning(
+                "Task was reclaimed while running, outcome discarded",
+                extra=dict(task_id=row.id, func_path=row.func_path),
             )
+            return False
 
-    def release(self, rows: list[QueuedTask]):
-        """
-        Hands unstarted rows back to the queue on shutdown so they don't wait for
-        the lease to expire.
-        """
-        for row in rows:
-            row.status = TaskResultStatus.READY
-            row.attempts -= 1
-            row.lease_expires_at = None
-            row.save(update_fields=["status", "attempts", "lease_expires_at"])
-
-    def run_batch(self) -> bool:
-        """
-        Returns True if there may be more work to do.
-        """
-        rows = self.claim_batch()
-
-        for index, row in enumerate(rows):
-            if self.stop_requested:
-                self.release(rows[index:])
-                return False
-            self.run_task(row)
-
-        return len(rows) == BATCH_SIZE
+        for name, value in fields.items():
+            setattr(row, name, value)
+        return True
 
     def load_task(self, row: QueuedTask) -> Task | None:
         try:
@@ -182,10 +170,13 @@ class Worker:
                 connection.close_if_unusable_or_obsolete()
             self.fail(row, e, task=task)
         else:
-            row.status = TaskResultStatus.SUCCESSFUL
-            row.finished_at = timezone.now()
-            row.lease_expires_at = None
-            row.save(update_fields=OUTCOME_FIELDS)
+            if not self.write_outcome(
+                row,
+                status=TaskResultStatus.SUCCESSFUL,
+                finished_at=timezone.now(),
+                lease_expires_at=None,
+            ):
+                return
             object.__setattr__(task_result, "status", TaskResultStatus.SUCCESSFUL)
             object.__setattr__(task_result, "finished_at", row.finished_at)
             task_finished.send(sender=type(self), task_result=task_result)
@@ -195,7 +186,8 @@ class Worker:
         Records a failed attempt, scheduling a retry if attempts remain.
         A final failure is announced through the task_finished signal.
         """
-        self.record_failure(row, exception, retry=row.attempts < row.max_attempts)
+        if not self.record_failure(row, exception, retry=row.attempts < row.max_attempts):
+            return
 
         if row.status == TaskResultStatus.READY:
             logger.warning(
@@ -218,16 +210,23 @@ class Worker:
         task_result = self.to_task_result(task, row)
         task_finished.send(sender=type(self), task_result=task_result)
 
-    def record_failure(self, row: QueuedTask, exception: BaseException, retry: bool):
-        row.errors = [*row.errors, make_error(exception)]
-        row.lease_expires_at = None
+    def record_failure(self, row: QueuedTask, exception: BaseException, retry: bool) -> bool:
+        errors = [*row.errors, make_error(exception)]
         if retry:
-            row.status = TaskResultStatus.READY
-            row.run_after = timezone.now() + retry_delay(row.attempts)
-        else:
-            row.status = TaskResultStatus.FAILED
-            row.finished_at = timezone.now()
-        row.save(update_fields=OUTCOME_FIELDS)
+            return self.write_outcome(
+                row,
+                status=TaskResultStatus.READY,
+                run_after=timezone.now() + retry_delay(row.attempts),
+                lease_expires_at=None,
+                errors=errors,
+            )
+        return self.write_outcome(
+            row,
+            status=TaskResultStatus.FAILED,
+            finished_at=timezone.now(),
+            lease_expires_at=None,
+            errors=errors,
+        )
 
     def to_task_result(self, task: Task, row: QueuedTask) -> TaskResult:
         return TaskResult(

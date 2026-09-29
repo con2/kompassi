@@ -142,6 +142,25 @@ def test_stale_lease_is_reclaimed_according_to_max_attempts():
 
 @postgres_backend
 @pytest.mark.django_db
+def test_outcome_of_a_reclaimed_task_is_discarded():
+    record_call.enqueue("slow")
+    worker = Worker()
+    row = worker.claim()
+    assert row is not None
+
+    # Another worker found the lease expired and handed the row out again
+    QueuedTask.objects.filter(id=row.id).update(lease_expires_at=timezone.now() + timedelta(hours=1), attempts=2)
+
+    worker.run_task(row)
+
+    fresh = QueuedTask.objects.get(id=row.id)
+    assert fresh.status == TaskResultStatus.RUNNING
+    assert fresh.attempts == 2
+    assert fresh.finished_at is None
+
+
+@postgres_backend
+@pytest.mark.django_db
 def test_unloadable_task_fails_without_retry():
     QueuedTask.objects.create(func_path="kompassi.task_queue.tests.no_such_task", max_attempts=3)
 

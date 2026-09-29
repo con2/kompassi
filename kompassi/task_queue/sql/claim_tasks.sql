@@ -1,3 +1,5 @@
+-- One row at a time: a claimed row that waited behind slower tasks in a batch
+-- could see its lease expire before it was even started.
 update task_queue_queuedtask t
 set
   status = 'RUNNING',
@@ -12,7 +14,7 @@ where t.id in (
     status = 'READY'
     and (run_after is null or run_after <= now())
   order by priority desc, id
-  limit %(batch_size)s
+  limit 1
   for update skip locked
 )
 returning *;
