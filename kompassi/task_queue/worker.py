@@ -22,7 +22,6 @@ from django.tasks import Task, TaskContext, TaskResult, TaskResultStatus
 from django.tasks.base import TaskError
 from django.tasks.signals import task_finished, task_started
 from django.utils import timezone
-from django.utils.crypto import get_random_string
 from django.utils.module_loading import import_string
 from psycopg import connect
 
@@ -63,7 +62,6 @@ def make_error(exception: BaseException) -> dict:
 
 class Worker:
     def __init__(self):
-        self.worker_id = get_random_string(32)
         self.stop_requested = False
 
     def request_stop(self, signum, frame):
@@ -76,13 +74,13 @@ class Worker:
 
         with connect(**connection.get_connection_params(), autocommit=True) as listen_conn:
             listen_conn.execute(f"listen {NOTIFY_CHANNEL}")
-            logger.info("Worker %s listening on %s", self.worker_id, NOTIFY_CHANNEL)
+            logger.info("Worker listening", extra=dict(notify_channel=NOTIFY_CHANNEL))
 
             while not self.stop_requested:
                 self.run_until_empty()
                 self.wait_for_notification(listen_conn)
 
-        logger.info("Worker %s stopped", self.worker_id)
+        logger.info("Worker stopped")
 
     def wait_for_notification(self, listen_conn):
         # Waiting in short slices lets a SIGTERM be honoured promptly.
@@ -223,5 +221,5 @@ class Worker:
             errors=[TaskError(**error) for error in row.errors],
             # TaskResult.attempts is len(worker_ids), which tasks rely on to know
             # whether this is their last try. Earlier workers are not recorded.
-            worker_ids=[self.worker_id] * row.attempts,
+            worker_ids=[""] * row.attempts,
         )
