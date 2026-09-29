@@ -57,6 +57,16 @@ def test_pseudonymize_form_data():
     }
 
 
+def test_pseudonymize_form_data_redaction_wins():
+    """A key that matches both a kept and a redacted field is redacted whatever the field order."""
+    kept = dict(slug="days", type="MultiSelect")
+    redacted = dict(slug="days.friday", type="SingleLineText")
+    form_data = {"days.friday": "Markku Mahtinen"}
+
+    assert pseudonymize_form_data([redacted, kept], form_data) == {"days.friday": REDACTED}
+    assert pseudonymize_form_data([kept, redacted], form_data) == {"days.friday": REDACTED}
+
+
 @pytest.mark.django_db
 def test_pseudonymize():
     """

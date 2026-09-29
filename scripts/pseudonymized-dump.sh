@@ -88,10 +88,12 @@ log "Copying the $namespace database into the pod"
 kubectl -n "$namespace" exec "$pod" -c postgres -- sh -c '
   set -eu
   createdb -h "$1" "$2"
-  PGPASSWORD="$SOURCE_PASSWORD" pg_dump -Fc --no-owner --no-acl \
-    "host=$SOURCE_HOSTNAME dbname=$SOURCE_DATABASE user=$SOURCE_USERNAME sslmode=$SOURCE_SSLMODE" \
-    | pg_restore -h "$1" -d "$2" --no-owner --no-acl --exit-on-error
-' sh "$socket" "$database" >&2
+  # Through a file rather than a pipe, so that a failing pg_dump stops the script.
+  PGPASSWORD="$SOURCE_PASSWORD" pg_dump -Fc --no-owner --no-acl -f "$3" \
+    "host=$SOURCE_HOSTNAME dbname=$SOURCE_DATABASE user=$SOURCE_USERNAME sslmode=$SOURCE_SSLMODE"
+  pg_restore -h "$1" -d "$2" --no-owner --no-acl --exit-on-error "$3"
+  rm "$3"
+' sh "$socket" "$database" /var/lib/postgresql/source.pgdump >&2
 
 log "Pseudonymizing"
 kubectl -n "$namespace" exec "$pod" -c pseudonymize -- python manage.py pseudonymize_db --yes >&2

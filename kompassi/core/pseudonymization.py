@@ -157,8 +157,9 @@ def pseudonymize_form_data(fields: list[dict[str, Any]], form_data: dict[str, An
         for key, value in form_data.items():
             if key != slug and not key.startswith(f"{slug}."):
                 continue
+            # A key can match several fields; a redacted value must win over a kept one.
             if type in KEPT_FORM_FIELD_TYPES:
-                result[key] = value
+                result.setdefault(key, value)
             elif type in REDACTED_FORM_FIELD_TYPES:
                 result[key] = REDACTED if value else value
 
