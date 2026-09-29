@@ -1,0 +1,41 @@
+# Runs the django.tasks background task queue (kompassi/task_queue).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  labels:
+    {{- include "kompassi.labels" . | nindent 4 }}
+    component: worker
+spec:
+  # The selector is immutable; it must stay equal to the one of the Deployment this chart adopted
+  # from the pre-Helm manifests.
+  selector:
+    matchLabels:
+      stack: kompassi
+      component: worker
+  template:
+    metadata:
+      labels:
+        stack: kompassi
+        component: worker
+    spec:
+      affinity:
+        {{- include "kompassi.podAntiAffinity" "worker" | nindent 8 }}
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      securityContext:
+        {{- include "kompassi.podSecurityContext" . | nindent 8 }}
+      containers:
+        - name: main
+          image: {{ include "kompassi.backendImage" . | quote }}
+          args: ["python", "manage.py", "worker"]
+          env:
+            {{- include "kompassi.backendEnv" . | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources.worker | nindent 12 }}
+          securityContext:
+            {{- include "kompassi.containerSecurityContext" . | nindent 12 }}
+          volumeMounts:
+            {{- include "kompassi.backendVolumeMounts" . | nindent 12 }}
+      volumes:
+        {{- include "kompassi.backendVolumes" . | nindent 8 }}

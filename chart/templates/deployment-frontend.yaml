@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    {{- include "kompassi.labels" . | nindent 4 }}
+    component: frontend
+spec:
+  replicas: {{ .Values.frontend.replicas }}
+  strategy:
+    {{- include "kompassi.rollout" . | nindent 4 }}
+  selector:
+    matchLabels:
+      stack: kompassi
+      component: frontend
+  template:
+    metadata:
+      labels:
+        stack: kompassi
+        component: frontend
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-frontend.yaml") . | sha256sum }}
+    spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: {{ include "kompassi.terminationGracePeriodSeconds" . }}
+      containers:
+        - name: node
+          image: "{{ .Values.frontend.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: frontend
+            - secretRef:
+                name: {{ include "kompassi.frontendSecretName" . }}
+          resources:
+            {{- toYaml .Values.resources.frontend | nindent 12 }}
+          securityContext:
+            readOnlyRootFilesystem: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          lifecycle:
+            {{- include "kompassi.preStop" . | nindent 12 }}
+          startupProbe:
+            {{- include "kompassi.httpGet" (list "/healthz" 3000 .Values.frontend.hostname) | nindent 12 }}
+            periodSeconds: 2
+            failureThreshold: 60
+          {{- if .Values.frontend.probes.liveness }}
+          livenessProbe:
+            {{- include "kompassi.httpGet" (list "/healthz" 3000 .Values.frontend.hostname) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: next-cache
+              mountPath: /usr/src/app/.next/cache
+      volumes:
+        - name: next-cache
+          emptyDir: {}

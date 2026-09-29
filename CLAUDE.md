@@ -96,6 +96,15 @@ To verify the production Docker image builds correctly (no backend required):
 docker build -f kompassi-v2-frontend/Dockerfile kompassi-v2-frontend
 ```
 
+## Deployment
+
+Both components are deployed by one Helm chart, `chart/`, into `kompassi-staging` and `kompassi-production` on the qb cluster. `.github/workflows/cicd.yaml` builds both images tagged with the commit SHA and runs `helm upgrade --install` into staging, then production after a manual gate. Environment settings are in `chart/values-staging.yaml` and `chart/values-production.yaml`; `chart/README.md` covers the Secrets each namespace needs.
+
+```bash
+helm lint chart -f chart/values-staging.yaml
+helm template kompassi chart -f chart/values-staging.yaml
+```
+
 ## Toolchain conventions
 
 - Python linter/formatter: **ruff** (line length 120, configured in `pyproject.toml`), driven via **prek**

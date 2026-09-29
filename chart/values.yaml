@@ -1,0 +1,111 @@
+# Real environment values live in values-staging.yaml and values-production.yaml.
+# This file's secret fields are obviously-bogus placeholders so `helm template`/`helm lint`
+# work without real secrets -- never deploy with these values as-is.
+
+image:
+  # Both images are built from the same commit and share this tag. Normally supplied by --set at
+  # `helm upgrade` time in .github/workflows/cicd.yaml.
+  tag: latest
+
+backend:
+  image:
+    repository: ghcr.io/con2/kompassi
+  # The first hostname is the primary one: health probes send it as the Host header. All of them go
+  # into ALLOWED_HOSTS and get a listener pair on the Gateway.
+  hostnames:
+    - kompassi.example.com
+  baseUrl: https://kompassi.example.com
+  installationName: Kompassi (example)
+  installationSlug: example
+  # Worker processes per gunicorn and uvicorn pod.
+  workers: 4
+  replicas:
+    kompassi: 1
+    uvicorn: 1
+  # gunicorn --timeout, in seconds.
+  timeoutSeconds: 120
+  # POSTGRES_SSLMODE: `disable` for the CNPG cluster on the pod network, `require` for a database
+  # reached over the internet.
+  postgresSslMode: disable
+  redis:
+    hostname: redis-ha-haproxy.redis-ha.svc.cluster.local
+    # Each environment sharing the Redis needs its own database number.
+    cacheDatabase: 0
+  s3:
+    bucketName: kompassi-example
+    endpointUrl: https://garage.con2.fi
+    # SigV4 credential scope; Garage rejects any region other than its configured one.
+    region: garage
+  mail:
+    smtpServer: sr1.pahaip.fi
+    defaultFromEmail: suunnistajat@kompassi.eu
+  admins:
+    - Luka Pajukanta <santtu@pajukanta.fi>
+  # Origins and hostnames the login views may redirect back to (KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS).
+  allowedLoginRedirects: []
+  probes:
+    readiness: true
+    liveness: true
+  cron:
+    nightly:
+      schedule: "7 0 * * *"
+      suspend: false
+    frequent:
+      schedule: "*/5 * * * *"
+      suspend: false
+
+  # THE PRODUCTION-RECOMMENDED PATH: point at pre-existing Secrets and the chart skips creating its
+  # own. See README.md for their keys. The key names are also what
+  # infrastructure/kubernetes/postgres/update-secret.sh writes, so do not rename them.
+  existingSecretName: ""
+  existingPostgresSecretName: ""
+  secret:
+    secretKey: changeme
+    ticketsApiKey: changeme
+    desuprofileOauth2ClientId: changeme
+    desuprofileOauth2ClientSecret: changeme
+    s3AccessKeyId: changeme
+    s3SecretAccessKey: changeme
+    oidcRsaPrivateKey: changeme
+    sshPrivateKey: changeme
+    sshKnownHosts: changeme
+  postgresSecret:
+    hostname: postgres
+    database: changeme
+    username: changeme
+    password: changeme
+
+frontend:
+  image:
+    repository: ghcr.io/con2/kompassi2
+  hostname: v2.kompassi.example.com
+  replicas: 1
+  probes:
+    liveness: true
+  # THE PRODUCTION-RECOMMENDED PATH: a pre-existing Secret whose keys are the env var names below.
+  existingSecretName: ""
+  secret:
+    NEXTAUTH_SECRET: changeme
+    KOMPASSI_OIDC_CLIENT_ID: changeme
+    KOMPASSI_OIDC_CLIENT_SECRET: changeme
+    # Must equal backend.secret.ticketsApiKey.
+    KOMPASSI_TICKETS_V2_API_KEY: changeme
+
+# Every Deployment rolls one pod at a time and keeps each old pod serving for this many seconds
+# after it is told to stop. See kompassi.rollout in templates/_helpers.tpl.
+preStopSleepSeconds: 10
+
+# Requests only, no limits. The environment values files size them from observed usage.
+resources:
+  kompassi:
+    requests: { cpu: 10m, memory: 64Mi }
+  setup:
+    requests: { cpu: 10m, memory: 64Mi }
+  uvicorn:
+    requests: { cpu: 10m, memory: 64Mi }
+  worker:
+    requests: { cpu: 10m, memory: 64Mi }
+  cron:
+    requests: { cpu: 10m, memory: 64Mi }
+  frontend:
+    requests: { cpu: 10m, memory: 64Mi }

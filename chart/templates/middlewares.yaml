@@ -1,0 +1,27 @@
+# An HTTPRoute can only reference Middlewares in its own namespace, so the ones shared
+# cluster-wide in `default` for Ingress apps are repeated here.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: body-100m
+  labels:
+    {{- include "kompassi.labels" . | nindent 4 }}
+spec:
+  buffering:
+    maxRequestBodyBytes: 100000000
+---
+# Retries only when the backend never answered (connection refused/reset), never on a response of
+# any status, and not for POST/PATCH. This covers the moment a pod stops accepting connections
+# during a rollout, like ingress-nginx's default proxy_next_upstream did. Not attached to the
+# tickets-v2 route: a ticket order POST that reached uvicorn but lost its connection must not be
+# sent twice.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: retry
+  labels:
+    {{- include "kompassi.labels" . | nindent 4 }}
+spec:
+  retry:
+    attempts: 3
+    initialInterval: 100ms

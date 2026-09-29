@@ -1,0 +1,69 @@
+{{- $host := include "kompassi.primaryHostname" . -}}
+# Serves only the tickets_v2 API, which the Gateway routes here by path prefix.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uvicorn
+  labels:
+    {{- include "kompassi.labels" . | nindent 4 }}
+    component: uvicorn
+spec:
+  replicas: {{ .Values.backend.replicas.uvicorn }}
+  strategy:
+    {{- include "kompassi.rollout" . | nindent 4 }}
+  # The selector is immutable; it must stay equal to the one of the Deployment this chart adopted
+  # from the pre-Helm manifests.
+  selector:
+    matchLabels:
+      stack: kompassi
+      component: uvicorn
+  template:
+    metadata:
+      labels:
+        stack: kompassi
+        component: uvicorn
+    spec:
+      affinity:
+        {{- include "kompassi.podAntiAffinity" "uvicorn" | nindent 8 }}
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      securityContext:
+        {{- include "kompassi.podSecurityContext" . | nindent 8 }}
+      terminationGracePeriodSeconds: {{ include "kompassi.terminationGracePeriodSeconds" . }}
+      containers:
+        - name: master
+          image: {{ include "kompassi.backendImage" . | quote }}
+          args:
+            - uvicorn
+            - --host=0.0.0.0
+            - --port=7998
+            - --no-access-log
+            - --workers={{ .Values.backend.workers }}
+            - kompassi.tickets_v2.optimized_server.app:app
+          ports:
+            - containerPort: 7998
+          env:
+            {{- include "kompassi.backendEnv" . | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources.uvicorn | nindent 12 }}
+          securityContext:
+            {{- include "kompassi.containerSecurityContext" . | nindent 12 }}
+          lifecycle:
+            {{- include "kompassi.preStop" . | nindent 12 }}
+          startupProbe:
+            {{- include "kompassi.httpGet" (list "/api/tickets-v2/status" 7998 $host) | nindent 12 }}
+            periodSeconds: 2
+            failureThreshold: 60
+          readinessProbe:
+            {{- include "kompassi.httpGet" (list "/api/tickets-v2/status" 7998 $host) | nindent 12 }}
+            periodSeconds: 30
+          livenessProbe:
+            {{- include "kompassi.httpGet" (list "/api/tickets-v2/status" 7998 $host) | nindent 12 }}
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          volumeMounts:
+            - name: kompassi-temp
+              mountPath: /tmp
+      volumes:
+        - name: kompassi-temp
+          emptyDir: {}

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend
+  labels:
+    {{- include "kompassi.labels" . | nindent 4 }}
+    component: frontend
+data:
+  PORT: "3000"
+  AUTH_URL: {{ printf "https://%s" .Values.frontend.hostname | quote }}
+  NEXT_PUBLIC_KOMPASSI_BASE_URL: {{ .Values.backend.baseUrl | quote }}
+  KOMPASSI_TICKETS_V2_API_URL: http://uvicorn:7998

@@ -1,0 +1,51 @@
+{{- $jobs := list
+  (dict "name" "cron-nightly" "command" "cron_nightly" "config" .Values.backend.cron.nightly)
+  (dict "name" "cron-frequent" "command" "cron_frequent" "config" .Values.backend.cron.frequent)
+-}}
+{{- range $i, $job := $jobs }}
+{{- if $i }}
+---
+{{- end }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ $job.name }}
+  labels:
+    {{- include "kompassi.labels" $ | nindent 4 }}
+    component: {{ $job.name }}
+spec:
+  schedule: {{ $job.config.schedule | quote }}
+  suspend: {{ $job.config.suspend }}
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            stack: kompassi
+            component: {{ $job.name }}
+        spec:
+          affinity:
+            {{- include "kompassi.podAntiAffinity" "kompassi" | nindent 12 }}
+          enableServiceLinks: false
+          automountServiceAccountToken: false
+          securityContext:
+            {{- include "kompassi.podSecurityContext" $ | nindent 12 }}
+          restartPolicy: OnFailure
+          containers:
+            - name: master
+              image: {{ include "kompassi.backendImage" $ | quote }}
+              args: ["python", "manage.py", {{ $job.command | quote }}]
+              env:
+                {{- include "kompassi.backendEnv" $ | nindent 16 }}
+              resources:
+                {{- toYaml $.Values.resources.cron | nindent 16 }}
+              securityContext:
+                {{- include "kompassi.containerSecurityContext" $ | nindent 16 }}
+              volumeMounts:
+                {{- include "kompassi.backendVolumeMounts" $ | nindent 16 }}
+          volumes:
+            {{- include "kompassi.backendVolumes" $ | nindent 12 }}
+{{- end }}

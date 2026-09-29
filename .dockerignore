@@ -6,5 +6,4 @@ kompassi-v2-frontend
 docs
 .ruff_cache
 dev-secrets
-kubernetes
-build.json
+chart

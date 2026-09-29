@@ -1,6 +1,4 @@
 node_modules
 .next
 .git
-kubernetes
-build.json
 tsconfig.tsbuildinfo

@@ -1,0 +1,24 @@
+{{- $services := list
+  (dict "name" "kompassi" "port" 8000)
+  (dict "name" "uvicorn" "port" 7998)
+  (dict "name" "frontend" "port" 3000)
+-}}
+{{- range $i, $service := $services }}
+{{- if $i }}
+---
+{{- end }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $service.name }}
+  labels:
+    {{- include "kompassi.labels" $ | nindent 4 }}
+    component: {{ $service.name }}
+spec:
+  selector:
+    stack: kompassi
+    component: {{ $service.name }}
+  ports:
+    - port: {{ $service.port }}
+      targetPort: {{ $service.port }}
+{{- end }}

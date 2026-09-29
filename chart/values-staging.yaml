@@ -1,0 +1,44 @@
+backend:
+  hostnames:
+    - dev.kompassi.eu
+  baseUrl: https://dev.kompassi.eu
+  installationName: Kompassi (DEV)
+  installationSlug: turskadev
+  redis:
+    cacheDatabase: 7
+  s3:
+    bucketName: kompassidev
+  allowedLoginRedirects:
+    - dev.ropekonsti.fi
+    - http://localhost:3000
+    - https://localhost:3000
+    - http://localhost:5000
+    - https://localhost:5000
+    - http://localhost:8000
+    - https://localhost:8000
+    - ropekonsti.fi
+    - wp.ropecon.fi
+    - dev.larpit.fi
+  # Secrets `kompassi` and `postgres` in namespace kompassi-staging are managed out of band.
+  existingSecretName: kompassi
+  existingPostgresSecretName: postgres
+
+frontend:
+  hostname: v2.dev.kompassi.eu
+  # Secret `kompassi2` is copied from the old kompassi2-staging namespace, see README.md.
+  existingSecretName: kompassi2
+
+# Near the 7-day median memory and p95 CPU per pod in September 2026 (qb-stalker Prometheus).
+resources:
+  kompassi:
+    requests: { cpu: 35m, memory: 960Mi }
+  setup:
+    requests: { cpu: 10m, memory: 256Mi }
+  uvicorn:
+    requests: { cpu: 30m, memory: 288Mi }
+  worker:
+    requests: { cpu: 10m, memory: 240Mi }
+  cron:
+    requests: { cpu: 10m, memory: 208Mi }
+  frontend:
+    requests: { cpu: 5m, memory: 128Mi }

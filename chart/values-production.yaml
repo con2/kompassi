@@ -1,0 +1,56 @@
+backend:
+  hostnames:
+    - kompassi.eu
+    - conit.fi
+  baseUrl: https://kompassi.eu
+  installationName: Kompassi
+  installationSlug: turska
+  workers: 12
+  replicas:
+    kompassi: 3
+    uvicorn: 3
+  # Until the production database moves to the CNPG cluster on qb.
+  postgresSslMode: require
+  redis:
+    cacheDatabase: 9
+  s3:
+    bucketName: kompassi
+  allowedLoginRedirects:
+    - "*.tracon.fi"
+    - "*.con2.fi"
+    - "*.ropecon.fi"
+    - "*.kompassi.eu"
+    - "*.solmukohta.eu"
+    - "*.kotae.fi"
+    - conikuvat.fi
+    - larppikuvat.fi
+    - ropekonsti.fi
+    - larpit.fi
+  # Secrets `kompassi` and `postgres` in namespace kompassi-production are managed out of band.
+  existingSecretName: kompassi
+  existingPostgresSecretName: postgres
+
+frontend:
+  hostname: v2.kompassi.eu
+  replicas: 3
+  probes:
+    # TODO re-enable after Hunger Games
+    liveness: false
+  # Secret `kompassi2` is copied from the old kompassi2-production namespace, see README.md.
+  existingSecretName: kompassi2
+
+# Near the 7-day median memory and p95 CPU per pod in September 2026 (qb-stalker Prometheus).
+# gunicorn with 12 workers peaked at 3.6 GiB per pod.
+resources:
+  kompassi:
+    requests: { cpu: 150m, memory: 2816Mi }
+  setup:
+    requests: { cpu: 10m, memory: 256Mi }
+  uvicorn:
+    requests: { cpu: 60m, memory: 768Mi }
+  worker:
+    requests: { cpu: 15m, memory: 240Mi }
+  cron:
+    requests: { cpu: 10m, memory: 208Mi }
+  frontend:
+    requests: { cpu: 10m, memory: 160Mi }

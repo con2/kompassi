@@ -1,0 +1,6 @@
+apiVersion: v2
+name: kompassi
+description: Kompassi event management system (Django backend + Next.js V2 frontend)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
