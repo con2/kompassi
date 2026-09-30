@@ -292,9 +292,20 @@ class _TemplateCompiler:
             ProjectFile.Type.CSS,
         ):
             return None
-        with the_file.data.open("rt") as tpl_file:
-            src = tpl_file.read()
+        src = read_and_close(the_file.data)
         return src, name, lambda: True
+
+
+def read_and_close(field_file) -> str:
+    """
+    Read given `FieldFile` and then close it.
+
+    A `FileField` of a model class becomes `FieldFile` on a model instance.
+    Using `FieldFile.read()` (shortcut for `FieldFile.file.read()`) opens the file but doesn't close it.
+    It is also a context manager that closes it for us automatically.
+    """
+    with field_file.open("rt") as file:
+        return file.read()
 
 
 class _HtmlCompiler:
@@ -313,7 +324,7 @@ class _HtmlCompiler:
         url_fetcher = VfsFetcher(self.vfs)
         parsed_sheets = [
             weasyprint.CSS(
-                string=sheet_file.data.read(),
+                string=read_and_close(sheet_file.data),
                 base_url=LOCAL_FILE_URI_PREFIX,
                 url_fetcher=url_fetcher,
             )
