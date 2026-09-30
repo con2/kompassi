@@ -30,4 +30,5 @@ def not_found_view(request, exception=None):
             "event": None,
             "login_page": True,
         },
+        status=404,
     )
