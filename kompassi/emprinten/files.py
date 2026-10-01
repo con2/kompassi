@@ -31,6 +31,7 @@ def make_lut(file: Pathlike, encoding: str) -> Lut:
 
 
 non_word_char = re.compile(r"\W+")
+non_first_char = re.compile(r"^([^a-zA-Z_])")
 
 
 def make_name(name: str) -> str:
@@ -45,8 +46,10 @@ def make_name(name: str) -> str:
     'foo_bar'
     >>> make_name("Barb!!")
     'barb'
+    >>> make_name("0foo")
+    '_0foo'
     """
-    return non_word_char.sub("_", name).strip("_").lower()
+    return non_first_char.sub(r"_\1", non_word_char.sub("_", name).strip("_")).lower()
 
 
 def parse_header_names(cols: list[str]) -> list[str]:
