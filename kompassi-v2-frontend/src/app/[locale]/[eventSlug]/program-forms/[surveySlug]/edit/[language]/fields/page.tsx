@@ -134,7 +134,11 @@ export default async function EditProgramFormFieldsPage(props: Props) {
         initialFields={form.fields}
         dimensions={dimensions}
         annotations={annotations}
-        formContext={survey.purpose === "DEFAULT" ? "program" : "involvement"}
+        formContext={
+          survey.purpose === "DEFAULT" || survey.purpose === "INVITE"
+            ? "program"
+            : "involvement"
+        }
         messages={{
           FormEditor: translations.FormEditor,
           SchemaForm: translations.SchemaForm,
