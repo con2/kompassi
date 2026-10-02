@@ -53,6 +53,8 @@ def propagate_form_fields_to_forms(apps, schema_editor):
                             )
                             continue
                         field["propagateToAnnotation"] = annotation_slug
+                        # the old extractor also ran after edits
+                        field["propagateToAnnotationOnEdit"] = True
                         claimed = changed = True
             if changed:
                 form.save(update_fields=["fields", "cached_enriched_fields"])

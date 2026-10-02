@@ -2084,3 +2084,42 @@ def test_field_propagation_config_is_validated():
 
     with pytest.raises(pydantic.ValidationError):
         Field.model_validate(dict(slug="n", type="NumberField", propagateToAnnotationOnEdit=True))
+
+
+@pytest.mark.django_db
+def test_extract_annotations_ignores_annotations_not_applicable_to_the_universe():
+    from kompassi.dimensions.models.annotation import Annotation
+    from kompassi.dimensions.models.enums import AnnotationAppliesTo, AnnotationDataType
+    from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
+    from kompassi.program_v2.models.meta import ProgramV2EventMeta
+
+    from .utils.extract_annotations import extract_annotations_from_responses
+
+    meta, _ = ProgramV2EventMeta.get_or_create_dummy()
+    event = meta.event
+
+    survey = Survey(event=event, slug="offer", app=DimensionApp.PROGRAM, purpose=SurveyPurpose.DEFAULT)
+    survey.with_mandatory_fields().save()
+    form = Form.objects.create(
+        event=event,
+        survey=survey,
+        language="en",
+        fields=[
+            dict(slug="a", type="SingleLineText", propagateToAnnotation="test:programNote"),
+            dict(slug="b", type="SingleLineText", propagateToAnnotation="test:hostNote"),
+        ],
+    )
+    response = Response.objects.create(form=form, form_data={"a": "x", "b": "y"})
+
+    universe_annotations = [
+        UniverseAnnotation.objects.create(
+            universe=meta.universe,
+            annotation=Annotation.objects.create(slug=slug, type=AnnotationDataType.STRING, applies_to=applies_to),
+        )
+        for slug, applies_to in (
+            ("test:programNote", AnnotationAppliesTo.PROGRAM_ITEM),
+            ("test:hostNote", AnnotationAppliesTo.INVOLVEMENT),
+        )
+    ]
+
+    assert extract_annotations_from_responses([response], universe_annotations) == {"test:programNote": "x"}

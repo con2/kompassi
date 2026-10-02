@@ -1,7 +1,10 @@
 import logging
 from collections.abc import Iterable
 
+from kompassi.dimensions.models.annotation import Annotation
 from kompassi.dimensions.models.cached_annotations import CachedAnnotations
+from kompassi.dimensions.models.enums import DimensionApp
+from kompassi.dimensions.models.universe import Universe
 from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
 
 from ..models.response import Response
@@ -17,10 +20,19 @@ def extract_annotations_from_responses(
 ) -> CachedAnnotations:
     """
     Collects annotation values from fields that declare `propagate_to_annotation`.
-    Annotations not active in the given universe annotations are ignored.
+    Annotations not active in the given universe annotations are ignored, as are annotations
+    that do not apply to the kind of object the universe holds (every annotation is
+    activated in every universe, so eg. an involvement-only annotation could otherwise
+    end up on a program item).
     When several fields target the same annotation, the first field with a usable value wins.
     """
-    schema = {ua.annotation.slug: ua.annotation for ua in universe_annotations if ua.is_active}
+    active = [ua for ua in universe_annotations if ua.is_active]
+    universe_apps = dict(Universe.objects.filter(id__in={ua.universe_id for ua in active}).values_list("id", "app"))
+    schema = {
+        ua.annotation.slug: ua.annotation
+        for ua in active
+        if _is_applicable_in_universe(ua.annotation, universe_apps[ua.universe_id])
+    }
 
     result: CachedAnnotations = {}
 
@@ -71,3 +83,13 @@ def extract_annotations_from_responses(
         result.update(response_result)
 
     return result
+
+
+def _is_applicable_in_universe(annotation: Annotation, app: DimensionApp) -> bool:
+    match app:
+        case DimensionApp.PROGRAM:
+            return annotation.is_applicable_to_program_items
+        case DimensionApp.INVOLVEMENT:
+            return annotation.is_applicable_to_involvements
+        case _:
+            return True
