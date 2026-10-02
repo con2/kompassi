@@ -6,5 +6,5 @@ export interface Survey {
   languages: {
     language: string;
   }[];
-  purpose: "DEFAULT" | "INVITE";
+  purpose: "DEFAULT" | "INVITE" | "FOLLOWUP";
 }

@@ -102,6 +102,18 @@ class Response(models.Model):
         related_name="+",
     )
 
+    parent = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="followups",
+        help_text=(
+            "Reserved: the response a follow-up response follows up on. "
+            "Must always point to the newest version of the parent response."
+        ),
+    )
+
     # FK id fields (annotated for the type checker)
     revision_created_by_id: int | None
     original_created_by_id: int | None

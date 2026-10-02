@@ -60,7 +60,18 @@ class Survey(models.Model):
     purpose: SurveyPurpose = EnumField(  # type: ignore
         SurveyPurpose,
         default=SurveyPurpose.DEFAULT,
-        help_text="Generic surveys and program offers are DEFAULT, program host invitations are ACCEPT_INVITATION.",
+        help_text=(
+            "Generic surveys and program offers are DEFAULT, program host invitations are INVITE, "
+            "follow-up questions to existing program hosts are FOLLOWUP."
+        ),
+    )
+    parent = models.ForeignKey(
+        "self",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="followups",
+        help_text="Reserved for follow-up surveys that follow up on the responses of a parent survey.",
     )
 
     login_required = models.BooleanField(
@@ -206,7 +217,7 @@ class Survey(models.Model):
         match self.app, self.purpose:
             case DimensionApp.PROGRAM, SurveyPurpose.DEFAULT:
                 return InvolvementType.PROGRAM_OFFER
-            case DimensionApp.PROGRAM, SurveyPurpose.INVITE:
+            case DimensionApp.PROGRAM, SurveyPurpose.INVITE | SurveyPurpose.FOLLOWUP:
                 return InvolvementType.PROGRAM_HOST
             case DimensionApp.FORMS, _:
                 return InvolvementType.SURVEY_RESPONSE
@@ -246,7 +257,7 @@ class Survey(models.Model):
                 )[0]
             case DimensionApp.PROGRAM:
                 # Invite fields describe the program host, not the program item.
-                if self.purpose == SurveyPurpose.INVITE:
+                if self.purpose in (SurveyPurpose.INVITE, SurveyPurpose.FOLLOWUP):
                     return self.event.involvement_universe
                 return self.event.program_universe
             case _:
@@ -417,14 +428,19 @@ class Survey(models.Model):
                     self.responses_editable_until = self.event.end_time
 
             case DimensionApp.FORMS:
-                if self.purpose == SurveyPurpose.INVITE:
-                    raise ValueError("ACCEPT_INVITATION is not a valid purpose for FORMS app")
+                if self.purpose in (SurveyPurpose.INVITE, SurveyPurpose.FOLLOWUP):
+                    raise ValueError(f"{self.purpose} is not a valid purpose for FORMS app")
 
                 if self.anonymity == Anonymity.NAME_AND_EMAIL:
                     self.login_required = True
 
             case _:
                 raise NotImplementedError(self.app)
+
+        if self.parent is not None and self.profile_field_selector | self.parent.profile_field_selector != (
+            self.profile_field_selector
+        ):
+            raise ValueError("A follow-up survey must select at least the profile fields its parent selects")
 
         return self
 
