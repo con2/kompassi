@@ -81,20 +81,7 @@ class Universe(models.Model):
     def surveys(self):
         from kompassi.forms.models.survey import Survey
 
-        match self.app:
-            case DimensionApp.FORMS:
-                return Survey.objects.filter(
-                    event=self.scope.event,
-                    slug=self.slug,
-                    app=self.app,
-                )
-            case DimensionApp.PROGRAM:
-                return Survey.objects.filter(
-                    event=self.scope.event,
-                    app=self.app,
-                )
-            case _:
-                raise ValueError(f"Unknown app type: {self.app}")
+        return Survey.objects.filter(universe=self)
 
     def clone(self, *, scope: Scope, slug: str) -> Universe:
         """
