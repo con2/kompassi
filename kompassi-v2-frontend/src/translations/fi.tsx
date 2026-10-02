@@ -266,12 +266,12 @@ const translations: Translations = {
       propagateDimensionOnCreate: {
         title: "Välitä arvo eteenpäin luotaessa",
         helpText:
-          "Kun vastaus luodaan, aseta kohdeobjektin (esim. ohjelmanumeron tai osallisuuden) vastaava ulottuvuus tähän arvoon.",
+          "Kun vastaus luodaan, aseta kohdeobjektin (esim. ohjelmanumeron tai osallisuuden) vastaava dimensio tähän arvoon.",
       },
       propagateDimensionOnEdit: {
         title: "Välitä arvo eteenpäin muokattaessa",
         helpText:
-          "Kun vastausta muokataan, päivitä kohdeobjektin vastaava ulottuvuus.",
+          "Kun vastausta muokataan, päivitä kohdeobjektin vastaava dimensio.",
       },
       propagateToAnnotation: {
         title: "Välitä arvo lisätietoon",
