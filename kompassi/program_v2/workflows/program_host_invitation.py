@@ -68,6 +68,7 @@ class ProgramHostInvitationWorkflow(Workflow):
             extract_annotations_from_responses(
                 program.responses.all(),
                 program.universe.active_universe_annotations.all(),
+                on_edit=old_version is not None,
             )
         )
         program.refresh_dependents()

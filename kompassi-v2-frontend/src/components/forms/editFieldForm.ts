@@ -247,6 +247,14 @@ export function formDataToField(
     encryptTo: ((formData.get("encryptTo") as string) || "").split("\n"),
   };
 
+  // the backend rejects "on edit" without an annotation to pass forward to
+  if (
+    "propagateToAnnotationOnEdit" in values &&
+    !values.propagateToAnnotation
+  ) {
+    values.propagateToAnnotationOnEdit = false;
+  }
+
   switch (initialValues.type) {
     case "SingleSelect":
     case "MultiSelect":

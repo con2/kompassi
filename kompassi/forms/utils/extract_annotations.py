@@ -20,7 +20,7 @@ def extract_annotations_from_responses(
     Annotations not active in the given universe annotations are ignored.
     When several fields target the same annotation, the first field with a usable value wins.
     """
-    schema = {ua.annotation.slug: ua.annotation for ua in universe_annotations}
+    schema = {ua.annotation.slug: ua.annotation for ua in universe_annotations if ua.is_active}
 
     result: CachedAnnotations = {}
 
