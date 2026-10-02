@@ -37,6 +37,7 @@ const query = graphql(`
       forms {
         survey(slug: $surveySlug, app: PROGRAM) {
           ...EditSurveyFieldsPage
+          isInInvolvementUniverse
         }
       }
     }
@@ -134,11 +135,7 @@ export default async function EditProgramFormFieldsPage(props: Props) {
         initialFields={form.fields}
         dimensions={dimensions}
         annotations={annotations}
-        formContext={
-          survey.purpose === "DEFAULT" || survey.purpose === "INVITE"
-            ? "program"
-            : "involvement"
-        }
+        formContext={survey.isInInvolvementUniverse ? "involvement" : "program"}
         messages={{
           FormEditor: translations.FormEditor,
           SchemaForm: translations.SchemaForm,
