@@ -306,7 +306,7 @@ const translations: Translations = {
       },
       dimension: {
         title: "Dimensio",
-        helpText: "Mistä dimensiosta tämä kenttä saa vastauksensa?",
+        helpText: "Mistä dimensiosta tämä kenttä saa vastausvaihtoehtonsa?",
       },
       maxLength: {
         title: "Enimmäispituus",
