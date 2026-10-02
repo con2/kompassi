@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from types import SimpleNamespace
 
+import pydantic
 import pytest
 import yaml
 from django.contrib.auth import get_user_model
@@ -2060,3 +2061,26 @@ def test_grantee_can_manage_dimensions_only_in_the_granted_surveys_universe():
 
     assert survey_a.universe.can_dimensions_be_created_by(_cached_request(grantee.user))
     assert not survey_b.universe.can_dimensions_be_created_by(_cached_request(grantee.user))
+
+
+def test_field_propagation_config_is_validated():
+    ok = Field.model_validate(
+        dict(
+            slug="max",
+            type="NumberField",
+            propagateToAnnotation="konsti:maxAttendance",
+            propagateToAnnotationOnEdit=True,
+        )
+    )
+    assert ok.propagate_to_annotation == "konsti:maxAttendance"
+
+    Field.model_validate(dict(slug="d", type="DimensionSingleSelect", dimension="d", propagateDimensionOnCreate=True))
+
+    with pytest.raises(pydantic.ValidationError):
+        Field.model_validate(dict(slug="d", type="DimensionSingleSelect", dimension="d", propagateToAnnotation="x:y"))
+
+    with pytest.raises(pydantic.ValidationError):
+        Field.model_validate(dict(slug="s", type="SingleSelect", propagateDimensionOnCreate=True))
+
+    with pytest.raises(pydantic.ValidationError):
+        Field.model_validate(dict(slug="n", type="NumberField", propagateToAnnotationOnEdit=True))

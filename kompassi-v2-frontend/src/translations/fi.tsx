@@ -263,6 +263,27 @@ const translations: Translations = {
         title: "Avainkenttä",
         helpText: "Avainkentät näytetään vastauslistassa.",
       },
+      propagateDimensionOnCreate: {
+        title: "Välitä arvo eteenpäin luotaessa",
+        helpText:
+          "Kun vastaus luodaan, aseta kohdeobjektin (esim. ohjelmanumeron tai osallisuuden) vastaava ulottuvuus tähän arvoon.",
+      },
+      propagateDimensionOnEdit: {
+        title: "Välitä arvo eteenpäin muokattaessa",
+        helpText:
+          "Kun vastausta muokataan, päivitä kohdeobjektin vastaava ulottuvuus.",
+      },
+      propagateToAnnotation: {
+        title: "Välitä arvo lisätietoon",
+        helpText:
+          "Aseta kohdeobjektin (esim. ohjelmanumeron tai osallisuuden) tämä lisätieto tämän kentän arvoon.",
+        none: "(ei välitetä eteenpäin)",
+      },
+      propagateToAnnotationOnEdit: {
+        title: "Välitä myös muokattaessa",
+        helpText:
+          "Päivitä lisätieto myös kun vastausta muokataan, ei vain kun se luodaan.",
+      },
       choices: {
         title: "Vaihtoehdot",
         helpText:
@@ -2438,17 +2459,6 @@ const translations: Translations = {
       },
       isInternal: {
         title: "Sisäinen",
-      },
-      formFields: {
-        title: "Lähdekentät ohjelmalomakkeilla",
-        description: (
-          <>
-            Niiden lomakekenttien tekniset nimet, joista tämän lisätiedon arvoja
-            yritetään kaivella. Yksi per rivi, järjestys merkitsee: lisätiedon
-            arvon määrittelee ensimmäinen näistä kentistä jolla on
-            oikeantyyppinen, epätyhjä arvo.
-          </>
-        ),
       },
       properties: {
         title: "Ominaisuudet",

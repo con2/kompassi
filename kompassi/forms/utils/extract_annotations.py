@@ -1,7 +1,6 @@
 import logging
 from collections.abc import Iterable
 
-from kompassi.dimensions.models.annotation import Annotation
 from kompassi.dimensions.models.cached_annotations import CachedAnnotations
 from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
 
@@ -13,53 +12,62 @@ logger = logging.getLogger(__name__)
 def extract_annotations_from_responses(
     responses: Iterable[Response],
     universe_annotations: Iterable[UniverseAnnotation],
+    *,
+    on_edit: bool = False,
 ) -> CachedAnnotations:
-    schema: list[Annotation] = []
-    field_mapping: dict[str, list[str]] = {}
-    interesting_fields: set[str] = set()
-
-    for ea in universe_annotations:
-        schema.append(ea.annotation)
-        field_mapping[ea.annotation.slug] = ea.form_fields
-        interesting_fields.update(ea.form_fields)
+    """
+    Collects annotation values from fields that declare `propagate_to_annotation`.
+    Annotations not active in the given universe annotations are ignored.
+    When several fields target the same annotation, the first field with a usable value wins.
+    """
+    schema = {ua.annotation.slug: ua.annotation for ua in universe_annotations}
 
     result: CachedAnnotations = {}
 
     for response in responses:
         fields = response.form.validated_fields
-        values, warnings = response.get_processed_form_data(fields=fields, field_slugs=interesting_fields)
-        form_fields_by_slug = {field.slug: field for field in fields}
+        propagating_fields = [
+            field
+            for field in fields
+            if field.propagate_to_annotation in schema and (not on_edit or field.propagate_to_annotation_on_edit)
+        ]
+        if not propagating_fields:
+            continue
 
-        for annotation in schema:
-            for form_field_slug in field_mapping[annotation.slug]:
-                form_field = form_fields_by_slug.get(form_field_slug)
-                if form_field is None:
-                    # this form does not have this field
-                    continue
+        values, warnings = response.get_processed_form_data(
+            fields=fields,
+            field_slugs={field.slug for field in propagating_fields},
+        )
 
-                value = values.get(form_field_slug)
-                if value is None:
-                    # no value for this field in this response
-                    continue
+        response_result: CachedAnnotations = {}
+        for field in propagating_fields:
+            annotation = schema[str(field.propagate_to_annotation)]
 
-                if field_warnings := warnings.get(form_field_slug):
-                    logger.info(
-                        "Cowardly refusing to look for value for annotation in a field with warnings: %s",
-                        dict(
-                            response=response.id,
-                            annotation_slug=annotation.slug,
-                            form_field_slug=form_field_slug,
-                            field_warnings=field_warnings,
-                        ),
-                    )
-                    continue
+            if annotation.slug in response_result:
+                continue
 
-                value = annotation.type.conform_value(value)
-                if value is None:
-                    # value did not conform to the data type of the annotation
-                    continue
+            value = values.get(field.slug)
+            if value is None:
+                continue
 
-                result[annotation.slug] = value
-                break
+            if field_warnings := warnings.get(field.slug):
+                logger.info(
+                    "Cowardly refusing to look for value for annotation in a field with warnings: %s",
+                    dict(
+                        response=response.id,
+                        annotation_slug=annotation.slug,
+                        form_field_slug=field.slug,
+                        field_warnings=field_warnings,
+                    ),
+                )
+                continue
+
+            value = annotation.type.conform_value(value)
+            if value is None:
+                continue
+
+            response_result[annotation.slug] = value
+
+        result.update(response_result)
 
     return result

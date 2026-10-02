@@ -315,7 +315,6 @@ NOT_PERSONAL: dict[str, frozenset[str]] = {
         "programme.Role": "perks",
         "programme.SpecialReservation": "code",
         "programme.Tag": "v2_dimensions",
-        "dimensions.UniverseAnnotation": "form_fields",
         "involvement.InvolvementToGroupMapping": "required_dimensions",
         "involvement.InvolvementToBadgeMapping": "required_dimensions annotations",
         "badges.SurveyToBadgeMapping": "required_dimensions annotations",

@@ -253,6 +253,27 @@ const translations: Translations = {
         title: "Nyckelfält",
         helpText: "Nyckelfält visas i svarslistan.",
       },
+      propagateDimensionOnCreate: {
+        title: "Skicka värdet vidare vid skapande",
+        helpText:
+          "När svaret skapas, sätt motsvarande dimension hos målobjektet (t.ex. programpunkten eller delaktigheten) till detta värde.",
+      },
+      propagateDimensionOnEdit: {
+        title: "Skicka värdet vidare vid redigering",
+        helpText:
+          "När svaret redigeras, uppdatera motsvarande dimension hos målobjektet.",
+      },
+      propagateToAnnotation: {
+        title: "Skicka värdet vidare till anteckning",
+        helpText:
+          "Sätt denna anteckning hos målobjektet (t.ex. programpunkten eller delaktigheten) till fältets värde.",
+        none: "(skicka inte vidare)",
+      },
+      propagateToAnnotationOnEdit: {
+        title: "Skicka vidare även vid redigering",
+        helpText:
+          "Uppdatera anteckningen även när svaret redigeras, inte bara när det skapas.",
+      },
       choices: {
         title: "Val",
         helpText:
@@ -2443,16 +2464,6 @@ const translations: Translations = {
       },
       isInternal: { title: "Intern" },
       isShownInDetail: { title: "Visas i programguiden" },
-      formFields: {
-        title: "Programformulärsfält",
-        description: (
-          <>
-            Tekniska namn på programformulärsfält vars värden extraheras för
-            denna anteckning. Ett per rad, i ordning: det första fältet med ett
-            icke-tomt värde av lämplig typ används.
-          </>
-        ),
-      },
       properties: { title: "Egenskaper" },
       actions: { title: "Funktioner" },
     },

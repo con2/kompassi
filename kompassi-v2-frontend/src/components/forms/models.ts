@@ -74,6 +74,10 @@ interface BaseField {
   isKeyField?: boolean;
   htmlType?: HtmlType;
   encryptTo?: string[];
+  propagateDimensionOnCreate?: boolean;
+  propagateDimensionOnEdit?: boolean;
+  propagateToAnnotation?: string;
+  propagateToAnnotationOnEdit?: boolean;
 }
 
 export interface Divider extends BaseField {

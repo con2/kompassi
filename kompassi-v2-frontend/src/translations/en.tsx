@@ -257,6 +257,27 @@ const translations = {
         title: "Key field",
         helpText: "Key fields are shown in the response list.",
       },
+      propagateDimensionOnCreate: {
+        title: "Pass value forward on create",
+        helpText:
+          "When the response is created, set the corresponding dimension of the target object (eg. the program item or the involvement) to this value.",
+      },
+      propagateDimensionOnEdit: {
+        title: "Pass value forward on edit",
+        helpText:
+          "When the response is edited, update the corresponding dimension of the target object.",
+      },
+      propagateToAnnotation: {
+        title: "Pass value forward to annotation",
+        helpText:
+          "Set this annotation of the target object (eg. the program item or the involvement) to the value of this field.",
+        none: "(do not pass forward)",
+      },
+      propagateToAnnotationOnEdit: {
+        title: "Also pass forward on edit",
+        helpText:
+          "Update the annotation also when the response is edited, not just when it is created.",
+      },
       choices: {
         title: "Choices",
         helpText:
@@ -2500,16 +2521,6 @@ const translations = {
       },
       isShownInDetail: {
         title: "Shown in program guide",
-      },
-      formFields: {
-        title: "Program form fields",
-        description: (
-          <>
-            Slugs of program form fields values for this annotation will be
-            extracted from. One per line, in order: the first field that has a
-            nonempty value of an appropriate type will be used.
-          </>
-        ),
       },
       properties: {
         title: "Properties",
