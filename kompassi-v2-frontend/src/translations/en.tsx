@@ -259,18 +259,30 @@ const translations = {
       },
       propagateDimensionOnCreate: {
         title: "Pass value forward on create",
-        helpText:
-          "When the response is created, set the corresponding dimension of the target object (eg. the program item or the involvement) to this value.",
+        helpText: {
+          program:
+            "When the response is created, set the corresponding dimension of the program item to this value.",
+          involvement:
+            "When the response is created, set the corresponding dimension of the involvement to this value.",
+        },
       },
       propagateDimensionOnEdit: {
         title: "Pass value forward on edit",
-        helpText:
-          "When the response is edited, update the corresponding dimension of the target object.",
+        helpText: {
+          program:
+            "When the response is edited, update the corresponding dimension of the program item.",
+          involvement:
+            "When the response is edited, update the corresponding dimension of the involvement.",
+        },
       },
       propagateToAnnotation: {
         title: "Pass value forward to annotation",
-        helpText:
-          "Set this annotation of the target object (eg. the program item or the involvement) to the value of this field.",
+        helpText: {
+          program:
+            "Set this annotation of the program item to the value of this field.",
+          involvement:
+            "Set this annotation of the involvement to the value of this field.",
+        },
         none: "(do not pass forward)",
       },
       propagateToAnnotationOnEdit: {

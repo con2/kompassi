@@ -265,18 +265,28 @@ const translations: Translations = {
       },
       propagateDimensionOnCreate: {
         title: "Välitä arvo eteenpäin luotaessa",
-        helpText:
-          "Kun vastaus luodaan, aseta kohdeobjektin (esim. ohjelmanumeron tai osallisuuden) vastaava dimensio tähän arvoon.",
+        helpText: {
+          program:
+            "Kun vastaus luodaan, aseta ohjelmanumeron vastaava dimensio tähän arvoon.",
+          involvement:
+            "Kun vastaus luodaan, aseta osallisuuden vastaava dimensio tähän arvoon.",
+        },
       },
       propagateDimensionOnEdit: {
         title: "Välitä arvo eteenpäin muokattaessa",
-        helpText:
-          "Kun vastausta muokataan, päivitä kohdeobjektin vastaava dimensio.",
+        helpText: {
+          program:
+            "Kun vastausta muokataan, päivitä ohjelmanumeron vastaava dimensio.",
+          involvement:
+            "Kun vastausta muokataan, päivitä osallisuuden vastaava dimensio.",
+        },
       },
       propagateToAnnotation: {
         title: "Välitä arvo lisätietoon",
-        helpText:
-          "Aseta kohdeobjektin (esim. ohjelmanumeron tai osallisuuden) tämä lisätieto tämän kentän arvoon.",
+        helpText: {
+          program: "Aseta ohjelmanumeron tämä lisätieto tämän kentän arvoon.",
+          involvement: "Aseta osallisuuden tämä lisätieto tämän kentän arvoon.",
+        },
         none: "(ei välitetä eteenpäin)",
       },
       propagateToAnnotationOnEdit: {

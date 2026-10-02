@@ -255,18 +255,29 @@ const translations: Translations = {
       },
       propagateDimensionOnCreate: {
         title: "Skicka värdet vidare vid skapande",
-        helpText:
-          "När svaret skapas, sätt motsvarande dimension hos målobjektet (t.ex. programpunkten eller delaktigheten) till detta värde.",
+        helpText: {
+          program:
+            "När svaret skapas, sätt programpunktens motsvarande dimension till detta värde.",
+          involvement:
+            "När svaret skapas, sätt delaktighetens motsvarande dimension till detta värde.",
+        },
       },
       propagateDimensionOnEdit: {
         title: "Skicka värdet vidare vid redigering",
-        helpText:
-          "När svaret redigeras, uppdatera motsvarande dimension hos målobjektet.",
+        helpText: {
+          program:
+            "När svaret redigeras, uppdatera programpunktens motsvarande dimension.",
+          involvement:
+            "När svaret redigeras, uppdatera delaktighetens motsvarande dimension.",
+        },
       },
       propagateToAnnotation: {
         title: "Skicka värdet vidare till anteckning",
-        helpText:
-          "Sätt denna anteckning hos målobjektet (t.ex. programpunkten eller delaktigheten) till fältets värde.",
+        helpText: {
+          program: "Sätt programpunktens denna anteckning till fältets värde.",
+          involvement:
+            "Sätt delaktighetens denna anteckning till fältets värde.",
+        },
         none: "(skicka inte vidare)",
       },
       propagateToAnnotationOnEdit: {

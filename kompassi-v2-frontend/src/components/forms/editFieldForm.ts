@@ -86,13 +86,15 @@ export function getFieldEditorFields(
           type: "SingleCheckbox",
           slug: "propagateDimensionOnCreate",
           required: false,
-          ...t.propagateDimensionOnCreate,
+          title: t.propagateDimensionOnCreate.title,
+          helpText: t.propagateDimensionOnCreate.helpText[formContext],
         },
         {
           type: "SingleCheckbox",
           slug: "propagateDimensionOnEdit",
           required: false,
-          ...t.propagateDimensionOnEdit,
+          title: t.propagateDimensionOnEdit.title,
+          helpText: t.propagateDimensionOnEdit.helpText[formContext],
         },
       );
     } else if (annotationPropagatingTypes.includes(fieldType)) {
@@ -112,7 +114,7 @@ export function getFieldEditorFields(
             ...applicable.map(({ slug, title }) => ({ slug, title })),
           ],
           title: t.propagateToAnnotation.title,
-          helpText: t.propagateToAnnotation.helpText,
+          helpText: t.propagateToAnnotation.helpText[formContext],
         },
         {
           type: "SingleCheckbox",
