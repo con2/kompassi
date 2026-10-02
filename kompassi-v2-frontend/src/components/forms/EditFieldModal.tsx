@@ -6,6 +6,8 @@ import {
   fieldToValues,
   formDataToField,
   getFieldEditorFields,
+  type AnnotationOption,
+  type FormEditorContext,
 } from "./editFieldForm";
 import "./FormEditor.scss";
 import { Field } from "./models";
@@ -18,6 +20,8 @@ interface EditFieldModalProps {
   onSubmit(field: Field): void;
   onClose(): void;
   dimensions: DimensionValueSelectFragment[];
+  annotations: AnnotationOption[];
+  formContext: FormEditorContext;
   messages: {
     FormEditor: Translations["FormEditor"];
     SchemaForm: Translations["SchemaForm"];
@@ -30,12 +34,16 @@ const EditFieldModal = ({
   onClose,
   messages,
   dimensions,
+  annotations,
+  formContext,
 }: EditFieldModalProps) => {
   const t = messages.FormEditor.editFieldModal;
   const fields = getFieldEditorFields(
     fieldToEdit.type,
     messages.FormEditor.editFieldForm,
     dimensions,
+    annotations,
+    formContext,
   );
 
   const handleSubmit = useCallback(

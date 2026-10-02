@@ -1,12 +1,41 @@
 import { Choice, Field, FieldType, Values } from "./models";
 import processFormData from "./processFormData";
 import { DimensionValueSelectFragment } from "@/__generated__/graphql";
+
+export type FormEditorContext = "survey" | "program" | "involvement";
+
+export interface AnnotationOption {
+  slug: string;
+  title: string;
+  isApplicableToProgramItems: boolean;
+  isApplicableToInvolvements: boolean;
+}
+
+const annotationPropagatingTypes: FieldType[] = [
+  "SingleLineText",
+  "MultiLineText",
+  "MarkdownText",
+  "SingleCheckbox",
+  "NumberField",
+  "DecimalField",
+  "DateField",
+  "TimeField",
+  "DateTimeField",
+];
+
+const dimensionFieldTypes: FieldType[] = [
+  "DimensionSingleSelect",
+  "DimensionMultiSelect",
+  "DimensionSingleCheckbox",
+];
 import type { Translations } from "@/translations/en";
 
 export function getFieldEditorFields(
   fieldType: FieldType,
   messages: Translations["FormEditor"]["editFieldForm"],
   dimensions: DimensionValueSelectFragment[],
+  annotations: AnnotationOption[] = [],
+  formContext: FormEditorContext = "survey",
 ): Field[] {
   const t = messages;
   const slugField: Field = {
@@ -47,6 +76,55 @@ export function getFieldEditorFields(
       ...t.isKeyField,
     },
   ]);
+
+  const propagationFields: Field[] = [];
+  // survey responses have no target object to pass values forward to
+  if (formContext !== "survey") {
+    if (dimensionFieldTypes.includes(fieldType)) {
+      propagationFields.push(
+        {
+          type: "SingleCheckbox",
+          slug: "propagateDimensionOnCreate",
+          required: false,
+          title: t.propagateDimensionOnCreate.title,
+          helpText: t.propagateDimensionOnCreate.helpText[formContext],
+        },
+        {
+          type: "SingleCheckbox",
+          slug: "propagateDimensionOnEdit",
+          required: false,
+          title: t.propagateDimensionOnEdit.title,
+          helpText: t.propagateDimensionOnEdit.helpText[formContext],
+        },
+      );
+    } else if (annotationPropagatingTypes.includes(fieldType)) {
+      const applicable = annotations.filter((annotation) =>
+        formContext === "involvement"
+          ? annotation.isApplicableToInvolvements
+          : annotation.isApplicableToProgramItems,
+      );
+      propagationFields.push(
+        {
+          type: "SingleSelect",
+          slug: "propagateToAnnotation",
+          required: false,
+          presentation: "dropdown",
+          choices: [
+            { slug: "", title: t.propagateToAnnotation.none },
+            ...applicable.map(({ slug, title }) => ({ slug, title })),
+          ],
+          title: t.propagateToAnnotation.title,
+          helpText: t.propagateToAnnotation.helpText[formContext],
+        },
+        {
+          type: "SingleCheckbox",
+          slug: "propagateToAnnotationOnEdit",
+          required: false,
+          ...t.propagateToAnnotationOnEdit,
+        },
+      );
+    }
+  }
 
   const choicesField: Field = {
     type: "MultiLineText",
@@ -89,33 +167,38 @@ export function getFieldEditorFields(
   //   ...t.encryptTo,
   // };
 
-  switch (fieldType) {
-    case "SingleSelect":
-    case "MultiSelect":
-      return editableFieldFields.concat([choicesField]); // , encryptTo]);
-    case "DimensionSingleSelect":
-    case "DimensionMultiSelect":
-    case "DimensionSingleCheckbox":
-      return editableFieldFields.concat([dimensionField]); // , encryptTo]);
-    case "RadioMatrix":
-      return editableFieldFields.concat([
-        questionsField,
-        choicesField,
-        // encryptTo,
-      ]);
-    case "MultiLineText":
-    case "MarkdownText":
-      return editableFieldFields.concat([maxLengthField]);
-    case "Divider":
-    case "Spacer":
-      return [slugField];
-    case "StaticText":
-      return baseFieldEditorFields;
-    default:
-      // TODO implement encryption
-      return editableFieldFields;
-    // default:
-    //   return baseFieldEditorFields.concat([encryptTo]);
+  const fields = getTypeSpecificFields();
+  return fields.concat(propagationFields);
+
+  function getTypeSpecificFields(): Field[] {
+    switch (fieldType) {
+      case "SingleSelect":
+      case "MultiSelect":
+        return editableFieldFields.concat([choicesField]); // , encryptTo]);
+      case "DimensionSingleSelect":
+      case "DimensionMultiSelect":
+      case "DimensionSingleCheckbox":
+        return editableFieldFields.concat([dimensionField]); // , encryptTo]);
+      case "RadioMatrix":
+        return editableFieldFields.concat([
+          questionsField,
+          choicesField,
+          // encryptTo,
+        ]);
+      case "MultiLineText":
+      case "MarkdownText":
+        return editableFieldFields.concat([maxLengthField]);
+      case "Divider":
+      case "Spacer":
+        return [slugField];
+      case "StaticText":
+        return baseFieldEditorFields;
+      default:
+        // TODO implement encryption
+        return editableFieldFields;
+      // default:
+      //   return baseFieldEditorFields.concat([encryptTo]);
+    }
   }
 }
 
@@ -165,6 +248,14 @@ export function formDataToField(
     ...processFormData(fields, formData),
     encryptTo: ((formData.get("encryptTo") as string) || "").split("\n"),
   };
+
+  // the backend rejects "on edit" without an annotation to pass forward to
+  if (
+    "propagateToAnnotationOnEdit" in values &&
+    !values.propagateToAnnotation
+  ) {
+    values.propagateToAnnotationOnEdit = false;
+  }
 
   switch (initialValues.type) {
     case "SingleSelect":

@@ -22,6 +22,18 @@ const query = graphql(`
       name
       slug
 
+      program {
+        eventAnnotations {
+          isActive
+          annotation {
+            slug
+            title(lang: $locale)
+            isApplicableToProgramItems
+            isApplicableToInvolvements
+          }
+        }
+      }
+
       forms {
         survey(slug: $surveySlug, app: PROGRAM) {
           ...EditSurveyFieldsPage
@@ -107,6 +119,10 @@ export default async function EditProgramFormFieldsPage(props: Props) {
 
   validateFields(form.fields);
 
+  const annotations = (data.event.program?.eventAnnotations ?? [])
+    .filter(({ isActive }) => isActive)
+    .map(({ annotation }) => annotation);
+
   return (
     <ProgramFormEditorView
       translations={translations}
@@ -117,6 +133,12 @@ export default async function EditProgramFormFieldsPage(props: Props) {
       <FormEditorWrapper
         initialFields={form.fields}
         dimensions={dimensions}
+        annotations={annotations}
+        formContext={
+          survey.purpose === "DEFAULT" || survey.purpose === "INVITE"
+            ? "program"
+            : "involvement"
+        }
         messages={{
           FormEditor: translations.FormEditor,
           SchemaForm: translations.SchemaForm,

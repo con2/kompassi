@@ -40,7 +40,6 @@ graphql(`
       isApplicableToScheduleItems
     }
     isActive
-    formFields
   }
 `);
 
@@ -167,7 +166,6 @@ export default async function ProgramAdminAnnotationsPage(props: Props) {
       className: "col-6 py-3",
       getCellContents: (row) => {
         const slug = mangleAnnotationSlug(row.annotation.slug);
-        const formFields = row.formFields as string[];
         const fields: Field[] = [
           {
             slug: "isActive",
@@ -175,17 +173,8 @@ export default async function ProgramAdminAnnotationsPage(props: Props) {
             title: t.attributes.isActive.checkboxLabel(row.annotation.slug),
             readOnly: row.annotation.slug.startsWith("internal:"),
           },
-          {
-            slug: "formFields",
-            type: "MultiLineText",
-            rows: 5,
-            title: t.attributes.formFields.title,
-          },
         ];
-        const values = {
-          ...row,
-          formFields: formFields.join("\n") || "",
-        };
+        const values = row;
         return (
           <form
             action={putEventAnnotation.bind(
@@ -238,10 +227,6 @@ export default async function ProgramAdminAnnotationsPage(props: Props) {
           <p>
             <em>{t.attributes.isActive.title}:</em>{" "}
             {t.attributes.isActive.description}
-          </p>
-          <p>
-            <em>{t.attributes.formFields.title}:</em>{" "}
-            {t.attributes.formFields.description}
           </p>
           <p>
             <em>{t.eventAnnotationsAdmin.actions.saveWithoutRefresh.title}:</em>{" "}

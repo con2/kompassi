@@ -253,6 +253,38 @@ const translations: Translations = {
         title: "Nyckelfält",
         helpText: "Nyckelfält visas i svarslistan.",
       },
+      propagateDimensionOnCreate: {
+        title: "Skicka värdet vidare vid skapande",
+        helpText: {
+          program:
+            "När svaret skapas, sätt programpunktens motsvarande dimension till detta värde.",
+          involvement:
+            "När svaret skapas, sätt delaktighetens motsvarande dimension till detta värde.",
+        },
+      },
+      propagateDimensionOnEdit: {
+        title: "Skicka värdet vidare vid redigering",
+        helpText: {
+          program:
+            "När svaret redigeras, uppdatera programpunktens motsvarande dimension.",
+          involvement:
+            "När svaret redigeras, uppdatera delaktighetens motsvarande dimension.",
+        },
+      },
+      propagateToAnnotation: {
+        title: "Skicka värdet vidare till anteckning",
+        helpText: {
+          program: "Sätt programpunktens denna anteckning till fältets värde.",
+          involvement:
+            "Sätt delaktighetens denna anteckning till fältets värde.",
+        },
+        none: "(skicka inte vidare)",
+      },
+      propagateToAnnotationOnEdit: {
+        title: "Skicka vidare även vid redigering",
+        helpText:
+          "Uppdatera anteckningen även när svaret redigeras, inte bara när det skapas.",
+      },
       choices: {
         title: "Val",
         helpText:
@@ -2443,16 +2475,6 @@ const translations: Translations = {
       },
       isInternal: { title: "Intern" },
       isShownInDetail: { title: "Visas i programguiden" },
-      formFields: {
-        title: "Programformulärsfält",
-        description: (
-          <>
-            Tekniska namn på programformulärsfält vars värden extraheras för
-            denna anteckning. Ett per rad, i ordning: det första fältet med ett
-            icke-tomt värde av lämplig typ används.
-          </>
-        ),
-      },
       properties: { title: "Egenskaper" },
       actions: { title: "Funktioner" },
     },

@@ -263,6 +263,37 @@ const translations: Translations = {
         title: "Avainkenttä",
         helpText: "Avainkentät näytetään vastauslistassa.",
       },
+      propagateDimensionOnCreate: {
+        title: "Välitä arvo eteenpäin luotaessa",
+        helpText: {
+          program:
+            "Kun vastaus luodaan, aseta ohjelmanumeron vastaava dimensio tähän arvoon.",
+          involvement:
+            "Kun vastaus luodaan, aseta osallisuuden vastaava dimensio tähän arvoon.",
+        },
+      },
+      propagateDimensionOnEdit: {
+        title: "Välitä arvo eteenpäin muokattaessa",
+        helpText: {
+          program:
+            "Kun vastausta muokataan, päivitä ohjelmanumeron vastaava dimensio.",
+          involvement:
+            "Kun vastausta muokataan, päivitä osallisuuden vastaava dimensio.",
+        },
+      },
+      propagateToAnnotation: {
+        title: "Välitä arvo lisätietoon",
+        helpText: {
+          program: "Aseta ohjelmanumeron tämä lisätieto tämän kentän arvoon.",
+          involvement: "Aseta osallisuuden tämä lisätieto tämän kentän arvoon.",
+        },
+        none: "(ei välitetä eteenpäin)",
+      },
+      propagateToAnnotationOnEdit: {
+        title: "Välitä myös muokattaessa",
+        helpText:
+          "Päivitä lisätieto myös kun vastausta muokataan, ei vain kun se luodaan.",
+      },
       choices: {
         title: "Vaihtoehdot",
         helpText:
@@ -275,7 +306,7 @@ const translations: Translations = {
       },
       dimension: {
         title: "Dimensio",
-        helpText: "Mistä dimensiosta tämä kenttä saa vastauksensa?",
+        helpText: "Mistä dimensiosta tämä kenttä saa vastausvaihtoehtonsa?",
       },
       maxLength: {
         title: "Enimmäispituus",
@@ -2438,17 +2469,6 @@ const translations: Translations = {
       },
       isInternal: {
         title: "Sisäinen",
-      },
-      formFields: {
-        title: "Lähdekentät ohjelmalomakkeilla",
-        description: (
-          <>
-            Niiden lomakekenttien tekniset nimet, joista tämän lisätiedon arvoja
-            yritetään kaivella. Yksi per rivi, järjestys merkitsee: lisätiedon
-            arvon määrittelee ensimmäinen näistä kentistä jolla on
-            oikeantyyppinen, epätyhjä arvo.
-          </>
-        ),
       },
       properties: {
         title: "Ominaisuudet",

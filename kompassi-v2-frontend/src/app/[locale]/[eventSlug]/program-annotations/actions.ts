@@ -34,17 +34,11 @@ export async function putEventAnnotation(
     ? true
     : decodeBoolean((formData.get("isActive") as string | null) || "false");
 
-  const formFields = ((formData.get("formFields") as string | null) || "")
-    .split("\n")
-    .map((field) => field.trim())
-    .filter(Boolean);
-
   const input = {
     scopeSlug: eventSlug,
     universeSlug,
     annotationSlug,
     isActive,
-    formFields,
     action,
   };
 

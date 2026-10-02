@@ -50,6 +50,24 @@ class FieldType(StrEnum):
         return self == FieldType.FILE_UPLOAD
 
     @property
+    def can_propagate_to_annotation(self) -> bool:
+        """
+        Returns True iff the value of this field is a scalar string, number, date or boolean
+        and can thus be passed forward to an annotation.
+        """
+        return self in (
+            FieldType.SINGLE_LINE_TEXT,
+            FieldType.MULTI_LINE_TEXT,
+            FieldType.MARKDOWN_TEXT,
+            FieldType.SINGLE_CHECKBOX,
+            FieldType.NUMBER_FIELD,
+            FieldType.DECIMAL_FIELD,
+            FieldType.DATE_FIELD,
+            FieldType.TIME_FIELD,
+            FieldType.DATE_TIME_FIELD,
+        )
+
+    @property
     def is_dimension_field(self) -> bool:
         """
         Returns True iff this field is a dimension field.
@@ -168,6 +186,46 @@ class Field(pydantic.BaseModel, populate_by_name=True):
         serialization_alias="encryptTo",
         repr=False,
     )
+
+    propagate_dimension_on_create: bool | None = pydantic.Field(
+        default=None,
+        validation_alias="propagateDimensionOnCreate",
+        serialization_alias="propagateDimensionOnCreate",
+        repr=False,
+    )
+    propagate_dimension_on_edit: bool | None = pydantic.Field(
+        default=None,
+        validation_alias="propagateDimensionOnEdit",
+        serialization_alias="propagateDimensionOnEdit",
+        repr=False,
+    )
+    propagate_to_annotation: str | None = pydantic.Field(
+        default=None,
+        validation_alias="propagateToAnnotation",
+        serialization_alias="propagateToAnnotation",
+        repr=False,
+    )
+    propagate_to_annotation_on_edit: bool | None = pydantic.Field(
+        default=None,
+        validation_alias="propagateToAnnotationOnEdit",
+        serialization_alias="propagateToAnnotationOnEdit",
+        repr=False,
+    )
+
+    @pydantic.model_validator(mode="after")
+    def validate_propagation(self) -> Field:
+        wants_dimension = self.propagate_dimension_on_create or self.propagate_dimension_on_edit
+        if wants_dimension and not self.type.is_dimension_field:
+            raise ValueError(f"Field {self.slug}: only Dimension* fields can propagate dimension values")
+
+        wants_annotation = self.propagate_to_annotation or self.propagate_to_annotation_on_edit
+        if wants_annotation and not self.type.can_propagate_to_annotation:
+            raise ValueError(f"Field {self.slug}: {self.type} fields cannot propagate to an annotation")
+
+        if self.propagate_to_annotation_on_edit and not self.propagate_to_annotation:
+            raise ValueError(f"Field {self.slug}: propagateToAnnotationOnEdit requires propagateToAnnotation")
+
+        return self
 
     @classmethod
     def from_dimension(

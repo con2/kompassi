@@ -1,7 +1,6 @@
 from enum import Enum
 
 import graphene
-import pydantic
 from django.db import transaction
 from django.http import HttpRequest
 
@@ -12,10 +11,6 @@ from ...models.scope import Scope
 from ...models.universe_annotation import UniverseAnnotation
 from ...tasks import universe_annotation_refresh_values
 from ..universe_annotation_limited import LimitedUniverseAnnotationType
-
-# too strict, users will be confounded
-# ListOfSlugsAdapter = pydantic.TypeAdapter(list[Slug])
-ListOfSlugsAdapter = pydantic.TypeAdapter(list[str])
 
 
 class PutUniverseAnnotationAction(Enum):
@@ -31,10 +26,6 @@ class PutUniverseAnnotationInput(graphene.InputObjectType):
     universe_slug = graphene.String(required=True)
     annotation_slug = graphene.String(required=True)
     is_active = graphene.Boolean(required=True)
-    form_fields = graphene.InputField(
-        graphene.List(graphene.NonNull(graphene.String)),
-        required=True,
-    )
     action = graphene.InputField(PutUniverseAnnotationActionType)
 
 
@@ -68,8 +59,6 @@ class PutUniverseAnnotation(graphene.Mutation):
         if annotation.is_internal and not input.is_active:
             raise ValueError("Internal annotations cannot be deactivated.")
 
-        form_fields = ListOfSlugsAdapter.validate_python(input.form_fields)
-
         if input.action:
             action = PutUniverseAnnotationAction(input.action)
         else:
@@ -82,10 +71,7 @@ class PutUniverseAnnotation(graphene.Mutation):
             ).update_or_create(
                 universe=universe,
                 annotation=annotation,
-                defaults=dict(
-                    is_active=input.is_active,
-                    form_fields=form_fields,
-                ),
+                defaults=dict(is_active=input.is_active),
             )
 
         match action:

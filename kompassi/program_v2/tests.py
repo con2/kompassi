@@ -213,6 +213,7 @@ def test_extract_annotations():
                     title="Max participants",
                     type="NumberField",
                     required=False,
+                    propagateToAnnotation="konsti:maxAttendance",
                 ),
             ],
         )
@@ -238,12 +239,14 @@ def test_extract_annotations():
                     title="Max participants",
                     type="NumberField",
                     required=False,
+                    propagateToAnnotation="konsti:maxAttendance",
                 ),
                 dict(
                     slug="is_revolving_door",
                     title="Is revolving door",
                     type="SingleCheckbox",
                     required=False,
+                    propagateToAnnotation="ropecon:isRevolvingDoor",
                 ),
             ],
         )
@@ -269,11 +272,6 @@ def test_extract_annotations():
         annotation=Annotation.objects.get(slug="konsti:maxAttendance"),
         defaults=dict(
             is_active=True,
-            form_fields=[
-                "this_field_does_not_exist",
-                "max_participants",
-                "also_this_field_does_not_exist",
-            ],
         ),
     )
     assert not created
@@ -283,11 +281,6 @@ def test_extract_annotations():
         annotation=Annotation.objects.get(slug="ropecon:isRevolvingDoor"),
         defaults=dict(
             is_active=True,
-            form_fields=[
-                "this_field_does_not_exist",
-                "is_revolving_door",
-                "also_this_field_does_not_exist",
-            ],
         ),
     )
     assert not created

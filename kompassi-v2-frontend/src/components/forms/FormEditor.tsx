@@ -3,6 +3,7 @@
 import React from "react";
 
 import AddFieldDropdown from "./AddFieldDropdown";
+import type { AnnotationOption, FormEditorContext } from "./editFieldForm";
 import EditFieldModal from "./EditFieldModal";
 import FormEditorControls from "./FormEditorControls";
 import { addField, removeField, replaceField } from "./formEditorLogic";
@@ -25,6 +26,10 @@ interface Props {
     SchemaForm: Translations["SchemaForm"];
   };
   dimensions: DimensionValueSelectFragment[];
+  /// Annotations that fields may pass their values forward to.
+  annotations?: AnnotationOption[];
+  /// Where responses end up; survey responses have nothing to pass values forward to.
+  formContext?: FormEditorContext;
 }
 
 /// The end user facing SchemaForm operates on enriched fields
@@ -81,6 +86,8 @@ export default function FormEditor(props: Props) {
     onPromoteFieldToDimension: onPromoteFieldToDimension,
     messages,
     dimensions,
+    annotations = [],
+    formContext = "survey",
   } = props;
   const t = messages.FormEditor;
 
@@ -196,6 +203,8 @@ export default function FormEditor(props: Props) {
           }}
           onClose={() => setEditFieldModalOpen(false)}
           dimensions={dimensions}
+          annotations={annotations}
+          formContext={formContext}
           messages={messages}
         />
       )}

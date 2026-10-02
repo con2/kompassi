@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from types import SimpleNamespace
 
+import pydantic
 import pytest
 import yaml
 from django.contrib.auth import get_user_model
@@ -2060,3 +2061,65 @@ def test_grantee_can_manage_dimensions_only_in_the_granted_surveys_universe():
 
     assert survey_a.universe.can_dimensions_be_created_by(_cached_request(grantee.user))
     assert not survey_b.universe.can_dimensions_be_created_by(_cached_request(grantee.user))
+
+
+def test_field_propagation_config_is_validated():
+    ok = Field.model_validate(
+        dict(
+            slug="max",
+            type="NumberField",
+            propagateToAnnotation="konsti:maxAttendance",
+            propagateToAnnotationOnEdit=True,
+        )
+    )
+    assert ok.propagate_to_annotation == "konsti:maxAttendance"
+
+    Field.model_validate(dict(slug="d", type="DimensionSingleSelect", dimension="d", propagateDimensionOnCreate=True))
+
+    with pytest.raises(pydantic.ValidationError):
+        Field.model_validate(dict(slug="d", type="DimensionSingleSelect", dimension="d", propagateToAnnotation="x:y"))
+
+    with pytest.raises(pydantic.ValidationError):
+        Field.model_validate(dict(slug="s", type="SingleSelect", propagateDimensionOnCreate=True))
+
+    with pytest.raises(pydantic.ValidationError):
+        Field.model_validate(dict(slug="n", type="NumberField", propagateToAnnotationOnEdit=True))
+
+
+@pytest.mark.django_db
+def test_extract_annotations_ignores_annotations_not_applicable_to_the_universe():
+    from kompassi.dimensions.models.annotation import Annotation
+    from kompassi.dimensions.models.enums import AnnotationAppliesTo, AnnotationDataType
+    from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
+    from kompassi.program_v2.models.meta import ProgramV2EventMeta
+
+    from .utils.extract_annotations import extract_annotations_from_responses
+
+    meta, _ = ProgramV2EventMeta.get_or_create_dummy()
+    event = meta.event
+
+    survey = Survey(event=event, slug="offer", app=DimensionApp.PROGRAM, purpose=SurveyPurpose.DEFAULT)
+    survey.with_mandatory_fields().save()
+    form = Form.objects.create(
+        event=event,
+        survey=survey,
+        language="en",
+        fields=[
+            dict(slug="a", type="SingleLineText", propagateToAnnotation="test:programNote"),
+            dict(slug="b", type="SingleLineText", propagateToAnnotation="test:hostNote"),
+        ],
+    )
+    response = Response.objects.create(form=form, form_data={"a": "x", "b": "y"})
+
+    universe_annotations = [
+        UniverseAnnotation.objects.create(
+            universe=meta.universe,
+            annotation=Annotation.objects.create(slug=slug, type=AnnotationDataType.STRING, applies_to=applies_to),
+        )
+        for slug, applies_to in (
+            ("test:programNote", AnnotationAppliesTo.PROGRAM_ITEM),
+            ("test:hostNote", AnnotationAppliesTo.INVOLVEMENT),
+        )
+    ]
+
+    assert extract_annotations_from_responses([response], universe_annotations) == {"test:programNote": "x"}

@@ -28,3 +28,4 @@ class AnnotationType(DjangoObjectType):
     is_computed = graphene.NonNull(graphene.Boolean)
     is_applicable_to_program_items = graphene.NonNull(graphene.Boolean)
     is_applicable_to_schedule_items = graphene.NonNull(graphene.Boolean)
+    is_applicable_to_involvements = graphene.NonNull(graphene.Boolean)
