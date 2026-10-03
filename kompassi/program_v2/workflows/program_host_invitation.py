@@ -8,7 +8,8 @@ from ...forms.utils.extract_annotations import extract_annotations_from_response
 
 class ProgramHostInvitationWorkflow(Workflow):
     """
-    Note that the Universe for program host invitations is the Involvement universe.
+    Program host invitations created after the Involvement universe became their home live in it;
+    older ones (see Survey.is_in_involvement_universe) still live in the program universe.
 
     XXX This Workflow is silly because everything is handled in accept_invitation.py.
     """
@@ -63,6 +64,10 @@ class ProgramHostInvitationWorkflow(Workflow):
         program = involvement.program
         if program is None:
             raise AssertionError("No it isn't (appease typechecker)")
+
+        if response.survey.is_in_involvement_universe:
+            # the fields describe the host; Involvement.from_accepted_invitation passed them forward
+            return
 
         program.refresh_annotations(
             extract_annotations_from_responses(

@@ -236,6 +236,14 @@ class FullSurveyType(LimitedSurveyType):
         # TODO supported_languages order instead of alphabetical?
         return parent.languages.order_by("language")
 
+    is_in_involvement_universe = graphene.NonNull(
+        graphene.Boolean,
+        description=(
+            "Whether the fields of this survey describe the involvement (eg. the program host) "
+            "and not the app object (eg. the program item)."
+        ),
+    )
+
     # TODO unify can_remove/can_delete naming across all apps
     @staticmethod
     def resolve_can_remove(survey: Survey, info):

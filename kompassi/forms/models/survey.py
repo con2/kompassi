@@ -245,9 +245,20 @@ class Survey(models.Model):
                     app=self.app,
                 )[0]
             case DimensionApp.PROGRAM:
+                # Invite fields describe the program host, not the program item.
+                if self.purpose == SurveyPurpose.INVITE:
+                    return self.event.involvement_universe
                 return self.event.program_universe
             case _:
                 raise NotImplementedError(self.app)
+
+    @property
+    def is_in_involvement_universe(self) -> bool:
+        """
+        False for program invite surveys created before they moved to the involvement universe.
+        Those cannot pass values forward to the involvement.
+        """
+        return self.universe.app == DimensionApp.INVOLVEMENT
 
     @cached_property
     def workflow(self) -> Workflow:
@@ -432,7 +443,7 @@ class Survey(models.Model):
         Clones this survey with its language versions (but not responses). A stand-alone
         survey (app=FORMS) gets a fresh clone of this survey's Universe, including its
         dimensions and values. A program form (app=PROGRAM) uses the target event's shared
-        program Universe as is; no dimension cloning applies there.
+        program Universe (an invite uses the involvement Universe) as is; no dimension cloning applies there.
         Some fields are not copied over because they make no sense or might cause data leaks.
         """
         survey = Survey(
@@ -471,8 +482,8 @@ class Survey(models.Model):
     ):
         from .survey_default_response_dimension_value import SurveyDefaultResponseDimensionValue
 
-        if cache.universe.app != self.app:
-            raise AssertionError(f"Expected cache universe to match survey app ({cache.universe.app} != {self.app})")
+        if cache.universe.id != self.universe_id:
+            raise AssertionError(f"Expected cache to be of the survey universe ({cache.universe} != {self.universe})")
 
         set_dimension_values(SurveyDefaultResponseDimensionValue, self, values_to_set, cache)
 

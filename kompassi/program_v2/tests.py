@@ -7,7 +7,9 @@ from django.utils.timezone import now
 from kompassi.access.models.email_alias_domain import EmailAliasDomain
 from kompassi.core.models.person import Person
 from kompassi.dimensions.models.annotation import Annotation
-from kompassi.dimensions.models.enums import DimensionApp
+from kompassi.dimensions.models.dimension import Dimension
+from kompassi.dimensions.models.dimension_value import DimensionValue
+from kompassi.dimensions.models.enums import AnnotationAppliesTo, AnnotationDataType, DimensionApp
 from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
 from kompassi.forms.models.enums import SurveyPurpose
 from kompassi.forms.models.form import Form
@@ -225,6 +227,8 @@ def test_extract_annotations():
             slug="accept-program-invitation",
             app=DimensionApp.PROGRAM,
             purpose=SurveyPurpose.INVITE,
+            # legacy: invites used to live in the program universe
+            universe=event.program_universe,
         ).with_mandatory_fields()
         accept_invitation.save()
         accept_invitation.workflow.handle_new_survey()
@@ -390,3 +394,103 @@ def test_schedule_public_from():
     meta.save(update_fields=["public_from"])
     meta.refresh_from_db()
     assert meta.is_schedule_public
+
+
+@pytest.mark.django_db
+def test_invite_survey_lives_in_involvement_universe_and_passes_values_forward():
+    meta, _ = ProgramV2EventMeta.get_or_create_dummy()
+    event = meta.event
+    EmailAliasDomain.get_or_create_dummy()
+
+    person, _ = Person.get_or_create_dummy()
+    person2, _ = Person.get_or_create_dummy(another=True, superuser=False)
+
+    offer = Survey(event=event, slug="offer", app=DimensionApp.PROGRAM, purpose=SurveyPurpose.DEFAULT)
+    offer.with_mandatory_fields().save()
+    offer.workflow.handle_new_survey()
+    offer_en = Form(
+        event=event,
+        survey=offer,
+        language="en",
+        fields=[dict(slug="title", title="Title", type="SingleLineText", required=True)],
+    )
+    offer_en.save()
+    offer.workflow.handle_form_update()
+
+    invite = Survey(event=event, slug="invite", app=DimensionApp.PROGRAM, purpose=SurveyPurpose.INVITE)
+    invite.with_mandatory_fields().save()
+    invite.workflow.handle_new_survey()
+    assert invite.universe == event.involvement_universe
+    assert invite.is_in_involvement_universe
+    assert offer.universe == event.program_universe
+
+    annotation = Annotation.objects.create(
+        slug="test:hostNote",
+        type=AnnotationDataType.STRING,
+        applies_to=AnnotationAppliesTo.INVOLVEMENT,
+    )
+    UniverseAnnotation.objects.create(universe=invite.universe, annotation=annotation)
+
+    dimension = Dimension.objects.create(universe=invite.universe, slug="host-kind")
+    DimensionValue.objects.create(dimension=dimension, slug="gm", title_en="GM")
+
+    invite_en = Form(
+        event=event,
+        survey=invite,
+        language="en",
+        fields=[
+            dict(slug="note", title="Note", type="SingleLineText", propagateToAnnotation="test:hostNote"),
+            dict(
+                slug="kind",
+                title="Kind",
+                type="DimensionSingleSelect",
+                dimension="host-kind",
+                propagateDimensionOnCreate=True,
+            ),
+        ],
+    )
+    invite_en.save()
+    invite.workflow.handle_form_update()
+
+    with transaction.atomic():
+        program_offer = Response.objects.create(
+            form=offer_en,
+            form_data={"title": "Test program"},
+            revision_created_by=person.user,
+            ip_address="127.0.0.1",
+            sequence_number=offer.get_next_sequence_number(),
+        )
+        offer.workflow.handle_new_response_phase1(program_offer)
+    offer.workflow.handle_new_response_phase2(program_offer)
+    program = Program.from_program_offer(program_offer)
+
+    invitation = program.invite_program_host(
+        person2.email,
+        survey=invite,
+        language="en",
+        involvement_dimensions={},
+    )
+
+    with transaction.atomic():
+        response = Response.objects.create(
+            form=invite_en,
+            form_data={"note": "hello", "kind": "gm"},
+            revision_created_by=person2.user,
+            ip_address="127.0.0.1",
+            sequence_number=invite.get_next_sequence_number(),
+        )
+        invite.workflow.handle_new_response_phase1(response)
+        invitation.mark_used()
+        involvement = Involvement.from_accepted_invitation(
+            response=response,
+            invitation=invitation,
+            cache=event.involvement_universe.preload_dimensions(),
+        )
+    invite.workflow.handle_new_response_phase2(response)
+
+    assert response.cached_dimensions["host-kind"] == ["gm"]
+    assert involvement.annotations["test:hostNote"] == "hello"
+    assert involvement.cached_dimensions["host-kind"] == ["gm"]
+
+    program.refresh_from_db()
+    assert "test:hostNote" not in program.annotations

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from collections import defaultdict
+from typing import Any
 
 from kompassi.dimensions.utils.dimension_cache import DimensionCache
 
@@ -71,23 +72,8 @@ def lift_dimension_values(
             )
             continue
 
-        value_slugs: list[str]
-        match field.type:
-            case FieldType.DIMENSION_MULTI_SELECT:
-                value_slugs = values.get(field.slug, [])
-            case FieldType.DIMENSION_SINGLE_SELECT:
-                value_slugs = [value_slug] if (value_slug := values.get(field.slug)) else []
-            case FieldType.DIMENSION_SINGLE_CHECKBOX:
-                value_slugs = ["true"] if values.get(field.slug) else ["false"]
-            case _:
-                logger.warning("Unexpected field type for dimension field: %s", log_context)
-                continue
-
-        if not isinstance(value_slugs, list):
-            logger.warning(
-                "Expected list of value slugs for dimension field: %s",
-                dict(log_context, value_slugs=value_slugs),
-            )
+        value_slugs = get_dimension_field_value_slugs(field, values, log_context)
+        if value_slugs is None:
             continue
 
         for value_slug in value_slugs:
@@ -104,3 +90,34 @@ def lift_dimension_values(
     response.set_dimension_values(values_to_set, cache)
 
     return values_to_set
+
+
+def get_dimension_field_value_slugs(
+    field: Field,
+    values: dict[str, Any],
+    log_context: dict[str, Any],
+) -> list[str] | None:
+    """
+    Normalizes the processed form data value of a Dimension* field into a list of value slugs.
+    Returns None if the value cannot be interpreted.
+    """
+    value_slugs: list[str]
+    match field.type:
+        case FieldType.DIMENSION_MULTI_SELECT:
+            value_slugs = values.get(field.slug, [])
+        case FieldType.DIMENSION_SINGLE_SELECT:
+            value_slugs = [value_slug] if (value_slug := values.get(field.slug)) else []
+        case FieldType.DIMENSION_SINGLE_CHECKBOX:
+            value_slugs = ["true"] if values.get(field.slug) else ["false"]
+        case _:
+            logger.warning("Unexpected field type for dimension field: %s", log_context)
+            return None
+
+    if not isinstance(value_slugs, list):
+        logger.warning(
+            "Expected list of value slugs for dimension field: %s",
+            dict(log_context, value_slugs=value_slugs),
+        )
+        return None
+
+    return value_slugs

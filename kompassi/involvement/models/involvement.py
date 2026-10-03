@@ -489,6 +489,18 @@ class Involvement(models.Model):
         app = involvement_type.app
         is_active = response.survey.workflow.is_response_active(response)
 
+        from kompassi.forms.utils.extract_annotations import extract_annotations_from_responses
+        from kompassi.forms.utils.extract_dimension_values import extract_dimension_values_from_response
+
+        passed_forward_dimensions: dict[str, list[str]] = {}
+        passed_forward_annotations: CachedAnnotations = {}
+        if response.survey.is_in_involvement_universe:
+            passed_forward_dimensions = extract_dimension_values_from_response(response)
+            passed_forward_annotations = extract_annotations_from_responses(
+                [response],
+                cache.universe.active_universe_annotations.all(),
+            )
+
         involvement, created = cls.objects.update_or_create(
             universe=cache.universe,
             person=response.original_created_by.person,  # type: ignore
@@ -503,10 +515,12 @@ class Involvement(models.Model):
             ),
         )
 
+        involvement.annotations = {**involvement.annotations, **passed_forward_annotations}
         involvement.with_computed_fields().save()
 
         if created or override_dimensions:
             dimensions = validate_cached_dimensions(response.survey.cached_default_involvement_dimensions)
+            dimensions.update(passed_forward_dimensions)
             dimensions.update(validate_cached_dimensions(invitation.cached_dimensions))
             involvement.refresh_dimensions(dimensions, cache=cache)
         else:

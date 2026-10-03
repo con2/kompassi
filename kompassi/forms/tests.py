@@ -2123,3 +2123,29 @@ def test_extract_annotations_ignores_annotations_not_applicable_to_the_universe(
     ]
 
     assert extract_annotations_from_responses([response], universe_annotations) == {"test:programNote": "x"}
+
+
+@pytest.mark.django_db
+def test_extract_dimension_values_uses_only_marked_fields():
+    from .utils.extract_dimension_values import extract_dimension_values_from_response
+
+    event, _ = Event.get_or_create_dummy()
+    survey = Survey(event=event, slug="dims", app=DimensionApp.FORMS, purpose=SurveyPurpose.DEFAULT)
+    survey.with_mandatory_fields().save()
+    dimension = Dimension.objects.create(universe=survey.universe, slug="kind")
+    for value_slug in ("a", "b"):
+        DimensionValue.objects.create(dimension=dimension, slug=value_slug)
+
+    form = Form.objects.create(
+        event=event,
+        survey=survey,
+        language="en",
+        fields=[
+            dict(slug="marked", type="DimensionSingleSelect", dimension="kind", propagateDimensionOnCreate=True),
+            dict(slug="unmarked", type="DimensionSingleSelect", dimension="kind"),
+        ],
+    )
+    response = Response.objects.create(form=form, form_data={"marked": "a", "unmarked": "b"})
+
+    assert extract_dimension_values_from_response(response) == {"kind": ["a"]}
+    assert extract_dimension_values_from_response(response, on_edit=True) == {}
