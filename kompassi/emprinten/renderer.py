@@ -14,6 +14,7 @@ import weasyprint
 from django.http import FileResponse, HttpResponse, HttpResponseBase
 from jinja2 import FunctionLoader
 from jinja2.sandbox import SandboxedEnvironment
+from weasyprint.urls import URLFetcher, URLFetcherResponse
 
 from . import filters, functions
 from .files import Lut, NameFactory, make_lut, make_name
@@ -306,11 +307,12 @@ class _HtmlCompiler:
         return [file_version for file_version in files if file_version.file.type == ProjectFile.Type.CSS]
 
     def compile(self, sources: list[FileWithData], result_dir: str) -> list[FileWithData]:
+        url_fetcher = VfsFetcher(self.vfs)
         parsed_sheets = [
             weasyprint.CSS(
                 string=sheet_file.data.read(),
                 base_url=LOCAL_FILE_URI_PREFIX,
-                url_fetcher=self._do_lookup,
+                url_fetcher=url_fetcher,
             )
             for sheet_file in self.stylesheets
         ]
@@ -319,7 +321,7 @@ class _HtmlCompiler:
             pdf_html = weasyprint.HTML(
                 filename=source,
                 base_url=LOCAL_FILE_URI_PREFIX,
-                url_fetcher=self._do_lookup,
+                url_fetcher=url_fetcher,
             )
             pdf = pdf_html.write_pdf(
                 stylesheets=parsed_sheets,
@@ -336,33 +338,36 @@ class _HtmlCompiler:
 
         return results
 
-    # See `weasyprint.urls.default_url_fetcher` for function signature.
-    # Note: At least some exceptions are silently ignored by weasyprint.
-    def _do_lookup(self, url: str, timeout: int = 10, ssl_context=None) -> dict:
+
+class VfsFetcher(URLFetcher):
+    def __init__(self, vfs: Vfs) -> None:
+        super().__init__()
+        self._vfs = vfs
+        self._data_director = urllib.request.OpenerDirector()
+        self._data_director.add_handler(urllib.request.DataHandler())
+
+    def fetch(self, url, headers=None):
         if url.startswith("data:"):
-            director = urllib.request.OpenerDirector()
-            director.add_handler(urllib.request.DataHandler())
-            data_response = director.open(url)
+            data_response = self._data_director.open(url)
             if data_response is None:
                 restricted_url = "Invalid data URL"
                 raise ValueError(restricted_url)
-            return {
-                "redirected_url": url,
-                "mime_type": data_response.headers["content-type"],
-                "string": data_response.file.read(),
-            }
+            return URLFetcherResponse(
+                url=url,
+                body=data_response,
+                headers={"content-type": data_response.headers["content-type"]},
+            )
 
         file_url = url.removeprefix(LOCAL_FILE_URI_PREFIX)
         if file_url == url:
             restricted_url = "Invalid URL to look up for"
             raise ValueError(restricted_url)
-        the_file: FileVersion | None = self.vfs.get(file_url)
+        the_file: FileVersion | None = self._vfs.get(file_url)
         if DEBUG:
             print("Pdf lookup", url, the_file)
         if the_file is None:
             raise KeyError
-        return {
-            "file_obj": the_file.data.open("rb"),
-            # Weasyprint requires this to avoid file not found exc with the original filename.
-            "redirected_url": file_url,
-        }
+        return URLFetcherResponse(
+            url=file_url,
+            body=the_file.data.open("rb"),
+        )
