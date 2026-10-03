@@ -24,6 +24,7 @@ from .filters import ProgramFilters
 from .models.meta import ProgramV2EventMeta
 from .models.program import Program
 from .models.schedule_item import ScheduleItem
+from .workflows.program_followup import ProgramFollowupWorkflow
 
 
 @pytest.mark.django_db
@@ -499,7 +500,7 @@ def test_invite_survey_lives_in_involvement_universe_and_passes_values_forward()
 
 
 @pytest.mark.django_db
-def test_program_followup_is_for_hosts_and_passes_values_to_their_involvements():
+def test_program_followup_is_for_hosts_and_passes_values_to_their_involvements(monkeypatch):
     meta, _ = ProgramV2EventMeta.get_or_create_dummy()
     event = meta.event
     EmailAliasDomain.get_or_create_dummy()
@@ -573,7 +574,15 @@ def test_program_followup_is_for_hosts_and_passes_values_to_their_involvements()
             sequence_number=followup.get_next_sequence_number(),
         )
         followup.workflow.handle_new_response_phase1(response)
+    notified: list = []
+    monkeypatch.setattr(
+        ProgramFollowupWorkflow,
+        "notify_subscribers",
+        lambda self, response, old_version=None: notified.append(response.id),
+    )
     followup.workflow.handle_new_response_phase2(response)
+    assert notified == [response.id]
+    assert response.admin_url.endswith(f"/program-forms/followup/responses/{response.id}")
 
     (host_involvement,) = event.involvements.filter(person=host, type=InvolvementType.PROGRAM_HOST)
     assert host_involvement.annotations["test:diet"] == "vegan"
@@ -592,3 +601,16 @@ def test_program_followup_is_for_hosts_and_passes_values_to_their_involvements()
         followup.workflow.handle_new_response_phase1(edited, old_version=response)
     host_involvement.refresh_from_db()
     assert host_involvement.annotations["test:diet"] == "vegan"
+
+    # an admin changing dimensions is an edit: values marked for creation only are not passed forward again
+    followup.workflow.handle_response_dimension_update(edited)
+    host_involvement.refresh_from_db()
+    assert host_involvement.annotations["test:diet"] == "vegan"
+
+    # the owner may edit only while they are still a program host
+    followup.responses_editable_until = now() + timedelta(days=1)
+    followup.save()
+    assert followup.workflow.response_can_be_edited_by_owner(edited, request_by(host))
+    host_involvement.is_active = False
+    host_involvement.save(update_fields=["is_active"])
+    assert not followup.workflow.response_can_be_edited_by_owner(edited, request_by(host))
