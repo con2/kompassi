@@ -171,7 +171,7 @@ export default async function SurveyPage(props: Props) {
     }
   }
 
-  if (purpose !== SurveyPurpose.Default) {
+  if (purpose === SurveyPurpose.Invite) {
     return (
       <ViewContainer>
         <ViewHeading>{t.specialPurposeSurvey.title}</ViewHeading>
@@ -233,7 +233,11 @@ export default async function SurveyPage(props: Props) {
 
       <Markdown input={description} />
       <form action={submit.bind(null, locale, eventSlug, surveySlug)}>
-        {targetRegistry && profile ? (
+        {purpose === SurveyPurpose.Followup ? (
+          <div className="alert alert-info mt-4 mb-4">
+            {t.followupAlreadyConsented}
+          </div>
+        ) : targetRegistry && profile ? (
           <TransferConsentForm
             profileFieldSelector={profileFieldSelector}
             profile={profile}

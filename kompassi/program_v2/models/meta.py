@@ -246,6 +246,14 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         )
 
     @property
+    def followup_forms(self):
+        return Survey.objects.filter(
+            event=self.event,
+            app=DimensionApp.PROGRAM,
+            purpose=SurveyPurpose.FOLLOWUP,
+        )
+
+    @property
     def schedule_url(self):
         return f"{settings.KOMPASSI_V2_BASE_URL}/{self.event.slug}/program"
 

@@ -1759,6 +1759,10 @@ const translations = {
               title: "Program host invite",
               shortTitle: "Invite",
             },
+            FOLLOWUP: {
+              title: "Follow-up to program hosts",
+              shortTitle: "Follow-up",
+            },
           },
         },
         programDimensionDefaults: {
@@ -2957,6 +2961,8 @@ const translations = {
           countResponsesByCurrentUser === 1 ? "" : "s"
         } to this survey. The maximum number of responses per user is ${maxResponsesPerUser}.`,
     },
+    followupAlreadyConsented:
+      "You have already consented to the processing of your personal data as a program host. These are the same data that this follow-up form shares with the organizers.",
     specialPurposeSurvey: {
       title: "Special purpose survey",
       defaultMessage: (

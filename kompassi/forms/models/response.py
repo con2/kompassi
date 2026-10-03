@@ -24,6 +24,7 @@ from kompassi.dimensions.utils.set_dimension_values import set_dimension_values
 from kompassi.graphql_api.language import SUPPORTED_LANGUAGES
 
 from .attachment import Attachment
+from .enums import SurveyPurpose
 from .field import Field
 from .form import Form
 from .survey import DimensionApp, Survey
@@ -100,6 +101,18 @@ class Response(models.Model):
         # TODO CASCADE? it's reasonable to delete old versions when the current one is deleted
         on_delete=models.SET_NULL,
         related_name="+",
+    )
+
+    parent = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="followups",
+        help_text=(
+            "Reserved: the response a follow-up response follows up on. "
+            "Must always point to the newest version of the parent response."
+        ),
     )
 
     # FK id fields (annotated for the type checker)
@@ -343,6 +356,8 @@ class Response(models.Model):
         match self.survey.app:
             case DimensionApp.FORMS:
                 return f"{settings.KOMPASSI_V2_BASE_URL}/{self.survey.event.slug}/surveys/{self.survey.slug}/responses/{self.id}"
+            case DimensionApp.PROGRAM if self.survey.purpose == SurveyPurpose.FOLLOWUP:
+                return f"{settings.KOMPASSI_V2_BASE_URL}/{self.survey.event.slug}/program-forms/{self.survey.slug}/responses/{self.id}"
             case DimensionApp.PROGRAM:
                 return f"{settings.KOMPASSI_V2_BASE_URL}/{self.survey.event.slug}/program-offers/{self.id}"
             case _:

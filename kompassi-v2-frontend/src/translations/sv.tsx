@@ -1728,6 +1728,10 @@ const translations: Translations = {
               title: "Inbjudan till programvärd",
               shortTitle: "Inbjudan",
             },
+            FOLLOWUP: {
+              title: "Uppföljning till programvärdar",
+              shortTitle: "Uppföljning",
+            },
           },
         },
         programDimensionDefaults: {
@@ -2904,6 +2908,8 @@ const translations: Translations = {
           countResponsesByCurrentUser === 1 ? "" : "en"
         } till denna undersökning. Det maximala antalet svar per användare är ${maxResponsesPerUser}.`,
     },
+    followupAlreadyConsented:
+      "Du har redan samtyckt till behandlingen av dina personuppgifter som programvärd. Det är samma uppgifter som detta uppföljningsformulär delar med arrangörerna.",
     specialPurposeSurvey: {
       title: "Enkät för särskilt ändamål",
       defaultMessage: (

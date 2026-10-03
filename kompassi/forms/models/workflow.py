@@ -266,6 +266,7 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
 
     @classmethod
     def get_workflow(cls, survey: Survey):
+        from kompassi.program_v2.workflows.program_followup import ProgramFollowupWorkflow
         from kompassi.program_v2.workflows.program_host_invitation import ProgramHostInvitationWorkflow
         from kompassi.program_v2.workflows.program_offer import ProgramOfferWorkflow
 
@@ -274,8 +275,16 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
                 return ProgramOfferWorkflow(survey=survey)
             case DimensionApp.PROGRAM, SurveyPurpose.INVITE:
                 return ProgramHostInvitationWorkflow(survey=survey)
+            case DimensionApp.PROGRAM, SurveyPurpose.FOLLOWUP:
+                return ProgramFollowupWorkflow(survey=survey)
             case _:
                 return cls(survey=survey)
+
+    def can_be_responded_by(self, request: HttpRequest) -> bool:
+        """
+        Whether the user may submit a new response. Checked in addition to login_required etc.
+        """
+        return True
 
     def is_response_active(self, response: Response) -> bool:
         # The basic survey workflow does not have a concept of active/inactive responses.
