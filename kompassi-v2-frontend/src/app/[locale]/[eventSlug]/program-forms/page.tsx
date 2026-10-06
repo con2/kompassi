@@ -59,7 +59,7 @@ const query = graphql(`
         surveys(
           includeInactive: true
           app: PROGRAM
-          purpose: [DEFAULT, INVITE]
+          purpose: [DEFAULT, INVITE, FOLLOWUP]
         ) {
           ...OfferForm
         }
@@ -224,7 +224,7 @@ export default async function ProgramFormsPage(props: Props) {
           </Link>
         );
 
-        if (programForm.purpose !== SurveyPurpose.Default) {
+        if (programForm.purpose === SurveyPurpose.Invite) {
           return (
             <ButtonGroup>
               {editButton}
@@ -240,35 +240,40 @@ export default async function ProgramFormsPage(props: Props) {
 
         return (
           <ButtonGroup>
-            {programForm.purpose === SurveyPurpose.Default &&
-              (programForm.isActive ? (
-                <Link
-                  href={fillInUrl}
-                  className="btn btn-sm btn-outline-primary"
-                >
-                  {surveyT.actions.fillIn.title}…
-                </Link>
-              ) : (
-                <button
-                  disabled
-                  className="btn btn-sm btn-outline-primary"
-                  title={surveyT.actions.fillIn.disabledTooltip}
-                >
-                  {surveyT.actions.fillIn.title}…
-                </button>
-              ))}
+            {programForm.isActive ? (
+              <Link href={fillInUrl} className="btn btn-sm btn-outline-primary">
+                {surveyT.actions.fillIn.title}…
+              </Link>
+            ) : (
+              <button
+                disabled
+                className="btn btn-sm btn-outline-primary"
+                title={surveyT.actions.fillIn.disabledTooltip}
+              >
+                {surveyT.actions.fillIn.title}…
+              </button>
+            )}
             <CopyButton
               className="btn btn-sm btn-outline-primary"
               data={absoluteUrl}
               messages={surveyT.actions.share}
             />
             {editButton}
-            <Link
-              href={`/${eventSlug}/program-offers/?form=${programForm.slug}`}
-              className="btn btn-sm btn-outline-primary"
-            >
-              {t.actions.viewOffers}…
-            </Link>
+            {programForm.purpose === SurveyPurpose.Followup ? (
+              <Link
+                href={`${adminUrl}/responses`}
+                className="btn btn-sm btn-outline-primary"
+              >
+                {surveyT.actions.viewResponses}…
+              </Link>
+            ) : (
+              <Link
+                href={`/${eventSlug}/program-offers/?form=${programForm.slug}`}
+                className="btn btn-sm btn-outline-primary"
+              >
+                {t.actions.viewOffers}…
+              </Link>
+            )}
           </ButtonGroup>
         );
       },
@@ -299,6 +304,10 @@ export default async function ProgramFormsPage(props: Props) {
         {
           slug: "INVITE",
           title: t.attributes.purpose.choices.INVITE.title,
+        },
+        {
+          slug: "FOLLOWUP",
+          title: t.attributes.purpose.choices.FOLLOWUP.title,
         },
       ],
     },

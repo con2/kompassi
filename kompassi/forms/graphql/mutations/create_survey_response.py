@@ -65,6 +65,9 @@ class CreateSurveyResponse(graphene.Mutation):
             if survey.login_required and not revision_created_by:
                 raise Exception("Login required")
 
+            if not survey.workflow.can_be_responded_by(request):
+                raise Exception("You are not allowed to respond to this survey")
+
             if survey.max_responses_per_user:  # noqa: SIM102
                 if (
                     survey.current_responses.filter(revision_created_by=revision_created_by).count()
@@ -72,7 +75,7 @@ class CreateSurveyResponse(graphene.Mutation):
                 ):
                     raise Exception("Maximum number of responses reached")
 
-        if survey.purpose != SurveyPurpose.DEFAULT and old_version is None:
+        if survey.purpose not in (SurveyPurpose.DEFAULT, SurveyPurpose.FOLLOWUP) and old_version is None:
             raise Exception("Special purpose surveys cannot be submitted via this endpoint")
 
         if survey.anonymity == "HARD":

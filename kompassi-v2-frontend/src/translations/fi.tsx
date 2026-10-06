@@ -1755,6 +1755,10 @@ const translations: Translations = {
               title: "Ohjelmanpitäjäkutsun hyväksyminen",
               shortTitle: "Kutsu",
             },
+            FOLLOWUP: {
+              title: "Jatkokysely ohjelmanpitäjille",
+              shortTitle: "Jatkokysely",
+            },
           },
         },
         programDimensionDefaults: {
@@ -2963,6 +2967,8 @@ const translations: Translations = {
           maxResponsesPerUser === 1 ? "kerran" : "kertaa"
         }.`,
     },
+    followupAlreadyConsented:
+      "Olet jo antanut suostumuksesi henkilötietojesi käsittelyyn ohjelmanpitäjänä. Nämä ovat samat tiedot, jotka tämä jatkokyselylomake jakaa järjestäjille.",
     specialPurposeSurvey: {
       title: "Kyselyyn ei voi vastata tätä kautta",
       defaultMessage: (

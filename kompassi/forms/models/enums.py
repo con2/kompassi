@@ -24,6 +24,12 @@ class SurveyPurpose(Enum):
     # Responses are handled by accept_invitation mutation (involvement application)
     INVITE = "INVITE"
 
+    # FOLLOWUP surveys ask for more information from people who already have a relationship to the event.
+    # Program FOLLOWUP surveys are answered through the /<event-slug>/<survey-slug> endpoint
+    # by program hosts (Involvement of type PROGRAM_HOST); the workflow decides who may respond.
+    # Reserved for Surveys V2 (app=FORMS), where a follow-up shares the universe of its parent survey.
+    FOLLOWUP = "FOLLOWUP"
+
 
 class EditMode(Enum):
     # The user is editing items owned by them

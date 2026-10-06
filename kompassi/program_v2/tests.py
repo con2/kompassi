@@ -2,6 +2,7 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 from django.db import transaction
+from django.test import RequestFactory
 from django.utils.timezone import now
 
 from kompassi.access.models.email_alias_domain import EmailAliasDomain
@@ -15,6 +16,7 @@ from kompassi.forms.models.enums import SurveyPurpose
 from kompassi.forms.models.form import Form
 from kompassi.forms.models.response import Response
 from kompassi.forms.models.survey import Survey
+from kompassi.involvement.models.enums import InvolvementType
 from kompassi.involvement.models.involvement import Involvement
 
 from ..forms.utils.extract_annotations import extract_annotations_from_responses
@@ -22,6 +24,7 @@ from .filters import ProgramFilters
 from .models.meta import ProgramV2EventMeta
 from .models.program import Program
 from .models.schedule_item import ScheduleItem
+from .workflows.program_followup import ProgramFollowupWorkflow
 
 
 @pytest.mark.django_db
@@ -494,3 +497,120 @@ def test_invite_survey_lives_in_involvement_universe_and_passes_values_forward()
 
     program.refresh_from_db()
     assert "test:hostNote" not in program.annotations
+
+
+@pytest.mark.django_db
+def test_program_followup_is_for_hosts_and_passes_values_to_their_involvements(monkeypatch):
+    meta, _ = ProgramV2EventMeta.get_or_create_dummy()
+    event = meta.event
+    EmailAliasDomain.get_or_create_dummy()
+
+    host, _ = Person.get_or_create_dummy()
+    outsider, _ = Person.get_or_create_dummy(another=True, superuser=False)
+
+    offer = Survey(event=event, slug="offer", app=DimensionApp.PROGRAM, purpose=SurveyPurpose.DEFAULT)
+    offer.with_mandatory_fields().save()
+    offer.workflow.handle_new_survey()
+    offer_en = Form(
+        event=event,
+        survey=offer,
+        language="en",
+        fields=[dict(slug="title", title="Title", type="SingleLineText", required=True)],
+    )
+    offer_en.save()
+    offer.workflow.handle_form_update()
+
+    followup = Survey(event=event, slug="followup", app=DimensionApp.PROGRAM, purpose=SurveyPurpose.FOLLOWUP)
+    followup.with_mandatory_fields().save()
+    followup.workflow.handle_new_survey()
+    assert followup.universe == event.involvement_universe
+    assert followup.involvement_type == InvolvementType.PROGRAM_HOST
+
+    annotation = Annotation.objects.create(
+        slug="test:diet",
+        type=AnnotationDataType.STRING,
+        applies_to=AnnotationAppliesTo.INVOLVEMENT,
+    )
+    UniverseAnnotation.objects.create(universe=followup.universe, annotation=annotation)
+    followup_en = Form(
+        event=event,
+        survey=followup,
+        language="en",
+        fields=[
+            dict(slug="diet", title="Diet", type="SingleLineText", propagateToAnnotation="test:diet"),
+            dict(slug="note", title="Note", type="SingleLineText", propagateToAnnotation="test:diet"),
+        ],
+    )
+    followup_en.save()
+    followup.workflow.handle_form_update()
+
+    with transaction.atomic():
+        program_offer = Response.objects.create(
+            form=offer_en,
+            form_data={"title": "Test program"},
+            revision_created_by=host.user,
+            ip_address="127.0.0.1",
+            sequence_number=offer.get_next_sequence_number(),
+        )
+        offer.workflow.handle_new_response_phase1(program_offer)
+    offer.workflow.handle_new_response_phase2(program_offer)
+    Program.from_program_offer(program_offer)
+
+    def request_by(person):
+        request = RequestFactory().get("/")
+        request.user = person.user
+        return request
+
+    assert followup.workflow.can_be_responded_by(request_by(host))
+    assert not followup.workflow.can_be_responded_by(request_by(outsider))
+
+    with transaction.atomic():
+        response = Response.objects.create(
+            form=followup_en,
+            form_data={"diet": "vegan"},
+            revision_created_by=host.user,
+            original_created_by=host.user,
+            ip_address="127.0.0.1",
+            sequence_number=followup.get_next_sequence_number(),
+        )
+        followup.workflow.handle_new_response_phase1(response)
+    notified: list = []
+    monkeypatch.setattr(
+        ProgramFollowupWorkflow,
+        "notify_subscribers",
+        lambda self, response, old_version=None: notified.append(response.id),
+    )
+    followup.workflow.handle_new_response_phase2(response)
+    assert notified == [response.id]
+    assert response.admin_url.endswith(f"/program-forms/followup/responses/{response.id}")
+
+    (host_involvement,) = event.involvements.filter(person=host, type=InvolvementType.PROGRAM_HOST)
+    assert host_involvement.annotations["test:diet"] == "vegan"
+    assert not event.involvements.filter(person=outsider).exists()
+
+    # an edit does not pass the annotation forward unless the field says so
+    with transaction.atomic():
+        edited = Response.objects.create(
+            form=followup_en,
+            form_data={"diet": "omnivore"},
+            revision_created_by=host.user,
+            original_created_by=host.user,
+            ip_address="127.0.0.1",
+            sequence_number=followup.get_next_sequence_number(),
+        )
+        followup.workflow.handle_new_response_phase1(edited, old_version=response)
+    host_involvement.refresh_from_db()
+    assert host_involvement.annotations["test:diet"] == "vegan"
+
+    # an admin changing dimensions is an edit: values marked for creation only are not passed forward again
+    followup.workflow.handle_response_dimension_update(edited)
+    host_involvement.refresh_from_db()
+    assert host_involvement.annotations["test:diet"] == "vegan"
+
+    # the owner may edit only while they are still a program host
+    followup.responses_editable_until = now() + timedelta(days=1)
+    followup.save()
+    assert followup.workflow.response_can_be_edited_by_owner(edited, request_by(host))
+    host_involvement.is_active = False
+    host_involvement.save(update_fields=["is_active"])
+    assert not followup.workflow.response_can_be_edited_by_owner(edited, request_by(host))
