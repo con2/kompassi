@@ -5,6 +5,7 @@ import pytest
 from kompassi.access.models import CBACEntry
 from kompassi.core.csv_export import export_csv
 from kompassi.core.models import Person
+from kompassi.core.models.enums import ProgramRoleRetentionPolicy
 from kompassi.event_log_v2.models.entry import Entry
 
 from .models import JobCategory, LabourEventMeta, Qualification, Signup
@@ -94,6 +95,15 @@ def test_recipient_group():
 def test_labour_excel_export():
     signup, _exists = Signup.get_or_create_dummy()
     signups = Signup.objects.filter(id=signup.id)
+
+    # Enum-valued Person fields are exported too; xlsxwriter rejects raw Enum members.
+    signup.person.program_role_retention_policy = ProgramRoleRetentionPolicy.REMOVE
+    signup.person.save(update_fields=["program_role_retention_policy"])
+
+    fields = Signup.get_csv_fields(signup.event)
+    header = Signup.get_csv_header(signup.event, fields)
+    row = signup.get_csv_row(signup.event, fields)
+    assert row[header.index("program_role_retention_policy")] == "REMOVE"
 
     with BytesIO() as output_file:
         export_csv(

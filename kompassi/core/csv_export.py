@@ -1,4 +1,5 @@
 from collections import namedtuple
+from enum import Enum
 
 import unicodecsv as csv
 from django.db import models
@@ -106,6 +107,8 @@ class CsvExportMixin:
                 result_row.append(str(field_value))
             elif callable(field_value):
                 result_row.append(field_value())
+            elif isinstance(field_value, Enum):
+                result_row.append(field_value.name)
             else:
                 result_row.append(field_value)
 
