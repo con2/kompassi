@@ -31,6 +31,7 @@ def make_lut(file: Pathlike, encoding: str) -> Lut:
 
 
 non_word_char = re.compile(r"\W+")
+non_first_char = re.compile(r"^([^a-zA-Z_])")
 
 
 def make_name(name: str) -> str:
@@ -45,13 +46,25 @@ def make_name(name: str) -> str:
     'foo_bar'
     >>> make_name("Barb!!")
     'barb'
+    >>> make_name("0foo")
+    '_0foo'
     """
-    return non_word_char.sub("_", name).strip("_").lower()
+    return non_first_char.sub(r"_\1", non_word_char.sub("_", name).strip("_")).lower()
 
 
 def parse_header_names(cols: list[str]) -> list[str]:
+    """
+    >>> parse_header_names(["foo", "bar"])
+    ['foo', 'bar']
+    >>> parse_header_names(["Foo", "Bar!"])
+    ['foo', 'bar']
+    >>> parse_header_names(["foo", "bar", "bar!"])
+    Traceback (most recent call last):
+       ...
+    ValueError: Conflicting field names in header
+    """
     names = [make_name(col) for col in cols]
-    if len(names) != len(cols):
+    if len(set(names)) != len(cols):
         fields = "Conflicting field names in header"
         raise ValueError(fields)
     return names

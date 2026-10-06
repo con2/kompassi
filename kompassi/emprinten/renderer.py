@@ -14,6 +14,7 @@ import weasyprint
 from django.http import FileResponse, HttpResponse, HttpResponseBase
 from jinja2 import FunctionLoader
 from jinja2.sandbox import SandboxedEnvironment
+from weasyprint.urls import URLFetcher, URLFetcherResponse
 
 from . import filters, functions
 from .files import Lut, NameFactory, make_lut, make_name
@@ -21,7 +22,13 @@ from .models import FileVersion, ProjectFile
 
 DEBUG = False
 
-FileWithData = tuple[str, dict[str, str | dict[str, typing.Any]] | None, bool]
+
+class FileWithData(typing.TypedDict):
+    file_name: str
+    data: dict[str, str | dict[str, typing.Any]] | None
+    success: bool
+
+
 DataRow = dict[str, str | dict[str, typing.Any]]
 DataSet = list[DataRow]
 Vfs = dict[str, FileVersion]
@@ -88,6 +95,15 @@ def render_pdf(
     return_archive: bool = False,
     handle_errors: bool = False,
 ) -> HttpResponseBase:
+    """
+    Render `data` row(s) with given `files` (templates and resources) into PDF's.
+    The result is either a `HttpResponse` (any kind of failure)
+    or a `FileResponse` (for both singular PDF and ZIP with multiple PDF's).
+
+    The `return_archive` controls whether the result is a PDF or a ZIP, both with one or more data rows.
+    If `handle_errors` is `True`, problems during template compilation will return
+    a success with error message per problematic row.
+    """
     main = find_main(files)
     if main is None:
         return HttpResponse("Main file not found", status=404)
@@ -134,14 +150,14 @@ def render_pdf(
         if return_archive:
             z_name = os.path.join(tmpdir, "result.zip")
             with zipfile.ZipFile(z_name, "w") as z:
-                for pdf_name, row, success in results:
-                    post_format = "{}" if success else RENDER_FAILURE_FILE_NAME_PATTERN
+                for result in results:
+                    post_format = "{}" if result["success"] else RENDER_FAILURE_FILE_NAME_PATTERN
                     arc_name = name_factory.make(
-                        {"row": row},
-                        fallback=os.path.basename(pdf_name),
+                        {"row": result["data"]},
+                        fallback=os.path.basename(result["file_name"]),
                         post_format=post_format,
                     )
-                    z.write(pdf_name, arcname=arc_name)
+                    z.write(result["file_name"], arcname=arc_name)
             if DEBUG:
                 ls_r(tmpdir)
             # FileResponse closes the open file by itself.
@@ -151,12 +167,12 @@ def render_pdf(
             return HttpResponse(status=401)
 
         if results:
-            pdf_name, row, success = results[0]
-            post_format = "{}" if success else RENDER_FAILURE_FILE_NAME_PATTERN
-            file_name = name_factory.make({"row": row}, fallback="result.pdf", post_format=post_format)
+            result = results[0]
+            post_format = "{}" if result["success"] else RENDER_FAILURE_FILE_NAME_PATTERN
+            file_name = name_factory.make({"row": result["data"]}, fallback="result.pdf", post_format=post_format)
             # FileResponse closes the open file by itself.
             return FileResponse(
-                open(pdf_name, "rb"),
+                open(result["file_name"], "rb"),
                 content_type="application/pdf",
                 filename=file_name,
             )
@@ -227,6 +243,11 @@ class _TemplateCompiler:
     def compile(
         self, main_file_name: str, src_dir: str, data: DataSet, title_pattern: str, *, split_output: bool
     ) -> list[FileWithData]:
+        """
+        Compile a dataset with Jinja HTML template from `main_file_name` into HTML(s).
+        `src_dir` should be an empty directory where the resulting HTML files will be saved.
+        `title_pattern` is compiled with Jinja and is used to fill the head `title` element.
+        """
         lookups = find_lookup_tables(self.vfs.values())
         tpl = self.env.get_template(main_file_name)
         _title_pattern = self.env.from_string(title_pattern)
@@ -243,7 +264,7 @@ class _TemplateCompiler:
                     of.write(html_header(title=title))
                     success = self._write_render_or_error(of, tpl, row_copy, idx, lookups)
                     of.write(html_footer())
-                sources.append((src_name, row_copy, success))
+                sources.append(FileWithData(file_name=src_name, data=row_copy, success=success))
         else:
             # Render title if we have any data, but supply the row only if it is singular.
             row_copy = dict(data[0]) if len(data) == 1 else None
@@ -257,7 +278,7 @@ class _TemplateCompiler:
                 for idx, row in enumerate(data, start=1):
                     success &= self._write_render_or_error(of, tpl, dict(row), idx, lookups)
                 of.write(html_footer())
-            sources.append((src_name, row_copy, success))
+            sources.append(FileWithData(file_name=src_name, data=row_copy, success=success))
         return sources
 
     def _write_render_or_error(self, of, tpl: jinja2.Template, row: dict, idx: int, lookups: dict) -> bool:
@@ -291,9 +312,20 @@ class _TemplateCompiler:
             ProjectFile.Type.CSS,
         ):
             return None
-        with the_file.data.open("rt") as tpl_file:
-            src = tpl_file.read()
+        src = read_and_close(the_file.data)
         return src, name, lambda: True
+
+
+def read_and_close(field_file) -> str:
+    """
+    Read given `FieldFile` and then close it.
+
+    A `FileField` of a model class becomes `FieldFile` on a model instance.
+    Using `FieldFile.read()` (shortcut for `FieldFile.file.read()`) opens the file but doesn't close it.
+    It is also a context manager that closes it for us automatically.
+    """
+    with field_file.open("rt") as file:
+        return file.read()
 
 
 class _HtmlCompiler:
@@ -306,20 +338,24 @@ class _HtmlCompiler:
         return [file_version for file_version in files if file_version.file.type == ProjectFile.Type.CSS]
 
     def compile(self, sources: list[FileWithData], result_dir: str) -> list[FileWithData]:
+        """
+        Compile HTML `sources` into PDF files in `result_dir`.
+        """
+        url_fetcher = VfsFetcher(self.vfs)
         parsed_sheets = [
             weasyprint.CSS(
-                string=sheet_file.data.read(),
+                string=read_and_close(sheet_file.data),
                 base_url=LOCAL_FILE_URI_PREFIX,
-                url_fetcher=self._do_lookup,
+                url_fetcher=url_fetcher,
             )
             for sheet_file in self.stylesheets
         ]
         results: list[FileWithData] = []
-        for source, row, template_success in sources:
+        for source in sources:
             pdf_html = weasyprint.HTML(
-                filename=source,
+                filename=source["file_name"],
                 base_url=LOCAL_FILE_URI_PREFIX,
-                url_fetcher=self._do_lookup,
+                url_fetcher=url_fetcher,
             )
             pdf = pdf_html.write_pdf(
                 stylesheets=parsed_sheets,
@@ -328,41 +364,52 @@ class _HtmlCompiler:
             if pdf is None:
                 raise RuntimeError("Unexpectedly None result")
 
-            dst_base = os.path.splitext(os.path.basename(source))[0]
+            dst_base = os.path.splitext(os.path.basename(source["file_name"]))[0]
             dst_name = os.path.join(result_dir, dst_base + ".pdf")
-            results.append((dst_name, row, template_success))
+            results.append(FileWithData(file_name=dst_name, data=source["data"], success=source["success"]))
             with open(dst_name, "wb") as of:
                 of.write(pdf)
 
         return results
 
-    # See `weasyprint.urls.default_url_fetcher` for function signature.
-    # Note: At least some exceptions are silently ignored by weasyprint.
-    def _do_lookup(self, url: str, timeout: int = 10, ssl_context=None) -> dict:
+
+class VfsFetcher(URLFetcher):
+    def __init__(self, vfs: Vfs) -> None:
+        super().__init__()
+        self._vfs = vfs
+        self._data_director = urllib.request.OpenerDirector()
+        self._data_director.add_handler(urllib.request.DataHandler())
+
+    def fetch(self, url, headers=None) -> URLFetcherResponse:
+        """
+        Resolve `data:` and `file:` URLs into content.
+        Former will be decoded, latter retrieved from VFS (if an exact match exists).
+
+        See `weasyprint.urls.URLFetcher.fetch`.
+        """
         if url.startswith("data:"):
-            director = urllib.request.OpenerDirector()
-            director.add_handler(urllib.request.DataHandler())
-            data_response = director.open(url)
+            data_response = self._data_director.open(url)
             if data_response is None:
                 restricted_url = "Invalid data URL"
                 raise ValueError(restricted_url)
-            return {
-                "redirected_url": url,
-                "mime_type": data_response.headers["content-type"],
-                "string": data_response.file.read(),
-            }
+            return URLFetcherResponse(
+                url=url,
+                body=data_response,
+                headers={"content-type": data_response.headers["content-type"]},
+            )
 
         file_url = url.removeprefix(LOCAL_FILE_URI_PREFIX)
         if file_url == url:
             restricted_url = "Invalid URL to look up for"
             raise ValueError(restricted_url)
-        the_file: FileVersion | None = self.vfs.get(file_url)
+        the_file: FileVersion | None = self._vfs.get(file_url)
         if DEBUG:
             print("Pdf lookup", url, the_file)
         if the_file is None:
             raise KeyError
-        return {
-            "file_obj": the_file.data.open("rb"),
-            # Weasyprint requires this to avoid file not found exc with the original filename.
-            "redirected_url": file_url,
-        }
+        return URLFetcherResponse(
+            # This value is ignored, but return the actual name.
+            # Any potential relative references won't be found from VFS as only exact matches exist.
+            url="file:///" + the_file.file.file_name,
+            body=the_file.data.open("rb"),
+        )
