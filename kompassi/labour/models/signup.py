@@ -895,6 +895,8 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
                 # too official
                 (Person, "official_first_names"),
                 (Person, "muncipality"),
+                # privacy preference, not the labour organizer's business
+                (Person, "program_role_retention_policy"),
                 (JVKortti, "personqualification"),
             ]
 

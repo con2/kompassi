@@ -96,14 +96,14 @@ def test_labour_excel_export():
     signup, _exists = Signup.get_or_create_dummy()
     signups = Signup.objects.filter(id=signup.id)
 
-    # Enum-valued Person fields are exported too; xlsxwriter rejects raw Enum members.
+    # A privacy preference the labour organizer must not see; also an Enum member,
+    # which xlsxwriter would reject if it did leak into the export.
     signup.person.program_role_retention_policy = ProgramRoleRetentionPolicy.REMOVE
     signup.person.save(update_fields=["program_role_retention_policy"])
 
     fields = Signup.get_csv_fields(signup.event)
     header = Signup.get_csv_header(signup.event, fields)
-    row = signup.get_csv_row(signup.event, fields)
-    assert row[header.index("program_role_retention_policy")] == "REMOVE"
+    assert "program_role_retention_policy" not in header
 
     with BytesIO() as output_file:
         export_csv(
