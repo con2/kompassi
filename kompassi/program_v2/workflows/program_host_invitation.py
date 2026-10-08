@@ -4,6 +4,7 @@ from kompassi.forms.models.workflow import Workflow
 from kompassi.involvement.models.involvement import Involvement
 
 from ...forms.utils.extract_annotations import extract_annotations_from_responses
+from ...forms.utils.extract_dimension_values import extract_dimension_values_for_universe
 
 
 class ProgramHostInvitationWorkflow(Workflow):
@@ -65,15 +66,23 @@ class ProgramHostInvitationWorkflow(Workflow):
         if program is None:
             raise AssertionError("No it isn't (appease typechecker)")
 
-        if response.survey.is_in_involvement_universe:
-            # the fields describe the host; Involvement.from_accepted_invitation passed them forward
-            return
+        # Fields that describe the host were passed forward to the Involvement in
+        # Involvement.from_accepted_invitation. Fields that describe the program item,
+        # ie. those in the program universe, pass forward here.
+        on_edit = old_version is not None
+        program_cache = program.universe.preload_dimensions()
 
         program.refresh_annotations(
             extract_annotations_from_responses(
                 program.responses.all(),
                 program.universe.active_universe_annotations.all(),
-                on_edit=old_version is not None,
+                on_edit=on_edit,
             )
         )
+
+        dimension_values = extract_dimension_values_for_universe(response, cache=program_cache, on_edit=on_edit)
+        if dimension_values:
+            program.set_dimension_values(dimension_values, cache=program_cache)
+            program.refresh_cached_fields()
+
         program.refresh_dependents()

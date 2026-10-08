@@ -6,6 +6,7 @@ from typing import Literal
 import pydantic
 
 from kompassi.dimensions.models.dimension import Dimension
+from kompassi.dimensions.models.enums import DimensionApp
 
 
 class FieldType(StrEnum):
@@ -155,6 +156,14 @@ class Field(pydantic.BaseModel, populate_by_name=True):
     # multiple only makes sense for FileUpload
     # decimal_places only makes sense for NumberField, DecimalField
     dimension: str | None = pydantic.Field(default=None, repr=False)
+    # Which universe of the event the dimension lives in. Only program forms (Survey.app == PROGRAM)
+    # may set this; absent means the survey's own universe.
+    dimension_universe: DimensionApp | None = pydantic.Field(
+        default=None,
+        validation_alias="dimensionUniverse",
+        serialization_alias="dimensionUniverse",
+        repr=False,
+    )
     subset_values: list[str] | None = pydantic.Field(
         default=None,
         validation_alias="subsetValues",
@@ -217,6 +226,12 @@ class Field(pydantic.BaseModel, populate_by_name=True):
         wants_dimension = self.propagate_dimension_on_create or self.propagate_dimension_on_edit
         if wants_dimension and not self.type.is_dimension_field:
             raise ValueError(f"Field {self.slug}: only Dimension* fields can propagate dimension values")
+
+        if self.dimension_universe is not None:
+            if not self.type.is_dimension_field:
+                raise ValueError(f"Field {self.slug}: only Dimension* fields can have dimensionUniverse")
+            if self.dimension_universe not in (DimensionApp.PROGRAM, DimensionApp.INVOLVEMENT):
+                raise ValueError(f"Field {self.slug}: dimensionUniverse must be program or involvement")
 
         wants_annotation = self.propagate_to_annotation or self.propagate_to_annotation_on_edit
         if wants_annotation and not self.type.can_propagate_to_annotation:

@@ -6,8 +6,12 @@ import { promoteFieldToDimension, updateSurveyFields } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
+import type { EditorDimension } from "@/components/forms/editFieldForm";
 import FormEditorWrapper from "@/components/forms/FormEditorWrapper";
-import { validateFields } from "@/components/forms/models";
+import {
+  validateFields,
+  type DimensionUniverse,
+} from "@/components/forms/models";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -23,6 +27,12 @@ const query = graphql(`
       slug
 
       program {
+        dimensions(publicOnly: false) {
+          ...DimensionValueSelect
+        }
+        involvementDimensions(publicOnly: false) {
+          ...DimensionValueSelect
+        }
         eventAnnotations {
           isActive
           annotation {
@@ -116,7 +126,20 @@ export default async function EditProgramFormFieldsPage(props: Props) {
   const survey = data.event.forms.survey;
   const form = data.event.forms.survey.form;
   const activeTab = `fields-${language}`;
-  const dimensions = data.event.forms.survey.dimensions;
+
+  // Dimension fields of program forms may refer to either universe of the event.
+  const dimensions: EditorDimension[] = [
+    ...(data.event.program?.dimensions ?? []).map((dimension) => ({
+      ...dimension,
+      universe: "program" as const,
+    })),
+    ...(data.event.program?.involvementDimensions ?? []).map((dimension) => ({
+      ...dimension,
+      universe: "involvement" as const,
+    })),
+  ];
+  const defaultDimensionUniverse: DimensionUniverse =
+    survey.isInInvolvementUniverse ? "involvement" : "program";
 
   validateFields(form.fields);
 
@@ -134,8 +157,9 @@ export default async function EditProgramFormFieldsPage(props: Props) {
       <FormEditorWrapper
         initialFields={form.fields}
         dimensions={dimensions}
+        defaultDimensionUniverse={defaultDimensionUniverse}
         annotations={annotations}
-        formContext={survey.isInInvolvementUniverse ? "involvement" : "program"}
+        formContext={defaultDimensionUniverse}
         messages={{
           FormEditor: translations.FormEditor,
           SchemaForm: translations.SchemaForm,

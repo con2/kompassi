@@ -1700,6 +1700,121 @@ def test_survey_clone_copies_missing_field_dimensions_into_program_universe():
     assert {choice["slug"] for choice in genre_field["choices"]} == {"fantasy", "scifi"}
 
 
+def _create_program_event(source_meta, slug: str):
+    from kompassi.program_v2.models.meta import ProgramV2EventMeta
+
+    source_event = source_meta.event
+    event = Event.objects.create(
+        name=f"Clone target {slug}",
+        slug=slug,
+        organization=source_event.organization,
+        venue=source_event.venue,
+        start_time=source_event.start_time + timedelta(days=365),
+        end_time=source_event.end_time + timedelta(days=365),
+    )
+    ProgramV2EventMeta.objects.create(
+        event=event,
+        admin_group=ProgramV2EventMeta.get_or_create_groups(event, ("admins",))[0],
+        default_registry=source_meta.default_registry,
+    )
+    return event
+
+
+@pytest.mark.django_db
+def test_survey_clone_legacy_invite_qualifies_fields_and_copies_dimensions_to_both_universes():
+    """
+    A legacy invite form keeps all its dimensions in the program universe. Cloning it lands in
+    the involvement universe: known host dimensions (shirt size) follow the host there, the
+    rest stay qualified to the program universe, and each is copied where the field now refers.
+    """
+    from kompassi.program_v2.models.meta import ProgramV2EventMeta
+
+    source_meta, _created = ProgramV2EventMeta.get_or_create_dummy()
+    source_event = source_meta.event
+    target_event = _create_program_event(source_meta, "clone-target-legacy")
+
+    for slug, value in (("shirt-size", "l"), ("photography", "yes")):
+        dimension = Dimension.objects.create(universe=source_event.program_universe, slug=slug)
+        DimensionValue.objects.create(dimension=dimension, slug=value)
+
+    legacy_invite = Survey(
+        event=source_event,
+        slug="legacy-invite",
+        app=DimensionApp.PROGRAM,
+        purpose=SurveyPurpose.INVITE,
+        universe=source_event.program_universe,
+    ).with_mandatory_fields()
+    legacy_invite.save()
+    assert not legacy_invite.is_in_involvement_universe
+    Form.objects.create(
+        event=source_event,
+        survey=legacy_invite,
+        language="en",
+        fields=[
+            dict(slug="shirt_size", type="DimensionSingleSelect", title="Shirt size", dimension="shirt-size"),
+            dict(slug="photography", type="DimensionSingleSelect", title="Photography", dimension="photography"),
+        ],
+    )
+
+    clone = legacy_invite.clone(
+        event=target_event,
+        slug="invite",
+        app=DimensionApp.PROGRAM,
+        purpose=SurveyPurpose.INVITE,
+    )
+    assert clone.universe == target_event.involvement_universe
+
+    cloned_form = clone.languages.get(language="en")
+    fields = {field["slug"]: field for field in cloned_form.fields}
+    assert fields["shirt_size"]["dimensionUniverse"] == "involvement"
+    assert fields["photography"]["dimensionUniverse"] == "program"
+
+    assert set(
+        target_event.involvement_universe.dimensions.get(slug="shirt-size").values.values_list("slug", flat=True)
+    ) == {"l"}
+    assert not target_event.involvement_universe.dimensions.filter(slug="photography").exists()
+    assert set(
+        target_event.program_universe.dimensions.get(slug="photography").values.values_list("slug", flat=True)
+    ) == {"yes"}
+    assert not target_event.program_universe.dimensions.filter(slug="shirt-size").exists()
+
+    enriched = {field["slug"]: field for field in cloned_form.cached_enriched_fields}
+    assert [choice["slug"] for choice in enriched["shirt_size"]["choices"]] == ["l"]
+    assert [choice["slug"] for choice in enriched["photography"]["choices"]] == ["yes"]
+
+
+@pytest.mark.django_db
+def test_set_dimension_values_leaves_same_slug_dimension_of_other_universe_alone():
+    """
+    The program and involvement universes both have a `state` dimension. Setting a response's
+    value in one universe must not delete its value in the other.
+    """
+    from kompassi.program_v2.models.meta import ProgramV2EventMeta
+
+    meta, _created = ProgramV2EventMeta.get_or_create_dummy()
+    event = meta.event
+    program_cache = event.program_universe.preload_dimensions()
+    involvement_cache = event.involvement_universe.preload_dimensions()
+    assert "state" in program_cache.dimensions
+    assert "state" in involvement_cache.dimensions
+
+    survey = Survey(event=event, slug="state-scope", app=DimensionApp.PROGRAM, purpose=SurveyPurpose.DEFAULT)
+    survey.with_mandatory_fields().save()
+    form = Form.objects.create(event=event, survey=survey, language="en", fields=[])
+    response = Response.objects.create(form=form, form_data={})
+
+    response.set_dimension_values({"state": ["new"]}, program_cache)
+    response.set_dimension_values({"state": ["active"]}, involvement_cache)
+
+    from .models.response_dimension_value import ResponseDimensionValue
+
+    stored = {
+        (rdv.value.dimension.universe.app, rdv.value.slug)
+        for rdv in ResponseDimensionValue.objects.filter(subject=response).select_related("value__dimension__universe")
+    }
+    assert stored == {(DimensionApp.PROGRAM, "new"), (DimensionApp.INVOLVEMENT, "active")}
+
+
 def _graphql_request(user):
     request = RequestFactory().post("/graphql")
     request.user = user
@@ -2158,6 +2273,18 @@ def test_field_propagation_config_is_validated():
     with pytest.raises(pydantic.ValidationError):
         Field.model_validate(dict(slug="n", type="NumberField", propagateToAnnotationOnEdit=True))
 
+    qualified = Field.model_validate(
+        dict(slug="d", type="DimensionSingleSelect", dimension="d", dimensionUniverse="involvement")
+    )
+    assert qualified.dimension_universe == DimensionApp.INVOLVEMENT
+    assert qualified.model_dump(mode="json", by_alias=True, exclude_none=True)["dimensionUniverse"] == "involvement"
+
+    with pytest.raises(pydantic.ValidationError):
+        Field.model_validate(dict(slug="s", type="SingleSelect", dimensionUniverse="program"))
+
+    with pytest.raises(pydantic.ValidationError):
+        Field.model_validate(dict(slug="d", type="DimensionSingleSelect", dimension="d", dimensionUniverse="forms"))
+
 
 @pytest.mark.django_db
 def test_extract_annotations_ignores_annotations_not_applicable_to_the_universe():
@@ -2200,7 +2327,7 @@ def test_extract_annotations_ignores_annotations_not_applicable_to_the_universe(
 
 @pytest.mark.django_db
 def test_extract_dimension_values_uses_only_marked_fields():
-    from .utils.extract_dimension_values import extract_dimension_values_from_response
+    from .utils.extract_dimension_values import extract_dimension_values_for_universe
 
     event, _ = Event.get_or_create_dummy()
     survey = Survey(event=event, slug="dims", app=DimensionApp.FORMS, purpose=SurveyPurpose.DEFAULT)
@@ -2219,6 +2346,8 @@ def test_extract_dimension_values_uses_only_marked_fields():
         ],
     )
     response = Response.objects.create(form=form, form_data={"marked": "a", "unmarked": "b"})
+    survey.workflow.handle_new_response_phase1(response)
+    cache = survey.universe.preload_dimensions()
 
-    assert extract_dimension_values_from_response(response) == {"kind": ["a"]}
-    assert extract_dimension_values_from_response(response, on_edit=True) == {}
+    assert extract_dimension_values_for_universe(response, cache=cache) == {"kind": ["a"]}
+    assert extract_dimension_values_for_universe(response, cache=cache, on_edit=True) == {}

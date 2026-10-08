@@ -500,6 +500,140 @@ def test_invite_survey_lives_in_involvement_universe_and_passes_values_forward()
 
 
 @pytest.mark.django_db
+def test_invite_form_fields_may_refer_to_either_universe():
+    """
+    One invite form asks about the host (shirt size, in the involvement universe) and about the
+    program item (genre, in the program universe). Host values pass to the Involvement and program
+    values to the Program; the response itself holds only the values of its own universe.
+    Annotations are routed by what they apply to.
+    """
+    meta, _ = ProgramV2EventMeta.get_or_create_dummy()
+    event = meta.event
+    EmailAliasDomain.get_or_create_dummy()
+
+    person, _ = Person.get_or_create_dummy()
+    person2, _ = Person.get_or_create_dummy(another=True, superuser=False)
+
+    offer = Survey(event=event, slug="offer-mixed", app=DimensionApp.PROGRAM, purpose=SurveyPurpose.DEFAULT)
+    offer.with_mandatory_fields().save()
+    offer.workflow.handle_new_survey()
+    offer_en = Form(
+        event=event,
+        survey=offer,
+        language="en",
+        fields=[dict(slug="title", title="Title", type="SingleLineText", required=True)],
+    )
+    offer_en.save()
+    offer.workflow.handle_form_update()
+
+    invite = Survey(event=event, slug="invite-mixed", app=DimensionApp.PROGRAM, purpose=SurveyPurpose.INVITE)
+    invite.with_mandatory_fields().save()
+    invite.workflow.handle_new_survey()
+    assert invite.universe == event.involvement_universe
+
+    host_annotation = Annotation.objects.create(
+        slug="test:hostDiet",
+        type=AnnotationDataType.STRING,
+        applies_to=AnnotationAppliesTo.INVOLVEMENT,
+    )
+    program_annotation = Annotation.objects.create(
+        slug="test:programStream",
+        type=AnnotationDataType.STRING,
+        applies_to=AnnotationAppliesTo.PROGRAM_ITEM,
+    )
+    for universe in (event.involvement_universe, event.program_universe):
+        UniverseAnnotation.objects.create(universe=universe, annotation=host_annotation)
+        UniverseAnnotation.objects.create(universe=universe, annotation=program_annotation)
+
+    shirt_size = Dimension.objects.create(universe=event.involvement_universe, slug="shirt-size")
+    DimensionValue.objects.create(dimension=shirt_size, slug="m", title_en="M")
+    genre = Dimension.objects.create(universe=event.program_universe, slug="genre")
+    DimensionValue.objects.create(dimension=genre, slug="fantasy", title_en="Fantasy")
+
+    invite_en = Form(
+        event=event,
+        survey=invite,
+        language="en",
+        fields=[
+            dict(slug="diet", title="Diet", type="SingleLineText", propagateToAnnotation="test:hostDiet"),
+            dict(
+                slug="shirt_size",
+                title="Shirt size",
+                type="DimensionSingleSelect",
+                dimension="shirt-size",
+                dimensionUniverse="involvement",
+                propagateDimensionOnCreate=True,
+            ),
+            dict(slug="stream", title="Stream", type="SingleLineText", propagateToAnnotation="test:programStream"),
+            dict(
+                slug="genre",
+                title="Genre",
+                type="DimensionSingleSelect",
+                dimension="genre",
+                dimensionUniverse="program",
+                propagateDimensionOnCreate=True,
+            ),
+        ],
+    )
+    invite_en.save()
+    invite.workflow.handle_form_update()
+
+    enriched = {field["slug"]: field for field in invite_en.cached_enriched_fields}
+    assert [choice["slug"] for choice in enriched["shirt_size"]["choices"]] == ["m"]
+    assert [choice["slug"] for choice in enriched["genre"]["choices"]] == ["fantasy"]
+
+    with transaction.atomic():
+        program_offer = Response.objects.create(
+            form=offer_en,
+            form_data={"title": "Mixed program"},
+            revision_created_by=person.user,
+            ip_address="127.0.0.1",
+            sequence_number=offer.get_next_sequence_number(),
+        )
+        offer.workflow.handle_new_response_phase1(program_offer)
+    offer.workflow.handle_new_response_phase2(program_offer)
+    program = Program.from_program_offer(program_offer)
+
+    invitation = program.invite_program_host(
+        person2.email,
+        survey=invite,
+        language="en",
+        involvement_dimensions={},
+    )
+
+    with transaction.atomic():
+        response = Response.objects.create(
+            form=invite_en,
+            form_data={"diet": "vegan", "shirt_size": "m", "stream": "yes", "genre": "fantasy"},
+            revision_created_by=person2.user,
+            ip_address="127.0.0.1",
+            sequence_number=invite.get_next_sequence_number(),
+        )
+        invite.workflow.handle_new_response_phase1(response)
+        invitation.mark_used()
+        involvement = Involvement.from_accepted_invitation(
+            response=response,
+            invitation=invitation,
+            cache=event.involvement_universe.preload_dimensions(),
+        )
+    invite.workflow.handle_new_response_phase2(response)
+
+    assert response.cached_dimensions["shirt-size"] == ["m"]
+    assert "genre" not in response.cached_dimensions
+
+    assert involvement.cached_dimensions["shirt-size"] == ["m"]
+    assert "genre" not in involvement.cached_dimensions
+    assert involvement.annotations["test:hostDiet"] == "vegan"
+    assert "test:programStream" not in involvement.annotations
+
+    program.refresh_from_db()
+    assert program.cached_dimensions["genre"] == ["fantasy"]
+    assert "shirt-size" not in program.cached_dimensions
+    assert program.annotations["test:programStream"] == "yes"
+    assert "test:hostDiet" not in program.annotations
+
+
+@pytest.mark.django_db
 def test_program_followup_is_for_hosts_and_passes_values_to_their_involvements(monkeypatch):
     meta, _ = ProgramV2EventMeta.get_or_create_dummy()
     event = meta.event

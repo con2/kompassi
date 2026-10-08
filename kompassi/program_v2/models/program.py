@@ -31,6 +31,7 @@ from kompassi.dimensions.utils.set_dimension_values import set_dimension_values
 from kompassi.forms.models.response import Response
 from kompassi.forms.models.survey import Survey
 from kompassi.forms.utils.extract_annotations import extract_annotations_from_responses
+from kompassi.forms.utils.extract_dimension_values import extract_dimension_values_for_universe
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.involvement.models.enums import InvolvementType
 from kompassi.involvement.models.invitation import Invitation
@@ -414,11 +415,17 @@ class Program(models.Model):
         program_offer.set_dimension_values(program.cached_dimensions, cache=cache)
         program_offer.refresh_cached_fields()
 
+        involvement_cache = event.involvement_universe.preload_dimensions()
+        combined_involvement_dimension_values = extract_dimension_values_for_universe(
+            program_offer, cache=involvement_cache
+        )
+        combined_involvement_dimension_values.update(validate_cached_dimensions(involvement_dimension_values or {}))
+
         Involvement.from_accepted_program_offer(
             program_offer,
             program,
-            cache=event.involvement_universe.preload_dimensions(),
-            dimension_values=involvement_dimension_values or {},
+            cache=involvement_cache,
+            dimension_values=combined_involvement_dimension_values,
         )
 
         return program

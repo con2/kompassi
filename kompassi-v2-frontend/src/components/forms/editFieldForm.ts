@@ -1,8 +1,64 @@
-import { Choice, Field, FieldType, Values } from "./models";
+import { Choice, DimensionUniverse, Field, FieldType, Values } from "./models";
 import processFormData from "./processFormData";
 import { DimensionValueSelectFragment } from "@/__generated__/graphql";
 
 export type FormEditorContext = "survey" | "program" | "involvement";
+
+/// A dimension the editor offers to dimension fields. Program forms get the dimensions of
+/// both universes of the event, each tagged with its universe; surveys get untagged ones.
+export type EditorDimension = DimensionValueSelectFragment & {
+  universe?: DimensionUniverse;
+};
+
+/// The universe a dimension field refers to, for looking it up among EditorDimensions.
+/// Survey fields have no universe and match by slug alone.
+export function getFieldDimensionUniverse(
+  field: Field,
+  defaultDimensionUniverse?: DimensionUniverse,
+): DimensionUniverse | undefined {
+  if (
+    field.type !== "DimensionSingleSelect" &&
+    field.type !== "DimensionMultiSelect" &&
+    field.type !== "DimensionSingleCheckbox"
+  ) {
+    return undefined;
+  }
+  return field.dimensionUniverse ?? defaultDimensionUniverse;
+}
+
+export function findEditorDimension(
+  dimensions: EditorDimension[],
+  dimensionSlug: string,
+  universe: DimensionUniverse | undefined,
+): EditorDimension | undefined {
+  return dimensions.find(
+    (dimension) =>
+      dimension.slug === dimensionSlug &&
+      (universe === undefined || dimension.universe === universe),
+  );
+}
+
+/// The dimension dropdown of the field editor encodes the universe into the choice slug
+/// so that one dropdown can offer the dimensions of both universes.
+function encodeDimensionChoice(dimension: EditorDimension): string {
+  return dimension.universe
+    ? `${dimension.universe}/${dimension.slug}`
+    : dimension.slug;
+}
+
+function decodeDimensionChoice(value: string): {
+  dimension: string;
+  dimensionUniverse?: DimensionUniverse;
+} {
+  const separator = value.indexOf("/");
+  if (separator === -1) {
+    return { dimension: value };
+  }
+  return {
+    dimensionUniverse: value.slice(0, separator) as DimensionUniverse,
+    dimension: value.slice(separator + 1),
+  };
+}
 
 export interface AnnotationOption {
   slug: string;
@@ -33,7 +89,7 @@ import type { Translations } from "@/translations/en";
 export function getFieldEditorFields(
   fieldType: FieldType,
   messages: Translations["FormEditor"]["editFieldForm"],
-  dimensions: DimensionValueSelectFragment[],
+  dimensions: EditorDimension[],
   annotations: AnnotationOption[] = [],
   formContext: FormEditorContext = "survey",
 ): Field[] {
@@ -145,10 +201,15 @@ export function getFieldEditorFields(
     slug: "dimension",
     required: true,
     presentation: "dropdown",
-    choices: dimensions.map(({ slug, title }) => ({
-      slug,
-      title: title || slug,
-    })),
+    choices: dimensions.map((dimension) => {
+      const title = dimension.title || dimension.slug;
+      return {
+        slug: encodeDimensionChoice(dimension),
+        title: dimension.universe
+          ? `${t.dimensionUniverse[dimension.universe]}: ${title}`
+          : title,
+      };
+    }),
     ...t.dimension,
   };
 
@@ -208,9 +269,13 @@ function formatChoices(choices: Choice[]): string {
   );
 }
 
-export function fieldToValues(field: Field): Record<string, any> {
+export function fieldToValues(
+  field: Field,
+  defaultDimensionUniverse?: DimensionUniverse,
+): Record<string, any> {
   let choices: string | undefined = undefined;
   let questions: string | undefined = undefined;
+  let dimension: string | undefined = undefined;
 
   const encryptTo = field.encryptTo ? field.encryptTo.join("\n") : "";
 
@@ -223,9 +288,22 @@ export function fieldToValues(field: Field): Record<string, any> {
       choices = formatChoices(field.choices);
       questions = formatChoices(field.questions);
       break;
+    case "DimensionSingleSelect":
+    case "DimensionMultiSelect":
+    case "DimensionSingleCheckbox": {
+      const universe = getFieldDimensionUniverse(
+        field,
+        defaultDimensionUniverse,
+      );
+      dimension =
+        universe && field.dimension
+          ? `${universe}/${field.dimension}`
+          : field.dimension;
+      break;
+    }
   }
 
-  return { ...field, choices, questions, encryptTo };
+  return { ...field, choices, questions, encryptTo, dimension };
 }
 
 function parseChoices(choices: string): Choice[] {
@@ -272,6 +350,16 @@ export function formDataToField(
         choices: parseChoices(values.choices as string),
         questions: parseChoices(values.questions as string),
       };
+    case "DimensionSingleSelect":
+    case "DimensionMultiSelect":
+    case "DimensionSingleCheckbox":
+      // an unqualified choice must clear a qualifier the field had before
+      return {
+        ...initialValues,
+        ...values,
+        dimensionUniverse: undefined,
+        ...decodeDimensionChoice(String(values.dimension ?? "")),
+      } as Field;
     default:
       return { ...initialValues, ...values };
   }

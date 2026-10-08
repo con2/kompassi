@@ -3,16 +3,21 @@
 import React from "react";
 
 import AddFieldDropdown from "./AddFieldDropdown";
-import type { AnnotationOption, FormEditorContext } from "./editFieldForm";
+import {
+  findEditorDimension,
+  getFieldDimensionUniverse,
+  type AnnotationOption,
+  type EditorDimension,
+  type FormEditorContext,
+} from "./editFieldForm";
 import EditFieldModal from "./EditFieldModal";
 import FormEditorControls from "./FormEditorControls";
 import { addField, removeField, replaceField } from "./formEditorLogic";
 import { Modal, useModal } from "./LegacyModal";
-import { Field, FieldType, emptyField } from "./models";
+import { DimensionUniverse, Field, FieldType, emptyField } from "./models";
 import newField from "./newField";
 import SchemaFormField from "./SchemaFormField";
 import SchemaFormInput from "./SchemaFormInput";
-import { DimensionValueSelectFragment } from "@/__generated__/graphql";
 import type { Translations } from "@/translations/en";
 
 import "./FormEditor.scss";
@@ -25,7 +30,9 @@ interface Props {
     FormEditor: Translations["FormEditor"];
     SchemaForm: Translations["SchemaForm"];
   };
-  dimensions: DimensionValueSelectFragment[];
+  dimensions: EditorDimension[];
+  /// The universe unqualified dimension fields refer to; only program forms have one.
+  defaultDimensionUniverse?: DimensionUniverse;
   /// Annotations that fields may pass their values forward to.
   annotations?: AnnotationOption[];
   /// Where responses end up; survey responses have nothing to pass values forward to.
@@ -37,7 +44,8 @@ interface Props {
 /// The form editor operates on raw fields and enjoys no such luxury.
 function injectChoices(
   field: Field,
-  dimensions: DimensionValueSelectFragment[],
+  dimensions: EditorDimension[],
+  defaultDimensionUniverse?: DimensionUniverse,
 ): Field {
   if (
     // is of a type that can has dimension values as choices
@@ -49,7 +57,11 @@ function injectChoices(
     (!field.choices || field.choices.length === 0)
   ) {
     // TODO(#643) subsetValues
-    const dimension = dimensions.find((d) => d.slug === field.dimension);
+    const dimension = findEditorDimension(
+      dimensions,
+      field.dimension,
+      getFieldDimensionUniverse(field, defaultDimensionUniverse),
+    );
     if (dimension) {
       return {
         ...field,
@@ -86,6 +98,7 @@ export default function FormEditor(props: Props) {
     onPromoteFieldToDimension: onPromoteFieldToDimension,
     messages,
     dimensions,
+    defaultDimensionUniverse,
     annotations = [],
     formContext = "survey",
   } = props;
@@ -98,7 +111,9 @@ export default function FormEditor(props: Props) {
 
   const removeFieldModal = useModal();
 
-  const fields = value.map((field) => injectChoices(field, dimensions));
+  const fields = value.map((field) =>
+    injectChoices(field, dimensions, defaultDimensionUniverse),
+  );
 
   const handleChange = React.useCallback(
     (newFields: Field[]) => onChange(newFields.map(stripInjectedChoices)),
@@ -203,6 +218,7 @@ export default function FormEditor(props: Props) {
           }}
           onClose={() => setEditFieldModalOpen(false)}
           dimensions={dimensions}
+          defaultDimensionUniverse={defaultDimensionUniverse}
           annotations={annotations}
           formContext={formContext}
           messages={messages}

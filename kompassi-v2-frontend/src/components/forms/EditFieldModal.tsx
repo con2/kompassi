@@ -7,19 +7,20 @@ import {
   formDataToField,
   getFieldEditorFields,
   type AnnotationOption,
+  type EditorDimension,
   type FormEditorContext,
 } from "./editFieldForm";
 import "./FormEditor.scss";
-import { Field } from "./models";
+import { DimensionUniverse, Field } from "./models";
 import { SchemaForm } from "./SchemaForm";
-import { DimensionValueSelectFragment } from "@/__generated__/graphql";
 import type { Translations } from "@/translations/en";
 
 interface EditFieldModalProps {
   fieldToEdit: Field;
   onSubmit(field: Field): void;
   onClose(): void;
-  dimensions: DimensionValueSelectFragment[];
+  dimensions: EditorDimension[];
+  defaultDimensionUniverse?: DimensionUniverse;
   annotations: AnnotationOption[];
   formContext: FormEditorContext;
   messages: {
@@ -34,6 +35,7 @@ const EditFieldModal = ({
   onClose,
   messages,
   dimensions,
+  defaultDimensionUniverse,
   annotations,
   formContext,
 }: EditFieldModalProps) => {
@@ -55,7 +57,10 @@ const EditFieldModal = ({
     },
     [fieldToEdit, fields, onSubmit],
   );
-  const values = useMemo(() => fieldToValues(fieldToEdit), [fieldToEdit]);
+  const values = useMemo(
+    () => fieldToValues(fieldToEdit, defaultDimensionUniverse),
+    [fieldToEdit, defaultDimensionUniverse],
+  );
 
   return (
     <Modal show={true} onHide={onClose} size="lg">

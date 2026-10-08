@@ -12,7 +12,7 @@ from kompassi.core.middleware import RequestWithCache
 from kompassi.core.utils.model_utils import make_slug_field
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES, getattr_message_in_language
 
-from .enums import ValueOrdering
+from .enums import DimensionApp, ValueOrdering
 from .scope import Scope
 from .universe import Universe
 
@@ -255,4 +255,13 @@ class Dimension(models.Model):
     def refresh_dependents(self):
         from kompassi.forms.models.form import Form
 
-        Form.refresh_cached_fields_qs(Form.objects.filter(survey__universe=self.universe))
+        forms = Form.objects.filter(survey__universe=self.universe)
+
+        # Program forms may refer to the program and involvement universes of their event
+        # through Field.dimension_universe regardless of the survey's own universe.
+        if self.universe.app in (DimensionApp.PROGRAM, DimensionApp.INVOLVEMENT) and (
+            event := self.universe.scope.event
+        ):
+            forms |= Form.objects.filter(survey__app=DimensionApp.PROGRAM, event=event)
+
+        Form.refresh_cached_fields_qs(forms)

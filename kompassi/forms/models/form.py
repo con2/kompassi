@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Self
 
@@ -109,7 +109,8 @@ class Form(models.Model):
         if field.get("type") in ("DimensionSingleSelect", "DimensionMultiSelect") and (
             dimension_slug := field.get("dimension")
         ):
-            dimension = self.survey.universe.dimensions.get(slug=dimension_slug)
+            universe = self.survey.resolve_dimension_universe(field.get("dimensionUniverse"))
+            dimension = universe.dimensions.get(slug=dimension_slug)
             field = dict(
                 field,
                 choices=[choice.model_dump(by_alias=True) for choice in dimension.as_choices(self.language)],
@@ -125,7 +126,16 @@ class Form(models.Model):
     def scope(self):
         return self.survey.scope
 
-    def clone(self, survey: Survey, created_by: AbstractBaseUser | None = None):
+    def clone(
+        self,
+        survey: Survey,
+        created_by: AbstractBaseUser | None = None,
+        field_overrides: Mapping[str, Mapping[str, Any]] | None = None,
+    ):
+        """
+        :param field_overrides: Attributes to set on the cloned fields, by field slug.
+        """
+        field_overrides = field_overrides or {}
         form = Form(
             event=survey.event,
             survey=survey,
@@ -133,7 +143,7 @@ class Form(models.Model):
             title=self.title,
             description=self.description,
             thank_you_message=self.thank_you_message,
-            fields=self.fields,
+            fields=[{**field, **field_overrides.get(field["slug"], {})} for field in self.fields],
             created_by=created_by,
         )
         form.save()

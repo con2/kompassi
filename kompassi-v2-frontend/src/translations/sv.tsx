@@ -299,6 +299,10 @@ const translations: Translations = {
         title: "Dimension",
         helpText: "Vilken dimension ska fältet hämta sina val från?",
       },
+      dimensionUniverse: {
+        program: "Programpunkt",
+        involvement: "Programvärd",
+      },
       maxLength: {
         title: "Maximilängd",
         helpText:

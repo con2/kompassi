@@ -3,6 +3,9 @@ import pydantic
 from django.db import transaction
 from graphene.types.generic import GenericScalar
 
+from kompassi.dimensions.models.enums import DimensionApp
+
+from ...models.enums import SurveyPurpose
 from ...models.field import Field
 from ...models.survey import Survey
 from ..survey_full import FullSurveyType
@@ -37,6 +40,15 @@ class UpdateFormFields(graphene.Mutation):
             fields = Fields.model_validate(dict(fields=input.fields))
 
             survey.workflow.check_access(info, operation="update", field="languages")
+
+            for field in fields.fields:
+                if field.dimension_universe is None:
+                    continue
+                if survey.app != DimensionApp.PROGRAM:
+                    raise ValueError(f"Field {field.slug}: only program forms may set dimensionUniverse")
+                if survey.purpose == SurveyPurpose.FOLLOWUP and field.dimension_universe == DimensionApp.PROGRAM:
+                    # a follow-up respondent may host several program items, so there is no single target
+                    raise ValueError(f"Field {field.slug}: follow-up forms cannot refer to the program universe")
 
             # Dimension fields' choices are only ever derived from the dimension at read time
             # (see Form._enrich_field). Persisting client-supplied choices for them would freeze

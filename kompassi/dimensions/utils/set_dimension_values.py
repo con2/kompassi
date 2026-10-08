@@ -27,6 +27,7 @@ def set_dimension_values(
 
     SubjectDimensionValue.objects.filter(
         subject=subject,
+        value__dimension__universe=cache.universe,
         value__dimension__slug__in=values_to_set.keys(),
     ).delete()
 

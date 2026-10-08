@@ -164,6 +164,13 @@ def get_scheduled_dimension_value(count_schedule_items: int) -> list[str]:
             raise ValueError(f"Invalid count_schedule_items: {count_schedule_items}. Must be >= 0.")
 
 
+# Program host invite forms created before invite surveys moved to the involvement universe
+# keep all their dimensions in the program universe. When such a form is cloned into the
+# involvement universe, these dimensions describe the host and follow it there; the rest
+# describe the program item and stay qualified to the program universe.
+LEGACY_INVITE_HOST_DIMENSION_SLUGS = frozenset({"shirt-size"})
+
+
 def get_program_universe(event: Event) -> Universe:
     """
     Returns the universe for the program offer workflow.

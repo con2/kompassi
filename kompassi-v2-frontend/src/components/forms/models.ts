@@ -146,9 +146,14 @@ export interface Tristate extends BaseField {
   type: "Tristate";
 }
 
+/// Which universe of the event a dimension field of a program form refers to.
+/// Absent means the survey's own universe.
+export type DimensionUniverse = "program" | "involvement";
+
 export interface DimensionSingleCheckbox extends BaseField {
   type: "DimensionSingleCheckbox";
   dimension: string;
+  dimensionUniverse?: DimensionUniverse;
 }
 
 export interface Choice {
@@ -173,6 +178,7 @@ export interface MultiSelect extends BaseField {
 export interface DimensionSingleSelect extends BaseField {
   type: "DimensionSingleSelect";
   dimension: string;
+  dimensionUniverse?: DimensionUniverse;
   subsetValues?: string[];
   choices: Choice[];
   presentation?: SingleSelectPresentation;
@@ -181,6 +187,7 @@ export interface DimensionSingleSelect extends BaseField {
 export interface DimensionMultiSelect extends BaseField {
   type: "DimensionMultiSelect";
   dimension: string;
+  dimensionUniverse?: DimensionUniverse;
   subsetValues?: string[];
   choices: Choice[];
 }

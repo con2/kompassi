@@ -4,7 +4,7 @@ from kompassi.dimensions.utils.dimension_cache import DimensionCache
 from kompassi.forms.models.response import Response
 from kompassi.forms.models.workflow import Workflow
 from kompassi.forms.utils.extract_annotations import extract_annotations_from_responses
-from kompassi.forms.utils.extract_dimension_values import extract_dimension_values_from_response
+from kompassi.forms.utils.extract_dimension_values import extract_dimension_values_for_universe
 from kompassi.involvement.models.enums import InvolvementType
 from kompassi.involvement.models.involvement import Involvement
 
@@ -64,7 +64,7 @@ class ProgramFollowupWorkflow(ProgramHostInvitationWorkflow):
         if on_edit is None:
             on_edit = old_version is not None
 
-        dimensions = extract_dimension_values_from_response(response, on_edit=on_edit)
+        dimensions = extract_dimension_values_for_universe(response, cache=cache, on_edit=on_edit)
         annotations = extract_annotations_from_responses(
             [response],
             cache.universe.active_universe_annotations.all(),

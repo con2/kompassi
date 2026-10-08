@@ -308,6 +308,10 @@ const translations: Translations = {
         title: "Dimensio",
         helpText: "Mistä dimensiosta tämä kenttä saa vastausvaihtoehtonsa?",
       },
+      dimensionUniverse: {
+        program: "Ohjelmanumero",
+        involvement: "Ohjelmanpitäjä",
+      },
       maxLength: {
         title: "Enimmäispituus",
         helpText:

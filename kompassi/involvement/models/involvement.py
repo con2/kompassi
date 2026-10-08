@@ -490,16 +490,15 @@ class Involvement(models.Model):
         is_active = response.survey.workflow.is_response_active(response)
 
         from kompassi.forms.utils.extract_annotations import extract_annotations_from_responses
-        from kompassi.forms.utils.extract_dimension_values import extract_dimension_values_from_response
+        from kompassi.forms.utils.extract_dimension_values import extract_dimension_values_for_universe
 
-        passed_forward_dimensions: dict[str, list[str]] = {}
-        passed_forward_annotations: CachedAnnotations = {}
-        if response.survey.is_in_involvement_universe:
-            passed_forward_dimensions = extract_dimension_values_from_response(response)
-            passed_forward_annotations = extract_annotations_from_responses(
-                [response],
-                cache.universe.active_universe_annotations.all(),
-            )
+        # Fields that describe the host pass forward here; fields that describe the program
+        # item pass forward to the Program in the invitation workflow.
+        passed_forward_dimensions = extract_dimension_values_for_universe(response, cache=cache)
+        passed_forward_annotations: CachedAnnotations = extract_annotations_from_responses(
+            [response],
+            cache.universe.active_universe_annotations.all(),
+        )
 
         involvement, created = cls.objects.update_or_create(
             universe=cache.universe,

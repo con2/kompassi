@@ -32,7 +32,14 @@ def lift_dimension_values(
     # only these fields have the potential of being dimension fields
     # TODO support single checkbox as dimension field?
     # get_processed_form_data expects enriched, validated form of fields
-    fields: list[Field] = [field for field in response.form.validated_fields if field.type.is_dimension_field]
+    # Fields qualified to the other universe of the event are passed forward from form data
+    # by extract_dimension_values_for_universe instead of being stored on the response.
+    fields: list[Field] = [
+        field
+        for field in response.form.validated_fields
+        if field.type.is_dimension_field
+        and survey.resolve_dimension_universe(field.dimension_universe) == cache.universe
+    ]
 
     if dimension_slugs is not None:
         # filter out fields that are not in dimension_slugs

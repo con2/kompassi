@@ -47,6 +47,8 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+DIMENSION_FIELD_TYPES = ("DimensionSingleSelect", "DimensionMultiSelect", "DimensionSingleCheckbox")
+
 
 class Survey(models.Model):
     event: models.ForeignKey[Event] = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="surveys")
@@ -262,6 +264,25 @@ class Survey(models.Model):
                 return self.event.program_universe
             case _:
                 raise NotImplementedError(self.app)
+
+    def resolve_dimension_universe(self, dimension_universe: DimensionApp | str | None) -> Universe:
+        """
+        The universe a dimension field of this survey refers to. Fields of program forms may
+        name the event's program or involvement universe; unqualified fields use the survey's own.
+        """
+        if dimension_universe is None:
+            return self.universe
+
+        if self.app != DimensionApp.PROGRAM:
+            raise ValueError(f"Only program forms may qualify the universe of a dimension field ({self})")
+
+        match DimensionApp(dimension_universe):
+            case DimensionApp.PROGRAM:
+                return self.event.program_universe
+            case DimensionApp.INVOLVEMENT:
+                return self.event.involvement_universe
+            case other:
+                raise ValueError(f"Dimension fields cannot refer to the {other} universe ({self})")
 
     @property
     def is_in_involvement_universe(self) -> bool:
@@ -483,10 +504,15 @@ class Survey(models.Model):
         survey.with_mandatory_fields()
         survey.save()
 
-        if survey.universe_id != self.universe_id and app != DimensionApp.FORMS:
-            self._copy_missing_field_dimensions(survey.universe)
+        if app == DimensionApp.FORMS:
+            field_overrides = {}
+        else:
+            field_overrides = self._qualify_dimension_fields_for_clone(survey)
+            self._copy_missing_field_dimensions(survey, field_overrides)
 
-        cloned_forms = [form.clone(survey, created_by=created_by) for form in self.languages.all()]
+        cloned_forms = [
+            form.clone(survey, created_by=created_by, field_overrides=field_overrides) for form in self.languages.all()
+        ]
 
         # cached_key_fields is denormalized from the isKeyField flag of the (cloned) form fields.
         if cloned_forms:
@@ -494,33 +520,68 @@ class Survey(models.Model):
 
         return survey
 
-    def _copy_missing_field_dimensions(self, target_universe: Universe) -> list[Dimension]:
+    def _qualify_dimension_fields_for_clone(self, target: Survey) -> dict[str, dict]:
         """
-        Saving a Form resolves the dimension of each dimension field in its survey's
-        Universe, so a cloned form can only be saved once every dimension it refers
-        to exists in the target Universe.
+        Returns per field slug the attributes to override in the cloned forms so that each
+        dimension field keeps referring to the same kind of universe it referred to in this
+        survey. Needed when the clone lives in a different universe app than the source, eg.
+        when a legacy invite form in the program universe is cloned into the involvement universe.
         """
-        referenced_slugs = {
-            dimension_slug
-            for form in self.languages.all()
-            for field in form.fields
-            if field.get("type") in ("DimensionSingleSelect", "DimensionMultiSelect")
-            and (dimension_slug := field.get("dimension"))
-        }
-        existing_slugs = set(
-            target_universe.dimensions.filter(slug__in=referenced_slugs).values_list("slug", flat=True)
-        )
-        missing_dimensions = (
-            self.universe.dimensions.filter(slug__in=referenced_slugs - existing_slugs)
-            .prefetch_related("values")
-            .order_by("order")
-        )
+        from kompassi.program_v2.dimensions import LEGACY_INVITE_HOST_DIMENSION_SLUGS
 
-        dimension_dtos = [DimensionDTO.from_dimension(dimension) for dimension in missing_dimensions]
-        if not dimension_dtos:
-            return []
+        if self.universe.app == target.universe.app:
+            return {}
 
-        return DimensionDTO.save_many(target_universe, dimension_dtos)
+        overrides: dict[str, dict] = {}
+        for form in self.languages.all():
+            for field in form.fields:
+                if field.get("type") not in DIMENSION_FIELD_TYPES or field.get("dimensionUniverse"):
+                    continue
+
+                dimension_slug = field.get("dimension", "")
+                if self.universe.app == DimensionApp.PROGRAM and dimension_slug in LEGACY_INVITE_HOST_DIMENSION_SLUGS:
+                    universe_app = DimensionApp.INVOLVEMENT
+                else:
+                    universe_app = self.universe.app
+
+                overrides[field["slug"]] = dict(dimensionUniverse=universe_app.value)
+
+        return overrides
+
+    def _copy_missing_field_dimensions(self, target: Survey, field_overrides: dict[str, dict]) -> list[Dimension]:
+        """
+        Saving a Form resolves the dimension of each dimension field in the universe the
+        field refers to, so a cloned form can only be saved once every dimension it refers
+        to exists in the universe the cloned field refers to. Each missing dimension is copied
+        from the universe the source field refers to.
+        """
+        sources_by_target: dict[Universe, dict[str, Universe]] = {}
+        for form in self.languages.all():
+            for field in form.fields:
+                if field.get("type") not in DIMENSION_FIELD_TYPES or not (dimension_slug := field.get("dimension")):
+                    continue
+                source_universe = self.resolve_dimension_universe(field.get("dimensionUniverse"))
+                cloned_field = {**field, **field_overrides.get(field["slug"], {})}
+                target_universe = target.resolve_dimension_universe(cloned_field.get("dimensionUniverse"))
+                sources_by_target.setdefault(target_universe, {})[dimension_slug] = source_universe
+
+        copied: list[Dimension] = []
+        for target_universe, sources in sources_by_target.items():
+            existing_slugs = set(target_universe.dimensions.filter(slug__in=sources).values_list("slug", flat=True))
+            missing_dimensions = [
+                dimension
+                for source_universe in set(sources.values())
+                for dimension in source_universe.dimensions.filter(
+                    slug__in={slug for slug, source in sources.items() if source == source_universe} - existing_slugs
+                )
+                .prefetch_related("values")
+                .order_by("order")
+            ]
+            dimension_dtos = [DimensionDTO.from_dimension(dimension) for dimension in missing_dimensions]
+            if dimension_dtos:
+                copied.extend(DimensionDTO.save_many(target_universe, dimension_dtos))
+
+        return copied
 
     @transaction.atomic
     def set_default_response_dimension_values(

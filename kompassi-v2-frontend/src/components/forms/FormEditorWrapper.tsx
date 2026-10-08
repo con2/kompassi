@@ -2,14 +2,18 @@
 
 import { useCallback, useState } from "react";
 import FormEditor from "./FormEditor";
-import type { AnnotationOption, FormEditorContext } from "./editFieldForm";
-import { Field } from "./models";
-import { DimensionValueSelectFragment } from "@/__generated__/graphql";
+import type {
+  AnnotationOption,
+  EditorDimension,
+  FormEditorContext,
+} from "./editFieldForm";
+import { DimensionUniverse, Field } from "./models";
 import type { Translations } from "@/translations/en";
 
 interface Props {
   initialFields: Field[];
-  dimensions: DimensionValueSelectFragment[];
+  dimensions: EditorDimension[];
+  defaultDimensionUniverse?: DimensionUniverse;
   annotations?: AnnotationOption[];
   formContext?: FormEditorContext;
   messages: {
@@ -28,6 +32,7 @@ export default function FormEditorWrapper({
   onChange,
   onPromoteFieldToDimension: onPromoteFieldToDimension,
   dimensions,
+  defaultDimensionUniverse,
   annotations,
   formContext,
 }: Props) {
@@ -45,6 +50,7 @@ export default function FormEditorWrapper({
   return (
     <FormEditor
       dimensions={dimensions}
+      defaultDimensionUniverse={defaultDimensionUniverse}
       annotations={annotations}
       formContext={formContext}
       value={fields}

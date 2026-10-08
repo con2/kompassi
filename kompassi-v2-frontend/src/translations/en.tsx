@@ -304,6 +304,10 @@ const translations = {
         title: "Dimension",
         helpText: "Which dimension should the field get its choices from?",
       },
+      dimensionUniverse: {
+        program: "Program item",
+        involvement: "Program host",
+      },
       maxLength: {
         title: "Maximum length",
         helpText:
