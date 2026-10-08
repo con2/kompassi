@@ -1602,7 +1602,7 @@ def test_survey_clone_clones_universe_for_standalone_survey():
 def test_survey_clone_uses_target_event_program_universe():
     """
     Cloning into a program form (app=PROGRAM) uses the target event's shared program
-    Universe as is; no dimensions are cloned from the source survey.
+    Universe as is; dimensions no form field refers to are not cloned from the source survey.
     """
     from kompassi.program_v2.models.meta import ProgramV2EventMeta
 
@@ -1625,6 +1625,79 @@ def test_survey_clone_uses_target_event_program_universe():
     assert clone.universe_id == target_event.program_universe.id
     assert clone.universe.dimensions.count() == dimension_count_before
     assert not clone.universe.dimensions.filter(slug="color").exists()
+
+
+@pytest.mark.django_db
+def test_survey_clone_copies_missing_field_dimensions_into_program_universe():
+    """
+    Cloning a program form into another event copies the dimensions its fields refer to
+    that the target event's program Universe lacks, so that the cloned form can be saved.
+    Dimensions the target Universe already has are kept as they are.
+    """
+    from kompassi.program_v2.models.meta import ProgramV2EventMeta
+
+    source_meta, _created = ProgramV2EventMeta.get_or_create_dummy()
+    source_event = source_meta.event
+
+    target_event = Event.objects.create(
+        name="Clone target event",
+        slug="clone-target-event",
+        organization=source_event.organization,
+        venue=source_event.venue,
+        start_time=source_event.start_time + timedelta(days=365),
+        end_time=source_event.end_time + timedelta(days=365),
+    )
+    ProgramV2EventMeta.objects.create(
+        event=target_event,
+        admin_group=ProgramV2EventMeta.get_or_create_groups(target_event, ("admins",))[0],
+        default_registry=source_meta.default_registry,
+    )
+
+    genre = Dimension.objects.create(universe=source_event.program_universe, slug="genre", title_en="Genre")
+    DimensionValue.objects.create(dimension=genre, slug="fantasy", title_en="Fantasy")
+    DimensionValue.objects.create(dimension=genre, slug="scifi", title_en="Sci-fi")
+
+    source_survey = Survey(
+        event=source_event,
+        slug="offer-form",
+        app=DimensionApp.PROGRAM,
+        purpose=SurveyPurpose.DEFAULT,
+    ).with_mandatory_fields()
+    source_survey.save()
+    Form.objects.create(
+        event=source_event,
+        survey=source_survey,
+        language="en",
+        title="Program offer",
+        fields=[
+            dict(slug="genre", type="DimensionSingleSelect", title="Genre", dimension="genre"),
+            dict(slug="room", type="DimensionMultiSelect", title="Room", dimension="room"),
+        ],
+    )
+
+    target_room = target_event.program_universe.dimensions.get(slug="room")
+    target_room.title_en = "Target room"
+    target_room.save()
+    assert not target_event.program_universe.dimensions.filter(slug="genre").exists()
+
+    clone = source_survey.clone(
+        event=target_event,
+        slug="offer-form",
+        app=DimensionApp.PROGRAM,
+        purpose=SurveyPurpose.DEFAULT,
+    )
+
+    cloned_genre = clone.universe.dimensions.get(slug="genre")
+    assert cloned_genre.id != genre.id
+    assert cloned_genre.title_en == "Genre"
+    assert set(cloned_genre.values.values_list("slug", flat=True)) == {"fantasy", "scifi"}
+
+    target_room.refresh_from_db()
+    assert target_room.title_en == "Target room"
+
+    cloned_form = clone.languages.get(language="en")
+    genre_field = next(field for field in cloned_form.cached_enriched_fields if field["slug"] == "genre")
+    assert {choice["slug"] for choice in genre_field["choices"]} == {"fantasy", "scifi"}
 
 
 def _graphql_request(user):

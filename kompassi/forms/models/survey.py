@@ -459,7 +459,8 @@ class Survey(models.Model):
         Clones this survey with its language versions (but not responses). A stand-alone
         survey (app=FORMS) gets a fresh clone of this survey's Universe, including its
         dimensions and values. A program form (app=PROGRAM) uses the target event's shared
-        program Universe (an invite uses the involvement Universe) as is; no dimension cloning applies there.
+        program Universe (an invite uses the involvement Universe); dimensions its fields
+        refer to that the target Universe lacks are copied over, existing ones are kept as is.
         Some fields are not copied over because they make no sense or might cause data leaks.
         """
         survey = Survey(
@@ -482,6 +483,9 @@ class Survey(models.Model):
         survey.with_mandatory_fields()
         survey.save()
 
+        if survey.universe_id != self.universe_id and app != DimensionApp.FORMS:
+            self._copy_missing_field_dimensions(survey.universe)
+
         cloned_forms = [form.clone(survey, created_by=created_by) for form in self.languages.all()]
 
         # cached_key_fields is denormalized from the isKeyField flag of the (cloned) form fields.
@@ -489,6 +493,34 @@ class Survey(models.Model):
             survey.refresh_cached_key_fields(cloned_forms[0])
 
         return survey
+
+    def _copy_missing_field_dimensions(self, target_universe: Universe) -> list[Dimension]:
+        """
+        Saving a Form resolves the dimension of each dimension field in its survey's
+        Universe, so a cloned form can only be saved once every dimension it refers
+        to exists in the target Universe.
+        """
+        referenced_slugs = {
+            dimension_slug
+            for form in self.languages.all()
+            for field in form.fields
+            if field.get("type") in ("DimensionSingleSelect", "DimensionMultiSelect")
+            and (dimension_slug := field.get("dimension"))
+        }
+        existing_slugs = set(
+            target_universe.dimensions.filter(slug__in=referenced_slugs).values_list("slug", flat=True)
+        )
+        missing_dimensions = (
+            self.universe.dimensions.filter(slug__in=referenced_slugs - existing_slugs)
+            .prefetch_related("values")
+            .order_by("order")
+        )
+
+        dimension_dtos = [DimensionDTO.from_dimension(dimension) for dimension in missing_dimensions]
+        if not dimension_dtos:
+            return []
+
+        return DimensionDTO.save_many(target_universe, dimension_dtos)
 
     @transaction.atomic
     def set_default_response_dimension_values(
