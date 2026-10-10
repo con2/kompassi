@@ -7,7 +7,8 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from kompassi.core.utils.cleanup import register_cleanup
-from kompassi.graphql_api.language import DEFAULT_LANGUAGE, to_supported_language
+from kompassi.graphql_api.language import DEFAULT_LANGUAGE, SupportedLanguageCode, to_supported_language
+from kompassi.involvement.dumpers.section import section
 
 from ..utils import url
 from .one_time_code import OneTimeCode
@@ -39,3 +40,13 @@ class EmailVerificationToken(OneTimeCode):
         language = DEFAULT_LANGUAGE if language == "sv" else language
 
         return render_to_string(f"emails/{language}/core_email_verification_message.eml", vars, request=request)
+
+    def dump_own_data(self, language: SupportedLanguageCode) -> dict:
+        # TODO how do we localize this?
+        return section(
+            title="Sähköpostin vahvistuskoodi",
+            content={
+                "Vahvistettava sähköpostiosoite": self.email,
+                **super().dump_own_data(language),
+            },
+        )
