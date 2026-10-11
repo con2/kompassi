@@ -95,6 +95,7 @@ class InvolvementEventMeta(models.Model, GroupManagementMixin):
 
     @cached_property
     def emperkelator_class(self) -> type[BaseEmperkelator] | None:
+        from kompassi.events.kotaeexpo2026.emperkelator import KotaeEmperkelator
         from kompassi.involvement.emperkelators.desucon2026 import DesuconEmperkelator
         from kompassi.involvement.emperkelators.ropecon2026 import RopeconEmperkelator
         from kompassi.involvement.emperkelators.tracon2027 import TraconEmperkelator
@@ -108,6 +109,8 @@ class InvolvementEventMeta(models.Model, GroupManagementMixin):
 
         if base_slug == "tracon" and year >= 2027:
             return TraconEmperkelator
+        elif base_slug == "kotaeexpo" and year == 2026:
+            return KotaeEmperkelator
         elif base_slug in ("desucon", "frostbite") and year >= 2026:
             return DesuconEmperkelator
         elif base_slug == "ropecon" and year >= 2026:
