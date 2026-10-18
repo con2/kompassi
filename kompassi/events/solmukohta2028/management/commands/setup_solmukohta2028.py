@@ -171,12 +171,12 @@ class Setup:
 
     def setup_access(self):
         organizer_group = self.event.labour_event_meta.get_group("organizers")
-        domain = EmailAliasDomain.objects.get(domain_name="ropecon.fi")
-        GroupEmailAliasGrant.ensure(
-            organizer_group,
-            domain,
-            [EmailAliasVariant.FIRSTNAME_LASTNAME],
-        )
+        for domain_name in ["ropecon.fi", "solmukohta.eu"]:
+            GroupEmailAliasGrant.ensure(
+                organizer_group,
+                EmailAliasDomain.objects.get(domain_name=domain_name),
+                [EmailAliasVariant.CUSTOM_FIRSTNAME_LASTNAME],
+            )
 
         # Lets ropecon-aliases read the organizer group's members for Google Workspace account sync,
         # without granting it every group via the same API endpoint.

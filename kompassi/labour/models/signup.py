@@ -7,8 +7,9 @@ from functools import cached_property
 from typing import TYPE_CHECKING
 
 import django.utils.timezone
+from django.conf import settings
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Case, Sum, Value, When
 from django.db.models.functions import Coalesce
 from django.utils.translation import gettext_lazy as _
 
@@ -867,14 +868,24 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
     def email_address(self):
         from kompassi.access.models import EmailAlias
 
+        # An organization may run events with different alias domains (Ropecon ry has
+        # ropecon.fi and solmukohta.eu), so aliases granted through this event's own groups
+        # take precedence over aliases the person holds from the organization's other events.
+        event_group_prefix = f"{settings.KOMPASSI_INSTALLATION_SLUG}-{self.event.slug}-"
         email_alias = (
             EmailAlias.objects.filter(
                 type__domain__organization=self.event.organization,
                 person=self.person,
             )
-            .order_by("type__priority")
+            .annotate(
+                granted_through_other_event=Case(
+                    When(group_grant__group__name__startswith=event_group_prefix, then=Value(False)),
+                    default=Value(True),
+                )
+            )
+            .order_by("granted_through_other_event", "type__priority")
             .first()
-        )  # TODO order
+        )
 
         return email_alias.email_address if email_alias else self.person.email
 

@@ -23,6 +23,7 @@ class EmailAliasVariant(Enum):
     FIRSTNAME_LASTNAME = "firstname.lastname"
     NICK = "nick"
     CUSTOM = "custom"
+    CUSTOM_FIRSTNAME_LASTNAME = "custom or firstname.lastname"
 
     def get_account_name(self, person: Person, domain: EmailAliasDomain):
         match self:
@@ -33,11 +34,21 @@ class EmailAliasVariant(Enum):
             case EmailAliasVariant.NICK:
                 return emailify(person.first_name)
             case EmailAliasVariant.CUSTOM:
-                return self.get_custom_email_alias(person, domain)
+                return self.get_custom_email_alias(person, domain) or EmailAliasVariant.NICK.get_account_name(
+                    person, domain
+                )
+            case EmailAliasVariant.CUSTOM_FIRSTNAME_LASTNAME:
+                return self.get_custom_email_alias(
+                    person, domain
+                ) or EmailAliasVariant.FIRSTNAME_LASTNAME.get_account_name(person, domain)
             case _:
                 raise NotImplementedError(self)
 
-    def get_custom_email_alias(self, person: Person, domain: EmailAliasDomain):
+    def get_custom_email_alias(self, person: Person, domain: EmailAliasDomain) -> str:
+        """
+        Returns the alias the person asked for on their latest signup in the domain's
+        organization, or an empty string if they did not ask for one.
+        """
         from kompassi.labour.models.signup import Signup
 
         organization = domain.organization
@@ -53,10 +64,9 @@ class EmailAliasVariant(Enum):
             try:
                 return emailify(email_alias.replace(f"@{domain.domain_name}", ""))
             except Exception:
-                logger.exception("Failed to emailify tracon person %s", signup)
+                logger.exception("Failed to emailify custom email alias of %s", signup)
 
-        # fallback
-        return EmailAliasVariant.NICK.get_account_name(person, domain)
+        return ""
 
 
 class EmailAliasType(models.Model):

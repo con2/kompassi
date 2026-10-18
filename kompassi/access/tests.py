@@ -1,5 +1,7 @@
 from datetime import timedelta
+from types import SimpleNamespace
 from unittest import TestCase as NonDatabaseTestCase
+from unittest.mock import patch
 
 import pytest
 from django.test import RequestFactory, TestCase
@@ -9,11 +11,11 @@ from kompassi.core.models import Person
 from kompassi.core.models.event import Event
 from kompassi.event_log_v2.models.entry import Entry
 from kompassi.forms.models.survey import Survey
-from kompassi.labour.models import LabourEventMeta
+from kompassi.labour.models import LabourEventMeta, Signup
 
 from .constants import CBAC_PERMISSION_DENIED, CBAC_SUDO_CLAIMS
 from .exceptions import CBACPermissionDenied
-from .models import CBACEntry, Claims, EmailAlias, EmailAliasType, GroupEmailAliasGrant
+from .models import CBACEntry, Claims, EmailAlias, EmailAliasDomain, EmailAliasType, GroupEmailAliasGrant
 from .models.email_alias_type import EmailAliasVariant
 from .sudo import grant_sudo
 from .utils import emailify
@@ -358,3 +360,64 @@ def test_grant_access_tolerates_duplicate_entries():
     assert entry is not None
     assert not created
     assert CBACEntry.objects.filter(user=person.user, claims=claims).count() == 2
+
+
+class SignupEmailAddressTestCase(TestCase):
+    def test_prefers_alias_granted_through_own_event(self):
+        """
+        The person holds a higher-priority alias from another event of the same organization,
+        but the alias granted through this event's own group wins.
+        """
+        signup, _ = Signup.get_or_create_dummy()
+        event = signup.event
+        person = signup.person
+        organization = event.organization
+
+        other_event, _ = Event.get_or_create_dummy(name="Other Event")
+        other_meta, _ = LabourEventMeta.get_or_create_dummy(event=other_event)
+        other_signup, _ = Signup.get_or_create_dummy(event=other_event, person=person)
+
+        own_domain, _ = EmailAliasDomain.objects.get_or_create(domain_name="own.example", organization=organization)
+        other_domain, _ = EmailAliasDomain.objects.get_or_create(domain_name="other.example", organization=organization)
+        own_type = EmailAliasType.objects.create(
+            domain=own_domain, variant_slug=EmailAliasVariant.FIRSTNAME_LASTNAME.name, priority=10
+        )
+        other_type = EmailAliasType.objects.create(
+            domain=other_domain, variant_slug=EmailAliasVariant.FIRSTNAME_LASTNAME.name, priority=-10
+        )
+
+        own_grant = GroupEmailAliasGrant.objects.create(
+            group=event.labour_event_meta.get_group("admins"), type=own_type
+        )
+        other_grant = GroupEmailAliasGrant.objects.create(group=other_meta.get_group("admins"), type=other_type)
+        own_type.create_alias_for_person(person, group_grant=own_grant)
+        other_type.create_alias_for_person(person, group_grant=other_grant)
+
+        assert signup.email_address.endswith("@own.example")
+        assert other_signup.email_address.endswith("@other.example")
+
+
+class CustomFirstnameLastnameVariantTestCase(TestCase):
+    def test_falls_back_to_firstname_lastname_when_no_custom_alias(self):
+        signup, _ = Signup.get_or_create_dummy()
+        domain, _ = EmailAliasDomain.objects.get_or_create(
+            domain_name="custom.example",
+            organization=signup.event.organization,
+        )
+
+        variant = EmailAliasVariant.CUSTOM_FIRSTNAME_LASTNAME
+        assert variant.get_account_name(signup.person, domain) == "markku.mahtinen"
+
+    def test_uses_custom_alias_when_set(self):
+        """
+        The dummy signup extra has no email_alias field, so one is faked.
+        """
+        signup, _ = Signup.get_or_create_dummy()
+        domain, _ = EmailAliasDomain.objects.get_or_create(
+            domain_name="custom.example",
+            organization=signup.event.organization,
+        )
+
+        variant = EmailAliasVariant.CUSTOM_FIRSTNAME_LASTNAME
+        with patch.object(Signup, "signup_extra", new=SimpleNamespace(email_alias="Mahti.Markku")):
+            assert variant.get_account_name(signup.person, domain) == "mahti.markku"

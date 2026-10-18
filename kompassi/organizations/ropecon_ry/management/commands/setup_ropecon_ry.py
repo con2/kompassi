@@ -48,21 +48,30 @@ class Setup:
             ),
         )
 
-        domain, _ = EmailAliasDomain.objects.get_or_create(
-            domain_name="ropecon.fi",
-            defaults=dict(
-                organization=self.organization,
-            ),
-        )
-
-        for variant in [
-            EmailAliasVariant.FIRSTNAME_LASTNAME,
-            EmailAliasVariant.NICK,
+        # Lower priority number wins when a person holds aliases in several domains granted
+        # through the same event. Solmukohta events grant both domains and must resolve to
+        # solmukohta.eu; Ropecon events grant only ropecon.fi.
+        for domain_name, priority in [
+            ("ropecon.fi", 0),
+            ("solmukohta.eu", -10),
         ]:
-            EmailAliasType.objects.get_or_create(
-                domain=domain,
-                variant_slug=variant.name,
+            domain, _ = EmailAliasDomain.objects.get_or_create(
+                domain_name=domain_name,
+                defaults=dict(
+                    organization=self.organization,
+                ),
             )
+
+            for variant in [
+                EmailAliasVariant.FIRSTNAME_LASTNAME,
+                EmailAliasVariant.NICK,
+                EmailAliasVariant.CUSTOM_FIRSTNAME_LASTNAME,
+            ]:
+                EmailAliasType.objects.update_or_create(
+                    domain=domain,
+                    variant_slug=variant.name,
+                    defaults=dict(priority=priority),
+                )
 
     def setup_involvement(self):
         volunteers, _ = Registry.objects.get_or_create(
