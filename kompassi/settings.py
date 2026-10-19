@@ -47,6 +47,10 @@ DATABASES = {
     },
 }
 
+# Production connects through PgBouncer in transaction mode, which cannot keep a server-side
+# cursor open across transactions. QuerySet.iterator() then fetches in client-side chunks.
+DISABLE_SERVER_SIDE_CURSORS = True
+
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

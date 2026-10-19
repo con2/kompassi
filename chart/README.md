@@ -27,7 +27,10 @@ Three Secrets, managed out of band:
   `desuprofileOauth2ClientSecret`, `s3AccessKeyId`, `s3SecretAccessKey`, `oidcRsaPrivateKey`,
   `sshPrivateKey`, `sshKnownHosts`.
 - `postgres`: `hostname`, `database`, `username`, `password`. For a database on the shared
-  CloudNativePG cluster, `infrastructure/kubernetes/postgres/update-secret.sh` writes this shape.
+  CloudNativePG cluster, `infrastructure/kubernetes/postgres/update-secret.sh` writes this shape
+  and also `hostname_pooled`, the PgBouncer pooler, which `backend.postgresPooled: true` makes
+  the web pods and cron jobs read. The worker always reads `hostname`: its `LISTEN` needs a
+  session of its own.
 - `kompassi2`: `NEXTAUTH_SECRET`, `KOMPASSI_OIDC_CLIENT_ID`, `KOMPASSI_OIDC_CLIENT_SECRET`,
   `KOMPASSI_TICKETS_V2_API_KEY`. The last one must equal `ticketsApiKey` in `kompassi`.
 

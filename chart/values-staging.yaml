@@ -4,6 +4,7 @@ backend:
   baseUrl: https://dev.kompassi.eu
   installationName: Kompassi (DEV)
   installationSlug: turskadev
+  postgresPooled: true
   redis:
     cacheDatabase: 7
   s3:

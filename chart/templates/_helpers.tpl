@@ -97,10 +97,24 @@ from kubectl-applied manifests that had them inline, and server-side apply never
 another field manager owns, so those stale entries would shadow a ConfigMap forever.
 */}}
 {{- define "kompassi.backendEnv" -}}
+- name: POSTGRES_HOSTNAME
+  valueFrom: { secretKeyRef: { name: {{ include "kompassi.postgresSecretName" . }}, key: {{ .Values.backend.postgresPooled | ternary "hostname_pooled" "hostname" }} } }
+{{ include "kompassi.backendEnvAfterHostname" . }}
+{{- end -}}
+
+{{/*
+The worker LISTENs on a channel, which is session state that PgBouncer in transaction mode does not
+keep, so it always takes the direct hostname.
+*/}}
+{{- define "kompassi.backendEnvDirectDb" -}}
+- name: POSTGRES_HOSTNAME
+  valueFrom: { secretKeyRef: { name: {{ include "kompassi.postgresSecretName" . }}, key: hostname } }
+{{ include "kompassi.backendEnvAfterHostname" . }}
+{{- end -}}
+
+{{- define "kompassi.backendEnvAfterHostname" -}}
 {{- $secret := include "kompassi.backendSecretName" . -}}
 {{- $postgres := include "kompassi.postgresSecretName" . -}}
-- name: POSTGRES_HOSTNAME
-  valueFrom: { secretKeyRef: { name: {{ $postgres }}, key: hostname } }
 - name: POSTGRES_DATABASE
   valueFrom: { secretKeyRef: { name: {{ $postgres }}, key: database } }
 - name: POSTGRES_USERNAME

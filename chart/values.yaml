@@ -27,6 +27,10 @@ backend:
   # POSTGRES_SSLMODE: `disable` for the CNPG cluster on the pod network, `require` for a database
   # reached over the internet.
   postgresSslMode: disable
+  # Web pods and cron jobs read the `postgres` Secret's hostname_pooled (PgBouncer in transaction
+  # mode) instead of hostname. The worker always reads hostname: its LISTEN needs a session of
+  # its own.
+  postgresPooled: false
   redis:
     hostname: redis-ha-haproxy.redis-ha.svc.cluster.local
     # Each environment sharing the Redis needs its own database number.
@@ -71,6 +75,7 @@ backend:
     sshKnownHosts: changeme
   postgresSecret:
     hostname: postgres
+    hostname_pooled: postgres
     database: changeme
     username: changeme
     password: changeme

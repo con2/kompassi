@@ -9,8 +9,8 @@ backend:
   replicas:
     kompassi: 3
     uvicorn: 3
-  # Until the production database moves to the CNPG cluster on qb.
   postgresSslMode: require
+  postgresPooled: true
   redis:
     cacheDatabase: 9
   s3:

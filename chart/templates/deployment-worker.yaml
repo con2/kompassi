@@ -30,7 +30,7 @@ spec:
           image: {{ include "kompassi.backendImage" . | quote }}
           args: ["python", "manage.py", "worker"]
           env:
-            {{- include "kompassi.backendEnv" . | nindent 12 }}
+            {{- include "kompassi.backendEnvDirectDb" . | nindent 12 }}
           resources:
             {{- toYaml .Values.resources.worker | nindent 12 }}
           securityContext:
