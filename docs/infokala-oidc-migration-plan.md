@@ -66,12 +66,12 @@ runtime.
 `/oidc/userinfo/`, regardless of granted scope:
 
 ```python
-email=request.user.person.email,
-email_verified=request.user.person.is_email_verified,
-family_name=request.user.person.surname,
-given_name=request.user.person.first_name,
-groups=[group.name for group in request.user.groups.all()],
-name=request.user.person.full_name,
+email = (request.user.person.email,)
+email_verified = (request.user.person.is_email_verified,)
+family_name = (request.user.person.surname,)
+given_name = (request.user.person.first_name,)
+groups = ([group.name for group in request.user.groups.all()],)
+name = (request.user.person.full_name,)
 ```
 
 Plus the toolkit default `sub` = `str(request.user.pk)` (a stable numeric
@@ -115,7 +115,7 @@ and default behavior below are accurate as of v5.0.1.
        "kompassi_oidc.backends.KompassiOIDCAuthenticationBackend",  # new
    ]
 
-   OIDC_RP_CLIENT_ID = env("KOMPASSI_OAUTH2_CLIENT_ID")      # reuse existing env var names —
+   OIDC_RP_CLIENT_ID = env("KOMPASSI_OAUTH2_CLIENT_ID")  # reuse existing env var names —
    OIDC_RP_CLIENT_SECRET = env("KOMPASSI_OAUTH2_CLIENT_SECRET")  # avoids extra K8s secret churn
    OIDC_OP_AUTHORIZATION_ENDPOINT = f"{KOMPASSI_HOST}/oidc/authorize/"
    OIDC_OP_TOKEN_ENDPOINT = f"{KOMPASSI_HOST}/oidc/token/"
@@ -174,6 +174,7 @@ before the view-level check runs.
 ```python
 def verify_claims(self, claims):
     return True  # no login-time gate today; keep parity, don't introduce one
+
 
 def update_user(self, user, claims):
     groups = claims.get("groups", [])
