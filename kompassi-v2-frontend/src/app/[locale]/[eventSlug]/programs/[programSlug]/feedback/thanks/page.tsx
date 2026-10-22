@@ -3,11 +3,17 @@ import Link from "next/link";
 
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
+import ClearDraft from "@/components/forms/ClearDraft";
+import { feedbackDraftKey } from "@/components/forms/draftKeys";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
 const query = graphql(`
-  query ProgramFeedbackQuery($eventSlug: String!, $programSlug: String!) {
+  query ProgramFeedbackThanksQuery($eventSlug: String!, $programSlug: String!) {
+    profile {
+      id
+    }
+
     event(slug: $eventSlug) {
       name
       program {
@@ -52,9 +58,16 @@ export default async function ProgramFeedbackPage(props: Props) {
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Program.feedback;
+  const { data } = await getClient().query({
+    query,
+    variables: { eventSlug, programSlug },
+  });
 
   return (
     <ViewContainer>
+      <ClearDraft
+        draftKey={feedbackDraftKey(eventSlug, programSlug, data.profile)}
+      />
       <Link
         className="link-subtle"
         href={`/${eventSlug}/programs/${programSlug}`}

@@ -231,7 +231,7 @@ function SchemaFormInput({
       return (
         <Fragment key={JSON.stringify(value)}>
           {field.choices?.map((choice) => {
-            const name = `${field.slug}.${choice.slug}`;
+            const name = `${slug}.${choice.slug}`;
             const choiceId = `${idPrefix}${idPrefix ? "-" : ""}${field.slug}-${
               choice.slug
             }`;
@@ -278,7 +278,7 @@ function SchemaFormInput({
                       type="radio"
                       required={required}
                       disabled={readOnly}
-                      name={`${field.slug}.${question.slug}`}
+                      name={`${slug}.${question.slug}`}
                       value={choice.slug}
                       defaultChecked={choice.slug === value?.[question.slug]}
                       title={`${choice.title}`}

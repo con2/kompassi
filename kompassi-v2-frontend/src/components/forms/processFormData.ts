@@ -36,18 +36,17 @@ export default function processFormData(
       case "MultiSelect":
       case "DimensionMultiSelect":
         const choicesPrefix = `${slug}.`;
+        const chosen: string[] = [];
         for (const [key, value] of Object.entries(byFieldName)) {
-          if (key.startsWith(choicesPrefix)) {
-            const choiceSlug = key.slice(choicesPrefix.length);
-            if (
-              typeof byFieldName[key] === "string" &&
-              !falsyValues.has(byFieldName[key])
-            ) {
-              const chosen = (values[choiceSlug] ??= []) as string[];
-              chosen.push(value as string);
-            }
+          if (
+            key.startsWith(choicesPrefix) &&
+            typeof value === "string" &&
+            !falsyValues.has(value)
+          ) {
+            chosen.push(key.slice(choicesPrefix.length));
           }
         }
+        values[field.slug] = chosen;
         break;
 
       case "RadioMatrix":
@@ -59,6 +58,7 @@ export default function processFormData(
             matrixValues[question.slug] = value as string;
           }
         }
+        values[field.slug] = matrixValues;
         break;
 
       case "NumberField":

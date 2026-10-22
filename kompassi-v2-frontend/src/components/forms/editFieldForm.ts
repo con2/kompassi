@@ -324,7 +324,10 @@ export function formDataToField(
 ): Field {
   const values: Values = {
     ...processFormData(fields, formData),
-    encryptTo: ((formData.get("encryptTo") as string) || "").split("\n"),
+    encryptTo: ((formData.get("encryptTo") as string) || "")
+      .split("\n")
+      .map((recipient) => recipient.trim())
+      .filter(Boolean),
   };
 
   // the backend rejects "on edit" without an annotation to pass forward to

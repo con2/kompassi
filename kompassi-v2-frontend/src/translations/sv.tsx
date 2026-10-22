@@ -191,6 +191,11 @@ const translations: Translations = {
       checked: "Valt",
       unchecked: "Icke valt",
     },
+    draft: {
+      restored: "Dina oskickade svar från {savedAt} återställdes.",
+      filesNotRestored: "Bifogade filer måste väljas på nytt.",
+      discard: "Förkasta återställda svar",
+    },
   },
   MainView: {
     defaultErrorMessage:

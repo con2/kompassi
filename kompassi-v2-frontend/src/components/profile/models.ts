@@ -2,6 +2,7 @@ import { graphql } from "@/__generated__";
 
 graphql(`
   fragment FullOwnProfile on OwnProfileType {
+    id
     firstName
     lastName
     nick
