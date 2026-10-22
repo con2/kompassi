@@ -29,8 +29,16 @@ interface Props extends SchemaFormProps {
 
 const saveDelayMs = 500;
 
-function withoutFileUploads(fields: Field[]): Field[] {
-  return fields.filter((field) => field.type !== "FileUpload");
+/// Files cannot be restored into an input, and answers the backend encrypts
+/// at rest must not sit in plaintext in localStorage.
+function draftableFields(fields: Field[]): Field[] {
+  return fields
+    .filter((field) => field.type !== "FileUpload" && !field.encryptTo?.length)
+    .map((field) =>
+      field.type === "MultiItemField"
+        ? { ...field, fields: draftableFields(field.fields) }
+        : field,
+    );
 }
 
 /// DateTimeInput submits a naive local datetime but only accepts a full
@@ -83,6 +91,11 @@ export default function AutosaveSchemaForm(props: Props) {
   const draft = discarded ? null : restored;
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  // After discard, nothing is saved until the user records a new answer; the
+  // discard click itself and a later pagehide would otherwise write the
+  // emptied form back as a draft.
+  const suppressedRef = useRef(false);
 
   useEffect(() => {
     if (draftKey) pruneExpiredDrafts();
@@ -93,35 +106,40 @@ export default function AutosaveSchemaForm(props: Props) {
     const form = containerRef.current?.closest("form");
     if (!form) return;
 
-    let timer: ReturnType<typeof setTimeout> | undefined;
+    const cancelPending = () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = undefined;
+    };
     const save = () => {
-      timer = undefined;
+      timerRef.current = undefined;
+      if (suppressedRef.current) return;
       const formData = new FormData(form);
-      saveDraft(
-        draftKey,
-        processFormData(withoutFileUploads(fields), formData),
-      );
+      saveDraft(draftKey, processFormData(draftableFields(fields), formData));
     };
     const saveLater = () => {
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(save, saveDelayMs);
+      cancelPending();
+      timerRef.current = setTimeout(save, saveDelayMs);
     };
     const saveNow = () => {
-      if (timer) clearTimeout(timer);
+      cancelPending();
       save();
+    };
+    const resumeAndSaveLater = () => {
+      suppressedRef.current = false;
+      saveLater();
     };
 
     // click covers inputs that update a hidden field programmatically
     // (DateTimeInput), which fires no input or change event on the form.
-    form.addEventListener("input", saveLater);
-    form.addEventListener("change", saveLater);
+    form.addEventListener("input", resumeAndSaveLater);
+    form.addEventListener("change", resumeAndSaveLater);
     form.addEventListener("click", saveLater);
     form.addEventListener("submit", saveNow);
     window.addEventListener("pagehide", saveNow);
     return () => {
-      if (timer) clearTimeout(timer);
-      form.removeEventListener("input", saveLater);
-      form.removeEventListener("change", saveLater);
+      cancelPending();
+      form.removeEventListener("input", resumeAndSaveLater);
+      form.removeEventListener("change", resumeAndSaveLater);
       form.removeEventListener("click", saveLater);
       form.removeEventListener("submit", saveNow);
       window.removeEventListener("pagehide", saveNow);
@@ -129,6 +147,9 @@ export default function AutosaveSchemaForm(props: Props) {
   }, [draftKey, fields]);
 
   const discard = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = undefined;
+    suppressedRef.current = true;
     if (draftKey) clearDraft(draftKey);
     setDiscarded(true);
   }, [draftKey]);
