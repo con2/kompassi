@@ -98,8 +98,11 @@ export default function AutosaveSchemaForm(props: Props) {
   // What the form showed right after its last mount. A save that would store
   // exactly this is skipped: it would only turn an untouched or just-discarded
   // form into a draft (the discard click and a later pagehide both trigger a
-  // save).
+  // save). Once something else has been saved, returning to the baseline must
+  // still be recorded, or the stale draft would come back on the next visit.
   const baselineRef = useRef<string | null>(null);
+  const baselineIsDraftRef = useRef(false);
+  const savedSinceBaselineRef = useRef(false);
 
   const serializeForm = useCallback(
     (form: HTMLFormElement) =>
@@ -116,6 +119,8 @@ export default function AutosaveSchemaForm(props: Props) {
   useEffect(() => {
     const form = containerRef.current?.closest("form");
     baselineRef.current = form ? serializeForm(form) : null;
+    baselineIsDraftRef.current = draft !== null;
+    savedSinceBaselineRef.current = false;
   }, [draft, serializeForm]);
 
   useEffect(() => {
@@ -130,8 +135,18 @@ export default function AutosaveSchemaForm(props: Props) {
     const save = () => {
       timerRef.current = undefined;
       const serialized = serializeForm(form);
-      if (serialized === baselineRef.current) return;
+      if (serialized === baselineRef.current) {
+        if (!savedSinceBaselineRef.current) return;
+        if (baselineIsDraftRef.current) {
+          saveDraft(draftKey, JSON.parse(serialized));
+        } else {
+          clearDraft(draftKey);
+        }
+        savedSinceBaselineRef.current = false;
+        return;
+      }
       saveDraft(draftKey, JSON.parse(serialized));
+      savedSinceBaselineRef.current = true;
     };
     const saveLater = () => {
       cancelPending();
