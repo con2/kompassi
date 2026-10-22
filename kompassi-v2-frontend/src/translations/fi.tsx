@@ -202,8 +202,8 @@ const translations: Translations = {
       unchecked: "Ei valittu",
     },
     draft: {
-      restored:
-        "Lähettämättömät vastauksesi ajalta {savedAt} palautettiin. Liitetiedostot on valittava uudelleen.",
+      restored: "Lähettämättömät vastauksesi ajalta {savedAt} palautettiin.",
+      filesNotRestored: "Liitetiedostot on valittava uudelleen.",
       discard: "Hylkää palautetut vastaukset",
     },
   },

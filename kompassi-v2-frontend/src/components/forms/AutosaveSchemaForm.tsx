@@ -71,6 +71,14 @@ function normalizeRestoredValues(fields: Field[], values: Values): Values {
   return normalized;
 }
 
+function hasFileUpload(fields: Field[]): boolean {
+  return fields.some(
+    (field) =>
+      field.type === "FileUpload" ||
+      (field.type === "MultiItemField" && hasFileUpload(field.fields)),
+  );
+}
+
 const subscribeToNothing = () => () => {};
 
 /// SchemaForm that keeps the user's input in localStorage until the enclosing
@@ -202,6 +210,7 @@ export default function AutosaveSchemaForm(props: Props) {
               "{savedAt}",
               formatDateTime(draft.savedAt, locale ?? "fi"),
             )}
+            {hasFileUpload(fields) && ` ${messages.draft.filesNotRestored}`}
           </span>
           <button
             type="button"

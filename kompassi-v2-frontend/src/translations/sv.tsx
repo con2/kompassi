@@ -192,8 +192,8 @@ const translations: Translations = {
       unchecked: "Icke valt",
     },
     draft: {
-      restored:
-        "Dina oskickade svar från {savedAt} återställdes. Bifogade filer måste väljas på nytt.",
+      restored: "Dina oskickade svar från {savedAt} återställdes.",
+      filesNotRestored: "Bifogade filer måste väljas på nytt.",
       discard: "Förkasta återställda svar",
     },
   },
