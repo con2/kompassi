@@ -30,10 +30,13 @@ interface Props extends SchemaFormProps {
 const saveDelayMs = 500;
 
 /// Files cannot be restored into an input, and answers the backend encrypts
-/// at rest must not sit in plaintext in localStorage.
+/// at rest must not sit in plaintext in localStorage. The field editor saves
+/// encryptTo as [""] when no recipient is given, so only non-empty entries count.
 function draftableFields(fields: Field[]): Field[] {
   return fields
-    .filter((field) => field.type !== "FileUpload" && !field.encryptTo?.length)
+    .filter(
+      (field) => field.type !== "FileUpload" && !field.encryptTo?.some(Boolean),
+    )
     .map((field) =>
       field.type === "MultiItemField"
         ? { ...field, fields: draftableFields(field.fields) }
