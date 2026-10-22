@@ -92,14 +92,28 @@ export default function AutosaveSchemaForm(props: Props) {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  // After discard, nothing is saved until the user records a new answer; the
-  // discard click itself and a later pagehide would otherwise write the
-  // emptied form back as a draft.
-  const suppressedRef = useRef(false);
+  // What the form showed right after its last mount. A save that would store
+  // exactly this is skipped: it would only turn an untouched or just-discarded
+  // form into a draft (the discard click and a later pagehide both trigger a
+  // save).
+  const baselineRef = useRef<string | null>(null);
+
+  const serializeForm = useCallback(
+    (form: HTMLFormElement) =>
+      JSON.stringify(
+        processFormData(draftableFields(fields), new FormData(form)),
+      ),
+    [fields],
+  );
 
   useEffect(() => {
     if (draftKey) pruneExpiredDrafts();
   }, [draftKey]);
+
+  useEffect(() => {
+    const form = containerRef.current?.closest("form");
+    baselineRef.current = form ? serializeForm(form) : null;
+  }, [draft, serializeForm]);
 
   useEffect(() => {
     if (!draftKey) return;
@@ -112,9 +126,9 @@ export default function AutosaveSchemaForm(props: Props) {
     };
     const save = () => {
       timerRef.current = undefined;
-      if (suppressedRef.current) return;
-      const formData = new FormData(form);
-      saveDraft(draftKey, processFormData(draftableFields(fields), formData));
+      const serialized = serializeForm(form);
+      if (serialized === baselineRef.current) return;
+      saveDraft(draftKey, JSON.parse(serialized));
     };
     const saveLater = () => {
       cancelPending();
@@ -124,32 +138,27 @@ export default function AutosaveSchemaForm(props: Props) {
       cancelPending();
       save();
     };
-    const resumeAndSaveLater = () => {
-      suppressedRef.current = false;
-      saveLater();
-    };
 
     // click covers inputs that update a hidden field programmatically
     // (DateTimeInput), which fires no input or change event on the form.
-    form.addEventListener("input", resumeAndSaveLater);
-    form.addEventListener("change", resumeAndSaveLater);
+    form.addEventListener("input", saveLater);
+    form.addEventListener("change", saveLater);
     form.addEventListener("click", saveLater);
     form.addEventListener("submit", saveNow);
     window.addEventListener("pagehide", saveNow);
     return () => {
       cancelPending();
-      form.removeEventListener("input", resumeAndSaveLater);
-      form.removeEventListener("change", resumeAndSaveLater);
+      form.removeEventListener("input", saveLater);
+      form.removeEventListener("change", saveLater);
       form.removeEventListener("click", saveLater);
       form.removeEventListener("submit", saveNow);
       window.removeEventListener("pagehide", saveNow);
     };
-  }, [draftKey, fields]);
+  }, [draftKey, serializeForm]);
 
   const discard = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = undefined;
-    suppressedRef.current = true;
     if (draftKey) clearDraft(draftKey);
     setDiscarded(true);
   }, [draftKey]);
