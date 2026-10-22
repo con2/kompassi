@@ -4,7 +4,7 @@ import SchemaFormField from "./SchemaFormField";
 import SchemaFormInput from "./SchemaFormInput";
 import type { Translations } from "@/translations/en";
 
-interface SchemaFormProps {
+export interface SchemaFormProps {
   fields: Field[];
   values?: Record<string, any>;
   messages: Translations["SchemaForm"];

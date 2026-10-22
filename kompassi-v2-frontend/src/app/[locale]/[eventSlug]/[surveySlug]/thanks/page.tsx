@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
+import ClearDraft from "@/components/forms/ClearDraft";
+import { surveyDraftKey } from "@/components/forms/draftKeys";
 import { getTranslations } from "@/translations";
 
 const query = graphql(`
@@ -11,6 +13,10 @@ const query = graphql(`
     $surveySlug: String!
     $locale: String
   ) {
+    profile {
+      id
+    }
+
     event(slug: $eventSlug) {
       name
 
@@ -56,7 +62,7 @@ export default async function SurveyPage(props: SurveyPageProps) {
     query,
     variables: { eventSlug, surveySlug, locale },
   });
-  const { event } = data;
+  const { event, profile } = data;
   if (!event) {
     notFound();
   }
@@ -70,6 +76,7 @@ export default async function SurveyPage(props: SurveyPageProps) {
 
   return (
     <ViewContainer>
+      <ClearDraft draftKey={surveyDraftKey(eventSlug, surveySlug, profile)} />
       <ViewHeading>{t.thankYou.title}</ViewHeading>
       <Markdown input={message} />
     </ViewContainer>

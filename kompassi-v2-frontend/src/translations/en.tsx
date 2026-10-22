@@ -195,6 +195,12 @@ const translations = {
       checked: "Checked",
       unchecked: "Not checked",
     },
+    draft: {
+      // {savedAt} is substituted client-side: functions cannot cross the server-client boundary
+      restored:
+        "Your unsent answers from {savedAt} were restored. Attached files need to be selected again.",
+      discard: "Discard restored answers",
+    },
   },
   MainView: {
     defaultErrorMessage:

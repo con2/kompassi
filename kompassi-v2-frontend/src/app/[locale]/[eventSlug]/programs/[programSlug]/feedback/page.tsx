@@ -6,12 +6,17 @@ import { createProgramFeedback } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { Field } from "@/components/forms/models";
-import { SchemaForm } from "@/components/forms/SchemaForm";
+import AutosaveSchemaForm from "@/components/forms/AutosaveSchemaForm";
+import { feedbackDraftKey } from "@/components/forms/draftKeys";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
 const query = graphql(`
   query ProgramFeedbackQuery($eventSlug: String!, $programSlug: String!) {
+    profile {
+      id
+    }
+
     event(slug: $eventSlug) {
       name
       program {
@@ -109,7 +114,12 @@ export default async function ProgramFeedbackPage(props: Props) {
           programSlug,
         )}
       >
-        <SchemaForm fields={fields} messages={translations.SchemaForm} />
+        <AutosaveSchemaForm
+          draftKey={feedbackDraftKey(eventSlug, programSlug, data.profile)}
+          fields={fields}
+          messages={translations.SchemaForm}
+          locale={locale}
+        />
         <SubmitButton>{t.actions.submit}</SubmitButton>
       </form>
       <p className="mt-3 text-muted">

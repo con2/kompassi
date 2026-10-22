@@ -17,7 +17,8 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { AlsoAvailableInLanguage } from "@/components/forms/AlsoAvailableInLanguage";
 import { validateFields } from "@/components/forms/models";
-import { SchemaForm } from "@/components/forms/SchemaForm";
+import AutosaveSchemaForm from "@/components/forms/AutosaveSchemaForm";
+import { invitationDraftKey } from "@/components/forms/draftKeys";
 import TransferConsentForm from "@/components/involvement/TransferConsentForm";
 import { getTranslations } from "@/translations";
 
@@ -256,7 +257,12 @@ export default async function SurveyPage(props: Props) {
           locale={locale}
         />
 
-        <SchemaForm fields={fields} messages={translations.SchemaForm} />
+        <AutosaveSchemaForm
+          draftKey={invitationDraftKey(invitationId, profile)}
+          fields={fields}
+          messages={translations.SchemaForm}
+          locale={locale}
+        />
         <SubmitButton>{surveyT.actions.submit}</SubmitButton>
       </form>
     </ViewContainer>

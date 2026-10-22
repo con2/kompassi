@@ -9,13 +9,14 @@ import { searchParamsToFormData } from "@con2/components/helpers";
 import { notFound } from "next/navigation";
 
 import { graphql } from "@/__generated__";
-import { SurveyPurpose } from "@/__generated__/graphql";
+import { Anonymity, SurveyPurpose } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { AlsoAvailableInLanguage } from "@/components/forms/AlsoAvailableInLanguage";
 import { validateFields } from "@/components/forms/models";
 import processFormData from "@/components/forms/processFormData";
-import { SchemaForm } from "@/components/forms/SchemaForm";
+import AutosaveSchemaForm from "@/components/forms/AutosaveSchemaForm";
+import { surveyDraftKey } from "@/components/forms/draftKeys";
 import { AnonymityNotice } from "@/components/forms/AnonymityNotice";
 import TransferConsentForm from "@/components/involvement/TransferConsentForm";
 import { getTranslations } from "@/translations";
@@ -255,10 +256,16 @@ export default async function SurveyPage(props: Props) {
             messages={translations}
           />
         )}
-        <SchemaForm
+        <AutosaveSchemaForm
+          draftKey={
+            anonymity === Anonymity.Hard
+              ? null
+              : surveyDraftKey(eventSlug, surveySlug, profile)
+          }
           fields={fields}
           values={values}
           messages={translations.SchemaForm}
+          locale={locale}
         />
         <SubmitButton>{t.actions.submit}</SubmitButton>
       </form>
