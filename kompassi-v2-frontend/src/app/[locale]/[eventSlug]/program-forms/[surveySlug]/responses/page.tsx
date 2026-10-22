@@ -40,8 +40,8 @@ graphql(`
   fragment ProgramFormResponse on LimitedResponseType {
     id
     sequenceNumber
-    revisionCreatedAt
-    revisionCreatedBy {
+    originalCreatedAt
+    originalCreatedBy {
       displayName
     }
     language
@@ -191,20 +191,20 @@ export default async function ProgramFormResponsesPage(props: Props) {
       title: "#",
     },
     {
-      slug: "revisionCreatedAt",
+      slug: "originalCreatedAt",
       title: t.attributes.originalCreatedAt,
       getCellContents: (row) => (
         <Link
           href={`/${eventSlug}/program-forms/${surveySlug}/responses/${row.id}`}
         >
-          <FormattedDateTime value={row.revisionCreatedAt} locale={locale} />
+          <FormattedDateTime value={row.originalCreatedAt} locale={locale} />
         </Link>
       ),
     },
     {
-      slug: "revisionCreatedBy",
+      slug: "originalCreatedBy",
       title: t.attributes.originalCreatedBy,
-      getCellContents: (row) => row.revisionCreatedBy?.displayName || "",
+      getCellContents: (row) => row.originalCreatedBy?.displayName || "",
     },
   ];
 
