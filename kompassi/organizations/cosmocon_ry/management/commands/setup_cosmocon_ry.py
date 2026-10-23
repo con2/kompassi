@@ -1,6 +1,9 @@
+from datetime import timedelta
+
 from django.core.management.base import BaseCommand
 
 from kompassi.core.models import Organization
+from kompassi.involvement.models.registry import Registry
 from kompassi.payments.models import PaymentsOrganizationMeta
 from kompassi.payments.models.payments_organization_meta import META_DEFAULTS
 
@@ -12,6 +15,7 @@ class Setup:
     def setup(self):
         self.setup_core()
         self.setup_payments()
+        self.setup_involvement()
 
     def setup_core(self):
         self.organization, _ = Organization.objects.get_or_create(
@@ -28,6 +32,19 @@ class Setup:
         PaymentsOrganizationMeta.objects.get_or_create(
             organization=self.organization,
             defaults=META_DEFAULTS,
+        )
+
+    def setup_involvement(self):
+        Registry.objects.update_or_create(
+            scope=self.organization.scope,
+            slug="volunteers",
+            defaults=dict(
+                title_en="Volunteers of Cosmocon ry",
+                title_fi="Cosmocon ry:n vapaaehtoisrekisteri",
+                title_sv="Cosmocon ry:s volontärregister",
+                policy_url_fi="https://cosmocon.fi/tietosuoja",
+                default_retention_period=timedelta(days=2 * 365),
+            ),
         )
 
 
