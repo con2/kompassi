@@ -35,16 +35,14 @@ class Setup:
         )
 
     def setup_involvement(self):
-        # TODO(Cosmocon): Kun tietosuojaseloste on julkaistu cosmocon.fi:ssä, täydennä sen osoite
-        # tähän tai käyttöliittymästä osoitteessa /<tapahtuma>/registries. Ilman sitä Kompassi
-        # näyttää henkilötietojen luovutuslomakkeella tekstin "Tietosuojaseloste puuttuu".
-        Registry.objects.get_or_create(
+        Registry.objects.update_or_create(
             scope=self.organization.scope,
             slug="volunteers",
             defaults=dict(
                 title_en="Volunteers of Cosmocon ry",
                 title_fi="Cosmocon ry:n vapaaehtoisrekisteri",
                 title_sv="Cosmocon ry:s volontärregister",
+                policy_url_fi="https://cosmocon.fi/tietosuoja",
                 default_retention_period=timedelta(days=2 * 365),
             ),
         )

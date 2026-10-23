@@ -293,14 +293,16 @@ class Setup:
         )
 
     def setup_program_v2(self):
-        InvolvementEventMeta.ensure(self.event)
-
-        (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
-
+        # Fails fast if setup_cosmocon_ry has not run; InvolvementEventMeta.ensure would create the
+        # registry with incomplete defaults otherwise.
         registry = Registry.objects.get(
             scope=self.organization.scope,
             slug="volunteers",
         )
+
+        InvolvementEventMeta.ensure(self.event)
+
+        (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
 
         meta, _ = ProgramV2EventMeta.objects.update_or_create(
             event=self.event,
