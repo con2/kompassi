@@ -3327,6 +3327,9 @@ const translations: Translations = {
   Report: {
     singleTitle: "Rapport",
     listTitle: "Rapporter",
+    actions: {
+      downloadCsv: "Ladda ner CSV",
+    },
   },
 
   SignInRequired: {

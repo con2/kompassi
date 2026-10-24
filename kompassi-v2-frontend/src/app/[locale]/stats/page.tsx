@@ -58,6 +58,8 @@ export default async function StatsPage(props: Props) {
           report={report}
           timezone={defaultTimezone}
           locale={locale}
+          filenamePrefix="kompassi"
+          messages={translations.Report}
         />
       ))}
     </ViewContainer>

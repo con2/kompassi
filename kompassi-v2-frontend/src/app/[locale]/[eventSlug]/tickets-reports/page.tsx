@@ -126,6 +126,8 @@ export default async function ReportsPage(props: Props) {
           report={report}
           timezone={timezone}
           locale={locale}
+          filenamePrefix={eventSlug}
+          messages={translations.Report}
         />
       ))}
     </TicketsAdminView>

@@ -3383,6 +3383,9 @@ const translations = {
   Report: {
     singleTitle: "Report",
     listTitle: "Reports",
+    actions: {
+      downloadCsv: "Download CSV",
+    },
   },
 
   SignInRequired: {

@@ -109,6 +109,8 @@ export default async function ProgramReportsPage(props: Props) {
           report={report}
           timezone={timezone}
           locale={locale}
+          filenamePrefix={eventSlug}
+          messages={translations.Report}
         />
       ))}
     </ProgramAdminView>

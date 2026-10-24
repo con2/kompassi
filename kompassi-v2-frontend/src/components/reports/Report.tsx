@@ -6,7 +6,10 @@ import { ReportFragment, TypeOfColumn } from "@/__generated__/graphql";
 import { timezone as defaultTimezone } from "@/config";
 import formatMoney from "@/helpers/formatMoney";
 import { defaultLanguage } from "@/translations";
+import type { Translations } from "@/translations/en";
 import { Card, CardBody, CardTitle } from "react-bootstrap";
+
+import ReportCsvDownloadButton from "./ReportCsvDownloadButton";
 
 graphql(`
   fragment Report on ReportType {
@@ -55,9 +58,18 @@ interface Props {
   report: ReportFragment;
   timezone: Temporal.TimeZoneLike;
   locale: string;
+  /** Event slug, or something else identifying where the report is from. Used in the CSV filename. */
+  filenamePrefix: string;
+  messages: Translations["Report"];
 }
 
-export default function Report({ report, timezone, locale }: Props) {
+export default function Report({
+  report,
+  timezone,
+  locale,
+  filenamePrefix,
+  messages,
+}: Props) {
   const firstColumnWidth = 12 - 2 * (report.columns.length - 1);
   function cellClassName(column: Column<any>, index: number) {
     return index === 0 ? `col-${firstColumnWidth}` : "col-2 text-end";
@@ -74,7 +86,15 @@ export default function Report({ report, timezone, locale }: Props) {
   return (
     <Card className="mt-3 mb-3">
       <CardBody>
-        <CardTitle>{report.title}</CardTitle>
+        <div className="d-flex justify-content-between align-items-start">
+          <CardTitle>{report.title}</CardTitle>
+          <ReportCsvDownloadButton
+            report={report}
+            filenamePrefix={filenamePrefix}
+            timezone={timezone}
+            messages={messages.actions}
+          />
+        </div>
         <DataTable columns={columns} rows={report.rows}>
           {report.totalRow && (
             <tfoot>

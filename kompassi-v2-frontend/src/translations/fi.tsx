@@ -3390,6 +3390,9 @@ const translations: Translations = {
   Report: {
     singleTitle: "Raportti",
     listTitle: "Raportit",
+    actions: {
+      downloadCsv: "Lataa CSV",
+    },
   },
 
   SignInRequired: {
