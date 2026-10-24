@@ -7,9 +7,13 @@ import { timezone as defaultTimezone } from "@/config";
 import formatMoney from "@/helpers/formatMoney";
 import { defaultLanguage } from "@/translations";
 import type { Translations } from "@/translations/en";
-import { Card, CardBody, CardTitle } from "react-bootstrap";
-
-import ReportCsvDownloadButton from "./ReportCsvDownloadButton";
+import {
+  Card,
+  CardBody,
+  CardTitle,
+  DropdownButton,
+  DropdownItem,
+} from "react-bootstrap";
 
 graphql(`
   fragment Report on ReportType {
@@ -58,8 +62,11 @@ interface Props {
   report: ReportFragment;
   timezone: Temporal.TimeZoneLike;
   locale: string;
-  /** Event slug, or something else identifying where the report is from. Used in the CSV filename. */
-  filenamePrefix: string;
+  /**
+   * Backend URL that serves this report as `${exportBaseUrl}/${report.slug}.csv` and `.xlsx`,
+   * eg. `${kompassiBaseUrl}/events/${eventSlug}/tickets/reports`.
+   */
+  exportBaseUrl: string;
   messages: Translations["Report"];
 }
 
@@ -67,7 +74,7 @@ export default function Report({
   report,
   timezone,
   locale,
-  filenamePrefix,
+  exportBaseUrl,
   messages,
 }: Props) {
   const firstColumnWidth = 12 - 2 * (report.columns.length - 1);
@@ -88,12 +95,19 @@ export default function Report({
       <CardBody>
         <div className="d-flex justify-content-between align-items-start">
           <CardTitle>{report.title}</CardTitle>
-          <ReportCsvDownloadButton
-            report={report}
-            filenamePrefix={filenamePrefix}
-            timezone={timezone}
-            messages={messages.actions}
-          />
+          <DropdownButton
+            title={messages.actions.exportDropdown.title + "…"}
+            variant="outline-primary"
+          >
+            {(["csv", "xlsx"] as const).map((format) => (
+              <DropdownItem
+                key={format}
+                href={`${exportBaseUrl}/${report.slug}.${format}?${new URLSearchParams({ lang: locale })}`}
+              >
+                {messages.actions.exportDropdown[format]}
+              </DropdownItem>
+            ))}
+          </DropdownButton>
         </div>
         <DataTable columns={columns} rows={report.rows}>
           {report.totalRow && (

@@ -7,7 +7,7 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import Report from "@/components/reports/Report";
 import TicketsAdminView from "@/components/tickets/TicketsAdminView";
-import { timezone as defaultTimezone } from "@/config";
+import { kompassiBaseUrl, timezone as defaultTimezone } from "@/config";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -126,7 +126,7 @@ export default async function ReportsPage(props: Props) {
           report={report}
           timezone={timezone}
           locale={locale}
-          filenamePrefix={eventSlug}
+          exportBaseUrl={`${kompassiBaseUrl}/events/${eventSlug}/tickets/reports`}
           messages={translations.Report}
         />
       ))}

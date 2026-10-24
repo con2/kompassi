@@ -3328,7 +3328,11 @@ const translations: Translations = {
     singleTitle: "Rapport",
     listTitle: "Rapporter",
     actions: {
-      downloadCsv: "Ladda ner CSV",
+      exportDropdown: {
+        title: "Ladda ner som",
+        csv: "CSV",
+        xlsx: "Excel",
+      },
     },
   },
 

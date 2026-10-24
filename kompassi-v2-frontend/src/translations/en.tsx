@@ -3384,7 +3384,11 @@ const translations = {
     singleTitle: "Report",
     listTitle: "Reports",
     actions: {
-      downloadCsv: "Download CSV",
+      exportDropdown: {
+        title: "Download as",
+        csv: "CSV",
+        xlsx: "Excel",
+      },
     },
   },
 

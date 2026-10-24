@@ -27,6 +27,7 @@ kompassi_apps = [
     "forms",
     "emprinten",
     "program_v2",
+    "reports",
     "events.frostbite2025",
 ]
 

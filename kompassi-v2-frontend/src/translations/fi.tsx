@@ -3391,7 +3391,11 @@ const translations: Translations = {
     singleTitle: "Raportti",
     listTitle: "Raportit",
     actions: {
-      downloadCsv: "Lataa CSV",
+      exportDropdown: {
+        title: "Lataa tiedostona",
+        csv: "CSV",
+        xlsx: "Excel",
+      },
     },
   },
 

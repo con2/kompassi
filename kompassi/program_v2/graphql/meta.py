@@ -27,7 +27,6 @@ from kompassi.messages_v2.graphql.message_reply_to import MessageReplyToType
 from kompassi.messages_v2.models.message import Message
 from kompassi.messages_v2.models.message_reply_to import MessageReplyTo
 from kompassi.reports.graphql.report import ReportType
-from kompassi.reports.models.report import Report
 
 from ..filters import ProgramFilters, ProgramUserRelation
 from ..models import (
@@ -36,7 +35,7 @@ from ..models import (
     ScheduleItem,
 )
 from ..models.meta import ProgramV2ProfileMeta
-from ..reports.paikkala_reports import ReservationsByZone, ReservationStatus
+from ..reports import get_reports
 from .program_full import FullProgramType
 from .program_host_full import FullProgramHostType, ProgramHost
 from .schedule_item_full import FullScheduleItemType
@@ -463,15 +462,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
             request,
         )
 
-        reports: list[Report] = []
-        reports.extend(ReservationStatus.report(meta.event))
-        reports.extend(
-            ReservationsByZone.report(schedule_item, lang=lang)
-            for schedule_item in meta.schedule_items.filter(
-                cached_combined_dimensions__contains=dict(paikkala=[]),
-            )
-        )
-        return reports
+        return get_reports(meta, lang)
 
     reports = graphene.NonNull(
         graphene.List(graphene.NonNull(ReportType)),

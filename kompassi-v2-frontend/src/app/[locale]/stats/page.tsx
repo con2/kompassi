@@ -4,7 +4,7 @@ import { graphql } from "@/__generated__";
 import { ReportFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import Report from "@/components/reports/Report";
-import { timezone as defaultTimezone } from "@/config";
+import { kompassiBaseUrl, timezone as defaultTimezone } from "@/config";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -58,7 +58,7 @@ export default async function StatsPage(props: Props) {
           report={report}
           timezone={defaultTimezone}
           locale={locale}
-          filenamePrefix="kompassi"
+          exportBaseUrl={`${kompassiBaseUrl}/stats/reports`}
           messages={translations.Report}
         />
       ))}
