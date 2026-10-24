@@ -4,6 +4,7 @@ from datetime import UTC, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import pytest
+import xlsxwriter
 from django.utils.timezone import now
 
 from kompassi.access.models.cbac_entry import CBACEntry
@@ -12,7 +13,7 @@ from kompassi.core.models.person import Person
 from kompassi.event_log_v2.models.entry import Entry
 from kompassi.tickets_v2.models.meta import TicketsV2EventMeta
 
-from .export import get_filename, write_csv, write_xlsx
+from .export import get_filename, get_sheet_name, write_csv, write_xlsx
 from .models.column import Column
 from .models.enums import TypeOfColumn
 from .models.report import Report
@@ -171,3 +172,47 @@ def test_xlsx_number_formats():
     # stored as a string, so Excel shows it rather than running it
     assert "<f>" not in sheet
     assert "=HYPERLINK" in shared_strings
+
+
+def test_untitled_column_falls_back_to_slug():
+    report = Report(
+        slug="shirt_sizes",
+        title=dict(en="Shirt sizes"),
+        columns=[Column(slug="size", type=TypeOfColumn.STRING), Column(slug="tshirt", title={}, type=TypeOfColumn.INT)],
+        rows=[["M", 3]],
+    )
+
+    buf = io.BytesIO()
+    write_csv(report, "en", buf)
+    assert buf.getvalue().decode("utf-8-sig").startswith("size,tshirt\r\n")
+
+    buf = io.BytesIO()
+    write_xlsx(report, "en", HELSINKI, buf)
+    with zipfile.ZipFile(buf) as xlsx:
+        assert "tshirt" in xlsx.read("xl/sharedStrings.xml").decode()
+
+
+@pytest.mark.parametrize(
+    "title,expected",
+    [
+        ("Exchanged tickets by hour", "Exchanged tickets by hour"),
+        # : replaced with a space, and truncated to 31 characters leaving an apostrophe at the end
+        ("Seat reservations status for: 'Allo 'Allo", "Seat reservations status for"),
+        ("'Allo 'Allo", "Allo 'Allo"),
+        ("[]", "reservations_by_zone_a_very_lon"),
+        ("'", "reservations_by_zone_a_very_lon"),
+        ("", "reservations_by_zone_a_very_lon"),
+    ],
+)
+def test_sheet_name(title: str, expected: str):
+    report = Report(
+        slug="reservations_by_zone_a_very_long_schedule_item_slug",
+        title=dict(en=title),
+        columns=[],
+        rows=[],
+    )
+    sheet_name = get_sheet_name(report, "en")
+    assert sheet_name == expected
+
+    # does not raise InvalidWorksheetName
+    xlsxwriter.Workbook(io.BytesIO()).add_worksheet(sheet_name)

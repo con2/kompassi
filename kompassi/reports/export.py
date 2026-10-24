@@ -15,6 +15,7 @@ from django.utils.timezone import now
 
 from kompassi.core.utils.locale_utils import get_message_in_language
 
+from .models.column import Column
 from .models.enums import TypeOfColumn, Value
 from .models.report import Report
 
@@ -91,6 +92,18 @@ def neutralize_formula(text: str) -> str:
     return "'" + text if text.startswith(FORMULA_PREFIXES) else text
 
 
+def get_column_title(column: Column, lang: str) -> str:
+    # eg. dimension value titles are entered by admins and may be missing
+    return get_message_in_language(column.title, lang) or column.slug
+
+
+def get_sheet_name(report: Report, lang: str) -> str:
+    title = get_message_in_language(report.title, lang) or ""
+    # Excel also forbids an apostrophe at either end, which truncation may leave there,
+    # and a name of only spaces, which is what a title of only forbidden characters becomes
+    return title.translate(SHEET_NAME_FORBIDDEN)[:31].strip("' ") or report.slug[:31]
+
+
 def write_csv(report: Report, lang: str, output_stream: BinaryIO):
     """
     Raw values rather than the formatted ones shown in the table, so that
@@ -100,7 +113,7 @@ def write_csv(report: Report, lang: str, output_stream: BinaryIO):
     buf = io.StringIO()
     writer = csv.writer(buf)
 
-    writer.writerow(neutralize_formula(get_message_in_language(column.title, lang)) for column in report.columns)
+    writer.writerow(neutralize_formula(get_column_title(column, lang)) for column in report.columns)
     for row in report.rows:
         writer.writerow(
             ""
@@ -124,8 +137,7 @@ def write_xlsx(report: Report, lang: str, tz: tzinfo, output_stream: BinaryIO):
     buf = io.BytesIO()
     workbook = xlsxwriter.Workbook(buf, {"in_memory": True})
 
-    title = get_message_in_language(report.title, lang) or report.slug
-    worksheet = workbook.add_worksheet(title.translate(SHEET_NAME_FORBIDDEN)[:31])
+    worksheet = workbook.add_worksheet(get_sheet_name(report, lang))
 
     header_format = workbook.add_format({"bold": True})
     formats = {
@@ -135,7 +147,7 @@ def write_xlsx(report: Report, lang: str, tz: tzinfo, output_stream: BinaryIO):
     }
 
     for col_ind, column in enumerate(report.columns):
-        column_title = get_message_in_language(column.title, lang)
+        column_title = get_column_title(column, lang)
         worksheet.write_string(0, col_ind, column_title, header_format)
         worksheet.set_column(col_ind, col_ind, max(12, len(column_title) + 2))
 
