@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from datetime import datetime, timedelta
 from decimal import Decimal
 from functools import cached_property
@@ -32,6 +33,8 @@ from ..utils.mail import email_template_language, tickets_from_email
 from .meta import TicketsV2EventMeta
 from .order import Order, OrderMixin
 from .product import Product
+
+logger = logging.getLogger(__name__)
 
 # TODO missing Swedish (message template too)
 ETICKET_TEXT = dict(
@@ -385,7 +388,10 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
         if etickets_pdf := self.get_etickets_pdf():
             message.attach(ETICKET_FILENAME, etickets_pdf, "application/pdf")
 
-        message.send(fail_silently=True)
+        try:
+            message.send()
+        except Exception:
+            logger.exception("Failed to send receipt %s for order %s", self.id, self.order_id)
 
     @classmethod
     def from_order(cls, order: Order) -> Self:

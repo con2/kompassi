@@ -38,7 +38,7 @@ class Subscription(models.Model):
             body=body,
             to=(self.recipient_name_and_email,),
             reply_to=self.get_email_reply_to(entry),
-        ).send(fail_silently=False)
+        ).send()
 
     def get_email_subject(self, entry: Entry):
         return f"[{settings.KOMPASSI_INSTALLATION_NAME}] {entry.message}"

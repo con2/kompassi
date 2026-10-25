@@ -491,10 +491,17 @@ KOMPASSI_PHONENUMBERS_DEFAULT_FORMAT = "INTERNATIONAL"
 
 
 # Sending email
-if env("EMAIL_HOST", default=""):
-    EMAIL_HOST = env("EMAIL_HOST")
+if email_host := env("EMAIL_HOST", default=""):
+    MAILERS = {
+        "default": {
+            "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+            "OPTIONS": {"host": email_host},
+        },
+    }
 else:
-    EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
+    MAILERS = {
+        "default": {"BACKEND": "django.core.mail.backends.dummy.EmailBackend"},
+    }
 
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="spam@example.com")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL

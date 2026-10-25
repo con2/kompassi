@@ -78,7 +78,7 @@ def send_message(message_id: str, involvement_ids: list[int] | None = None):
         # send actually succeeds - otherwise a transient failure would permanently mark
         # the person as sent-to and they'd never be retried on a subsequent (re-)send.
         try:
-            email.send(fail_silently=False)
+            email.send()
         except Exception:
             logger.exception("Failed to send message %s to %s", message.id, person.email)
             continue

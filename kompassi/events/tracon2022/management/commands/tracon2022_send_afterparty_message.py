@@ -23,7 +23,7 @@ class Command(BaseCommand):
             body = render_to_string("tracon2022_afterparty_message.eml", vars)
 
             if really:
-                send_mail(subject, body, sender, [recipient], fail_silently=False)
+                send_mail(subject, body, sender, [recipient])
                 print(recipient)
             else:
                 print("To:", recipient)

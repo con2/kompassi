@@ -24,7 +24,7 @@ class Command(BaseCommand):
             body = render_to_string(options["template"], vars)
 
             if really:
-                send_mail(subject, body, sender, [recipient], fail_silently=False)
+                send_mail(subject, body, sender, [recipient])
                 print(recipient)
             else:
                 print("To:", recipient)

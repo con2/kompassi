@@ -303,11 +303,14 @@ class PersonMessage(models.Model):
 
         reply_to_tup = (reply_to_str,) if (reply_to_str := self.message.reply_to) else None
 
-        EmailMessage(
-            subject=self.subject.text,
-            body=self.body.text,
-            from_email=meta.cloaked_contact_email,
-            to=(self.person.name_and_email,),
-            bcc=msgbcc,
-            reply_to=reply_to_tup,
-        ).send(fail_silently=True)
+        try:
+            EmailMessage(
+                subject=self.subject.text,
+                body=self.body.text,
+                from_email=meta.cloaked_contact_email,
+                to=(self.person.name_and_email,),
+                bcc=msgbcc,
+                reply_to=reply_to_tup,
+            ).send()
+        except Exception:
+            logger.exception("Failed to send message %s to %s", self.message.id, self.person.email)

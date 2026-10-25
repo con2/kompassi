@@ -12,4 +12,4 @@ def send_email(**opts):
     if settings.DEBUG:
         logger.debug(opts["body"])
 
-    EmailMessage(**opts).send(fail_silently=False)
+    EmailMessage(**opts).send()

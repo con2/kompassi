@@ -58,9 +58,12 @@ class Command(BaseCommand):
         ):
             print(order.formatted_order_number, order.customer.name_and_email)
 
-            EmailMessage(
-                subject=SUBJECT,
-                body=MESSAGE,
-                from_email=FROM,
-                to=(order.customer.name_and_email,),
-            ).send(fail_silently=True)
+            try:
+                EmailMessage(
+                    subject=SUBJECT,
+                    body=MESSAGE,
+                    from_email=FROM,
+                    to=(order.customer.name_and_email,),
+                ).send()
+            except Exception:
+                logger.exception("Failed to send cancellation message for order %s", order.formatted_order_number)
