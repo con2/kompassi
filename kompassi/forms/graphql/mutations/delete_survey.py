@@ -1,4 +1,5 @@
 import graphene
+from django.db import transaction
 from django.http import HttpRequest
 
 from ...models.survey import Survey
@@ -30,7 +31,9 @@ class DeleteSurvey(graphene.Mutation):
         if not survey.can_be_deleted_by(request):
             raise Exception("Cannot delete survey")
 
-        survey.workflow.revoke_all_access(request)
-        survey.delete()
+        with transaction.atomic():
+            survey.workflow.revoke_all_access(request)
+            # language versions (Forms) are deleted by cascade
+            survey.delete()
 
         return DeleteSurvey(slug=input.survey_slug)  # type: ignore

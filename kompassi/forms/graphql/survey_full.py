@@ -248,8 +248,8 @@ class FullSurveyType(LimitedSurveyType):
     @staticmethod
     def resolve_can_remove(survey: Survey, info):
         """
-        Surveys that have language versions cannot be removed.
-        Having language versions is also a prerequisite for a survey to have responses.
+        Surveys that have responses cannot be removed.
+        Removing a survey also removes its language versions.
         """
         request: HttpRequest = info.context
         return survey.can_be_deleted_by(request)

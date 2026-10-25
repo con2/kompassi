@@ -1802,6 +1802,8 @@ const translations: Translations = {
           title: "Poista ohjelmalomake",
           cannotRemove:
             "Ohjelmalomaketta ei voi poistaa, koska sillä on tehty ohjelmatarjouksia.",
+          languageVersionsWillBeRemoved: (languages: string) =>
+            `Myös ohjelmalomakkeen seuraavat kieliversiot poistetaan: ${languages}.`,
           confirmation: (surveyTitle: string) => (
             <>
               Haluatko varmasti poistaa ohjelmalomakkeen{" "}
@@ -2862,6 +2864,8 @@ const translations: Translations = {
       deleteSurvey: {
         title: "Poista kysely",
         cannotRemove: "Kyselyä, joka on jo saanut vastauksia, ei voi poistaa.",
+        languageVersionsWillBeRemoved: (languages: string) =>
+          `Myös kyselyn seuraavat kieliversiot poistetaan: ${languages}.`,
         confirmation: (surveyTitle: string) => (
           <>
             Haluatko varmasti poistaa kyselyn <strong>{surveyTitle}</strong>?

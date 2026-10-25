@@ -412,7 +412,15 @@ class Survey(models.Model):
         return {form.language: form.title for form in self.languages.all()}
 
     def can_be_deleted_by(self, request: HttpRequest):
-        return self.workflow.is_allowed(request, operation="delete") and not self.languages.exists()
+        """
+        Deleting a survey also deletes its language versions, so a survey can be deleted
+        if none of its language versions have responses. Follow-up surveys protect their parent.
+        """
+        return (
+            self.workflow.is_allowed(request, operation="delete")
+            and not self.all_responses.exists()
+            and not self.followups.exists()
+        )
 
     def can_responses_be_deleted_by(self, request: HttpRequest) -> CanResponsesBeDeleted:
         return self.workflow.responses_can_be_deleted_by(request)

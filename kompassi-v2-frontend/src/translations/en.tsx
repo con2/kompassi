@@ -1807,6 +1807,8 @@ const translations = {
           title: "Remove program form",
           cannotRemove:
             "A program form that has program offers cannot be removed.",
+          languageVersionsWillBeRemoved: (languages: string) =>
+            `The following language versions of the program form will also be removed: ${languages}.`,
           confirmation: (surveyTitle: string) => (
             <>
               Are you sure you want to remove the program form{" "}
@@ -2861,6 +2863,8 @@ const translations = {
       deleteSurvey: {
         title: "Remove survey",
         cannotRemove: "A survey that has responses cannot be removed.",
+        languageVersionsWillBeRemoved: (languages: string) =>
+          `The following language versions of the survey will also be removed: ${languages}.`,
         confirmation: (surveyTitle: string) => (
           <>
             Are you sure you want to remove the survey{" "}

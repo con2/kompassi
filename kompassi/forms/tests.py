@@ -2351,3 +2351,56 @@ def test_extract_dimension_values_uses_only_marked_fields():
 
     assert extract_dimension_values_for_universe(response, cache=cache) == {"kind": ["a"]}
     assert extract_dimension_values_for_universe(response, cache=cache, on_edit=True) == {}
+
+
+DELETE_SURVEY_MUTATION = """
+mutation DeleteSurvey($input: DeleteSurveyInput!) {
+  deleteSurvey(input: $input) {
+    slug
+  }
+}
+"""
+
+
+@pytest.mark.django_db
+def test_delete_survey_with_language_versions():
+    """
+    A survey that has language versions but no responses can be deleted, and deleting it
+    also deletes its language versions. A survey whose language versions have responses
+    cannot be deleted.
+    """
+    Entry.ensure_partitions()
+
+    event, _created = Event.get_or_create_dummy()
+    survey = Survey.objects.create(event=event, slug="delete-with-languages")
+    en = Form.objects.create(event=event, survey=survey, language="en", fields=[])
+    Form.objects.create(event=event, survey=survey, language="fi", fields=[])
+
+    admin, _created = Person.get_or_create_dummy(superuser=False)
+    _grant_org_wide(admin.user, event.organization)
+    admin_request = _graphql_request(admin.user)
+
+    response = Response.objects.create(form=en, form_data={})
+    assert not survey.can_be_deleted_by(admin_request)
+
+    result = schema.execute(
+        DELETE_SURVEY_MUTATION,
+        None,
+        admin_request,
+        variable_values=dict(input=dict(eventSlug=event.slug, surveySlug=survey.slug)),
+    )
+    assert result.errors
+    assert Survey.objects.filter(id=survey.id).exists()
+
+    response.delete()
+    assert survey.can_be_deleted_by(admin_request)
+
+    result = schema.execute(
+        DELETE_SURVEY_MUTATION,
+        None,
+        admin_request,
+        variable_values=dict(input=dict(eventSlug=event.slug, surveySlug=survey.slug)),
+    )
+    assert not result.errors
+    assert not Survey.objects.filter(id=survey.id).exists()
+    assert not Form.objects.filter(survey_id=survey.id).exists()

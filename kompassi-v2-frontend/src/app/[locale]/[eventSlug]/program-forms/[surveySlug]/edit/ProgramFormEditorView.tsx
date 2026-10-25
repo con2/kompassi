@@ -9,7 +9,10 @@ import Link from "next/link";
 import { ReactNode } from "react";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
-import { Survey } from "../../../surveys/[surveySlug]/edit/models";
+import {
+  getLanguageVersionNames,
+  Survey,
+} from "../../../surveys/[surveySlug]/edit/models";
 import SurveyEditorTabs from "../../../surveys/[surveySlug]/edit/SurveyEditorTabs";
 import { deleteProgramForm } from "./actions";
 import type { Translations } from "@/translations/en";
@@ -54,10 +57,26 @@ export default function ProgramFormEditorView({
             submitButtonVariant="danger"
             action={deleteProgramForm.bind(null, event.slug, survey.slug)}
             disabled={!survey.canRemove}
-            // TODO disabledMessage={t.actions.deleteSurvey.cannotRemove}
+            labelTitle={
+              survey.canRemove
+                ? undefined
+                : t.actions.deleteProgramForm.cannotRemove
+            }
           >
-            {t.actions.deleteProgramForm.confirmation(
-              survey.title || survey.slug,
+            <p>
+              {t.actions.deleteProgramForm.confirmation(
+                survey.title || survey.slug,
+              )}
+            </p>
+            {survey.languages.length > 0 && (
+              <p>
+                {t.actions.deleteProgramForm.languageVersionsWillBeRemoved(
+                  getLanguageVersionNames(
+                    survey,
+                    translations.LanguageSwitcher.supportedLanguages,
+                  ),
+                )}
+              </p>
             )}
           </ModalButton>
         </ViewHeadingActions>

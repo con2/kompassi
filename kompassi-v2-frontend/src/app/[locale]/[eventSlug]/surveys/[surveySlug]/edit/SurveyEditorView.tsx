@@ -11,7 +11,7 @@ import { ReactNode } from "react";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import { deleteSurvey } from "./actions";
-import { Survey } from "./models";
+import { getLanguageVersionNames, Survey } from "./models";
 import SurveyEditorTabs from "./SurveyEditorTabs";
 import { getTranslations } from "@/translations";
 
@@ -57,9 +57,23 @@ export default function SurveyEditorView({
             submitButtonVariant="danger"
             action={deleteSurvey.bind(null, eventSlug, survey.slug)}
             disabled={!survey.canRemove}
-            // TODO disabledMessage={t.actions.deleteSurvey.cannotRemove}
+            labelTitle={
+              survey.canRemove ? undefined : t.actions.deleteSurvey.cannotRemove
+            }
           >
-            {t.actions.deleteSurvey.confirmation(survey.title || survey.slug)}
+            <p>
+              {t.actions.deleteSurvey.confirmation(survey.title || survey.slug)}
+            </p>
+            {survey.languages.length > 0 && (
+              <p>
+                {t.actions.deleteSurvey.languageVersionsWillBeRemoved(
+                  getLanguageVersionNames(
+                    survey,
+                    translations.LanguageSwitcher.supportedLanguages,
+                  ),
+                )}
+              </p>
+            )}
           </ModalButton>
         </ViewHeadingActions>
       </ViewHeadingActionsWrapper>
