@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a monorepo with two main components:
 
-- `kompassi/` — Django backend (Python 3.14+)
+- `kompassi/` — Django backend (Python 3.15+)
 - `kompassi-v2-frontend/` — Next.js frontend (TypeScript, React, Apollo Client)
 
 The backend serves both a legacy Django-rendered UI (V1) and a GraphQL API consumed by the V2 frontend. The V2 frontend lives at a separate origin and authenticates via OAuth2/OIDC Bearer tokens.
