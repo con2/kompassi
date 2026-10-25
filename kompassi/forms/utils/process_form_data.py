@@ -109,7 +109,7 @@ class DecimalFieldProcessor(FieldProcessor):
         else:
             try:
                 decimal.Decimal(value)
-            except (decimal.InvalidOperation, TypeError):
+            except decimal.InvalidOperation, TypeError:
                 warnings.append(FieldWarning.INVALID_VALUE)
 
         return warnings

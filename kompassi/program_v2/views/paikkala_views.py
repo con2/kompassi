@@ -108,7 +108,7 @@ def handle_errors(view_func):
             logger.warning(message, exc_info=True)
             return redirect("core_frontpage_view")
 
-        except (NoCapacity, NoRowCapacity):
+        except NoCapacity, NoRowCapacity:
             message = _(
                 "There isn't sufficient space for your reservation in the selected zone. Please try another zone."
             )

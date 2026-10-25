@@ -97,7 +97,7 @@ def is_password_compromised(password):
 
     try:
         hibp_page = parse_hibp_page(page_str)
-    except (ValueError, IndexError, KeyError):
+    except ValueError, IndexError, KeyError:
         logger.exception("is_password_compromised: Failed to parse HIBPv2 page %s", hash_prefix)
         return None
 

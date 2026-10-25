@@ -43,7 +43,7 @@ class Batch(models.Model):
 
     is_printed = time_bool_property("printed_at")
 
-    badges: models.QuerySet["Badge"]
+    badges: models.QuerySet[Badge]
 
     @classmethod
     def create(cls, event, personnel_class=None, max_items=100, moon_rune_policy="dontcare"):

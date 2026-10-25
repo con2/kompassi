@@ -199,7 +199,7 @@ class NameFactory:
             return self._tpl.render(row) if self._tpl is not None else fallback
         except jinja2.exceptions.SecurityError:
             raise
-        except (jinja2.exceptions.TemplateError, ValueError):
+        except jinja2.exceptions.TemplateError, ValueError:
             return fallback
 
     @classmethod
