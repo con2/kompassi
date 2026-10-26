@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ReactNode } from "react";
 import { isSupportedLanguage, SupportedLanguage } from "@/translations";
 import en, { Translations } from "@/translations/en";
@@ -40,11 +39,14 @@ export function AlsoAvailableInLanguage({ language, languages, path }: Props) {
     return (
       <div className="alert alert-primary">
         {otherLanguages.map((lang) => {
+          // Plain <a> instead of <Link>: the locale is switched by the i18n proxy on a
+          // full page load (as in NavigationMenus). A client-side transition to
+          // /<lang>/... gets redirected back to the unprefixed path without switching.
           function LanguageLink({ children }: { children: ReactNode }) {
             return (
-              <Link prefetch={false} href={`/${lang}${path}`} lang={lang}>
+              <a href={`/${lang}${path}`} lang={lang}>
                 {children}
-              </Link>
+              </a>
             );
           }
 
