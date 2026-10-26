@@ -74,6 +74,13 @@ export default function SurveyEditorView({
                 )}
               </p>
             )}
+            {survey.countPendingInvitations > 0 && (
+              <p>
+                {t.actions.deleteSurvey.pendingInvitationsWillBeRemoved(
+                  survey.countPendingInvitations,
+                )}
+              </p>
+            )}
           </ModalButton>
         </ViewHeadingActions>
       </ViewHeadingActionsWrapper>

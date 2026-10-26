@@ -1801,9 +1801,13 @@ const translations: Translations = {
         deleteProgramForm: {
           title: "Poista ohjelmalomake",
           cannotRemove:
-            "Ohjelmalomaketta ei voi poistaa, koska sillä on tehty ohjelmatarjouksia.",
+            "Ohjelmalomaketta ei voi poistaa, jos sillä on tehty ohjelmatarjouksia tai sillä on jatkokyselyitä.",
           languageVersionsWillBeRemoved: (languages: string) =>
             `Myös ohjelmalomakkeen seuraavat kieliversiot poistetaan: ${languages}.`,
+          pendingInvitationsWillBeRemoved: (count: number) =>
+            count === 1
+              ? "Myös 1 kutsu, jota ei ole vielä hyväksytty, poistetaan. Kutsusähköpostissa oleva linkki lakkaa toimimasta."
+              : `Myös ${count} kutsua, joita ei ole vielä hyväksytty, poistetaan. Kutsusähköposteissa olevat linkit lakkaavat toimimasta.`,
           confirmation: (surveyTitle: string) => (
             <>
               Haluatko varmasti poistaa ohjelmalomakkeen{" "}
@@ -2863,9 +2867,14 @@ const translations: Translations = {
       },
       deleteSurvey: {
         title: "Poista kysely",
-        cannotRemove: "Kyselyä, joka on jo saanut vastauksia, ei voi poistaa.",
+        cannotRemove:
+          "Kyselyä, joka on jo saanut vastauksia tai jolla on jatkokyselyitä, ei voi poistaa.",
         languageVersionsWillBeRemoved: (languages: string) =>
           `Myös kyselyn seuraavat kieliversiot poistetaan: ${languages}.`,
+        pendingInvitationsWillBeRemoved: (count: number) =>
+          count === 1
+            ? "Myös 1 kutsu, jota ei ole vielä hyväksytty, poistetaan. Kutsusähköpostissa oleva linkki lakkaa toimimasta."
+            : `Myös ${count} kutsua, joita ei ole vielä hyväksytty, poistetaan. Kutsusähköposteissa olevat linkit lakkaavat toimimasta.`,
         confirmation: (surveyTitle: string) => (
           <>
             Haluatko varmasti poistaa kyselyn <strong>{surveyTitle}</strong>?

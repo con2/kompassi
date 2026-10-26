@@ -1806,9 +1806,13 @@ const translations = {
         deleteProgramForm: {
           title: "Remove program form",
           cannotRemove:
-            "A program form that has program offers cannot be removed.",
+            "A program form that has program offers or follow-up surveys cannot be removed.",
           languageVersionsWillBeRemoved: (languages: string) =>
             `The following language versions of the program form will also be removed: ${languages}.`,
+          pendingInvitationsWillBeRemoved: (count: number) =>
+            count === 1
+              ? "1 invitation that has not been accepted yet will also be removed. The link in the invitation email will stop working."
+              : `${count} invitations that have not been accepted yet will also be removed. The links in the invitation emails will stop working.`,
           confirmation: (surveyTitle: string) => (
             <>
               Are you sure you want to remove the program form{" "}
@@ -2862,9 +2866,14 @@ const translations = {
       },
       deleteSurvey: {
         title: "Remove survey",
-        cannotRemove: "A survey that has responses cannot be removed.",
+        cannotRemove:
+          "A survey that has responses or follow-up surveys cannot be removed.",
         languageVersionsWillBeRemoved: (languages: string) =>
           `The following language versions of the survey will also be removed: ${languages}.`,
+        pendingInvitationsWillBeRemoved: (count: number) =>
+          count === 1
+            ? "1 invitation that has not been accepted yet will also be removed. The link in the invitation email will stop working."
+            : `${count} invitations that have not been accepted yet will also be removed. The links in the invitation emails will stop working.`,
         confirmation: (surveyTitle: string) => (
           <>
             Are you sure you want to remove the survey{" "}

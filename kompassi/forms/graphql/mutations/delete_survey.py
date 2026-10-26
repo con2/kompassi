@@ -22,18 +22,21 @@ class DeleteSurvey(graphene.Mutation):
         info,
         input: DeleteSurveyInput,
     ):
-        survey = Survey.objects.get(
-            event__slug=input.event_slug,
-            slug=input.survey_slug,
-        )
-
         request: HttpRequest = info.context
-        if not survey.can_be_deleted_by(request):
-            raise Exception("Cannot delete survey")
 
         with transaction.atomic():
+            survey = Survey.objects.select_for_update().get(
+                event__slug=input.event_slug,
+                slug=input.survey_slug,
+            )
+            # Lock the language versions so that no response can be created between the check and the delete
+            list(survey.languages.select_for_update())
+
+            if not survey.can_be_deleted_by(request):
+                raise Exception("Cannot delete survey")
+
             survey.workflow.revoke_all_access(request)
-            # language versions (Forms) are deleted by cascade
+            # language versions (Forms) and pending invitations are deleted by cascade
             survey.delete()
 
         return DeleteSurvey(slug=input.survey_slug)  # type: ignore

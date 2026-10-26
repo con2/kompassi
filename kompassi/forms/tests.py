@@ -20,6 +20,7 @@ from kompassi.dimensions.models.enums import DimensionApp
 from kompassi.event_log_v2.models.entry import Entry
 from kompassi.graphql_api.schema import schema
 from kompassi.involvement.models.enums import InvolvementType
+from kompassi.involvement.models.invitation import Invitation
 from kompassi.involvement.models.involvement import Involvement
 from kompassi.involvement.models.registry import Registry
 from kompassi.program_v2.workflows.program_offer import ProgramOfferWorkflow
@@ -2404,3 +2405,60 @@ def test_delete_survey_with_language_versions():
     assert not result.errors
     assert not Survey.objects.filter(id=survey.id).exists()
     assert not Form.objects.filter(survey_id=survey.id).exists()
+
+
+COUNT_PENDING_INVITATIONS_QUERY = """
+query CountPendingInvitations($eventSlug: String!, $surveySlug: String!) {
+  event(slug: $eventSlug) {
+    forms {
+      survey(slug: $surveySlug) {
+        countPendingInvitations
+      }
+    }
+  }
+}
+"""
+
+
+@pytest.mark.django_db
+def test_delete_survey_with_followups_and_invitations():
+    """
+    A survey that has follow-up surveys cannot be deleted. Pending invitations do not prevent
+    deleting a survey; they are counted so that the user can be warned, and deleted along with it.
+    """
+    Entry.ensure_partitions()
+
+    event, _created = Event.get_or_create_dummy()
+    survey = Survey.objects.create(event=event, slug="delete-with-followups")
+    Form.objects.create(event=event, survey=survey, language="en", fields=[])
+
+    admin, _created = Person.get_or_create_dummy(superuser=False)
+    _grant_org_wide(admin.user, event.organization)
+    admin_request = _graphql_request(admin.user)
+
+    followup = Survey.objects.create(event=event, slug="delete-with-followups-followup", parent=survey)
+    assert not survey.can_be_deleted_by(admin_request)
+    followup.delete()
+
+    Invitation.objects.create(survey=survey, email="pending@example.com")
+    Invitation.objects.create(survey=survey, email="used@example.com", used_at=now())
+
+    result = schema.execute(
+        COUNT_PENDING_INVITATIONS_QUERY,
+        None,
+        admin_request,
+        variable_values=dict(eventSlug=event.slug, surveySlug=survey.slug),
+    )
+    assert not result.errors
+    assert result.data["event"]["forms"]["survey"]["countPendingInvitations"] == 1  # type: ignore
+
+    assert survey.can_be_deleted_by(admin_request)
+    result = schema.execute(
+        DELETE_SURVEY_MUTATION,
+        None,
+        admin_request,
+        variable_values=dict(input=dict(eventSlug=event.slug, surveySlug=survey.slug)),
+    )
+    assert not result.errors
+    assert not Survey.objects.filter(id=survey.id).exists()
+    assert not Invitation.objects.filter(survey_id=survey.id).exists()

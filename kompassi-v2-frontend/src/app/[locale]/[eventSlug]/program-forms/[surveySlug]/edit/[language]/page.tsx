@@ -19,6 +19,7 @@ graphql(`
     slug
     title(lang: $locale)
     canRemove
+    countPendingInvitations
     canGrantAccess
     purpose
 

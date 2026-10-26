@@ -28,6 +28,7 @@ const query = graphql(`
           title(lang: $locale)
           purpose
           canRemove
+          countPendingInvitations
           canGrantAccess
           languages {
             language

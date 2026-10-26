@@ -248,8 +248,8 @@ class FullSurveyType(LimitedSurveyType):
     @staticmethod
     def resolve_can_remove(survey: Survey, info):
         """
-        Surveys that have responses cannot be removed.
-        Removing a survey also removes its language versions.
+        Surveys that have responses or follow-up surveys cannot be removed.
+        Removing a survey also removes its language versions and pending invitations.
         """
         request: HttpRequest = info.context
         return survey.can_be_deleted_by(request)
@@ -257,6 +257,23 @@ class FullSurveyType(LimitedSurveyType):
     can_remove = graphene.NonNull(
         graphene.Boolean,
         description=normalize_whitespace(resolve_can_remove.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_count_pending_invitations(survey: Survey, info) -> int:
+        """
+        Returns the number of invitations to this survey that have not been accepted yet.
+        Removing the survey also removes them. Returns 0 to those who cannot remove the survey.
+        """
+        request: HttpRequest = info.context
+        if not survey.workflow.is_allowed(request, operation="delete"):
+            return 0
+
+        return survey.invitations.filter(used_at__isnull=True).count()
+
+    count_pending_invitations = graphene.NonNull(
+        graphene.Int,
+        description=normalize_whitespace(resolve_count_pending_invitations.__doc__ or ""),
     )
 
     @staticmethod

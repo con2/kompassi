@@ -1774,9 +1774,13 @@ const translations: Translations = {
         deleteProgramForm: {
           title: "Ta bort programformulär",
           cannotRemove:
-            "Ett programformulär som har programerbjudanden kan inte tas bort.",
+            "Ett programformulär som har programerbjudanden eller uppföljningsenkäter kan inte tas bort.",
           languageVersionsWillBeRemoved: (languages: string) =>
             `Följande språkversioner av programformuläret kommer också att tas bort: ${languages}.`,
+          pendingInvitationsWillBeRemoved: (count: number) =>
+            count === 1
+              ? "1 inbjudan som ännu inte har accepterats kommer också att tas bort. Länken i inbjudningsmejlet slutar fungera."
+              : `${count} inbjudningar som ännu inte har accepterats kommer också att tas bort. Länkarna i inbjudningsmejlen slutar fungera.`,
           confirmation: (surveyTitle: string) => (
             <>
               Är du säker på att du vill ta bort programformuläret{" "}
@@ -2808,9 +2812,14 @@ const translations: Translations = {
       },
       deleteSurvey: {
         title: "Radera enkät",
-        cannotRemove: "En enkät som redan har fått svar kan inte raderas.",
+        cannotRemove:
+          "En enkät som redan har fått svar eller har uppföljningsenkäter kan inte raderas.",
         languageVersionsWillBeRemoved: (languages: string) =>
           `Följande språkversioner av enkäten kommer också att raderas: ${languages}.`,
+        pendingInvitationsWillBeRemoved: (count: number) =>
+          count === 1
+            ? "1 inbjudan som ännu inte har accepterats kommer också att raderas. Länken i inbjudningsmejlet slutar fungera."
+            : `${count} inbjudningar som ännu inte har accepterats kommer också att raderas. Länkarna i inbjudningsmejlen slutar fungera.`,
         confirmation: (surveyTitle: string) => (
           <>
             Är du säker på att du vill ta bort enkäten{" "}
