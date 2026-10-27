@@ -302,12 +302,12 @@ const translations: Translations = {
       choices: {
         title: "Vaihtoehdot",
         helpText:
-          'Joka rivillä tulee olla yksi vaihtoehto muodossa "rivin-tekninen-nimi: Käyttäjälle näytettävä vaihtoehto". Teknisessä nimessä saa käyttää pieniä kirjaimia a-z, numeroita sekä väliviivaa (-). Joka rivillä pitää olla eri tekninen nimi.',
+          'Kirjoita yksi vaihtoehto riville muodossa `tekninen-nimi: Käyttäjälle näytettävä teksti`. Tekninen nimi yksilöi vaihtoehdon, ei kysymystä, joten joka rivillä pitää olla eri tekninen nimi. Teknisessä nimessä saa käyttää pieniä kirjaimia a-z, numeroita sekä väliviivaa (-). Esimerkiksi kysymyksen "Saako sinua kuvata?" vaihtoehdot voisivat olla:\n\n```\nyes: Kyllä\nno: Ei\n```\n\nÄlä käytä kysymyksen nimeä teknisenä nimenä (`kuvauslupa: Kyllä`, `kuvauslupa: Ei`): silloin vastauksia ei voi erottaa toisistaan. Käytä samoja teknisiä nimiä kaikissa kieliversioissa ja käännä vain teksti. Älä muuta teknisiä nimiä sen jälkeen, kun vastauksia on jo tullut.',
       },
       questions: {
         title: "Kysymykset",
         helpText:
-          'Joka rivillä tulee olla yksi kysymys muodossa "rivin-tekninen-nimi: Käyttäjälle näytettävä teksti". Teknisessä nimessä saa käyttää pieniä kirjaimia a-z, numeroita sekä väliviivaa (-). Joka rivillä pitää olla eri tekninen nimi.',
+          "Kirjoita yksi kysymys riville muodossa `tekninen-nimi: Käyttäjälle näytettävä teksti`. Tekninen nimi yksilöi kysymysrivin, joten joka rivillä pitää olla eri tekninen nimi. Teknisessä nimessä saa käyttää pieniä kirjaimia a-z, numeroita sekä väliviivaa (-). Esimerkiksi:\n\n```\nfood: Millaista ruoka oli?\nmusic: Millaista musiikki oli?\n```\n\nKäytä samoja teknisiä nimiä kaikissa kieliversioissa ja käännä vain teksti. Älä muuta teknisiä nimiä sen jälkeen, kun vastauksia on jo tullut.",
       },
       dimension: {
         title: "Dimensio",

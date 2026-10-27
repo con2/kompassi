@@ -293,12 +293,12 @@ const translations: Translations = {
       choices: {
         title: "Val",
         helpText:
-          'Varje rad måste innehålla ett val i formatet "rad-slug: Val som visas för användaren". Sluggen kan innehålla gemener a-z, siffror och bindestreck (-). Varje rad måste ha en unik slug.',
+          'Skriv ett val per rad i formatet `tekniskt-namn: Text som visas för användaren`. Det tekniska namnet identifierar valet, inte frågan, så varje rad måste ha ett eget tekniskt namn. Det får innehålla gemener a-z, siffror och bindestreck (-). Valen för frågan "Får vi fotografera dig?" kan till exempel vara:\n\n```\nyes: Ja\nno: Nej\n```\n\nAnvänd inte frågans namn som tekniskt namn (`fototillstand: Ja`, `fototillstand: Nej`): då går svaren inte att skilja åt. Använd samma tekniska namn i alla språkversioner och översätt bara texten. Ändra inte de tekniska namnen efter att svar har kommit in.',
       },
       questions: {
         title: "Frågor",
         helpText:
-          'Varje rad måste innehålla en fråga i formatet "rad-slug: Text som visas för användaren". Sluggen kan innehålla gemener a-z, siffror och bindestreck (-). Varje rad måste ha en unik slug.',
+          "Skriv en fråga per rad i formatet `tekniskt-namn: Text som visas för användaren`. Det tekniska namnet identifierar frågeraden, så varje rad måste ha ett eget tekniskt namn. Det får innehålla gemener a-z, siffror och bindestreck (-). Till exempel:\n\n```\nfood: Hur var maten?\nmusic: Hur var musiken?\n```\n\nAnvänd samma tekniska namn i alla språkversioner och översätt bara texten. Ändra inte de tekniska namnen efter att svar har kommit in.",
       },
       dimension: {
         title: "Dimension",
