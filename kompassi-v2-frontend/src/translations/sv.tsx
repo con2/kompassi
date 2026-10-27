@@ -1774,7 +1774,7 @@ const translations: Translations = {
         deleteProgramForm: {
           title: "Ta bort programformulär",
           cannotRemove:
-            "Ett programformulär som har programerbjudanden kan inte tas bort.",
+            "För att ta bort det här programformuläret, ta först bort alla dess språkversioner.",
           confirmation: (surveyTitle: string) => (
             <>
               Är du säker på att du vill ta bort programformuläret{" "}
@@ -2806,7 +2806,8 @@ const translations: Translations = {
       },
       deleteSurvey: {
         title: "Radera enkät",
-        cannotRemove: "En enkät som redan har fått svar kan inte raderas.",
+        cannotRemove:
+          "För att radera den här enkäten, radera först alla dess språkversioner.",
         confirmation: (surveyTitle: string) => (
           <>
             Är du säker på att du vill ta bort enkäten{" "}

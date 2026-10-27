@@ -54,7 +54,7 @@ export default function ProgramFormEditorView({
             submitButtonVariant="danger"
             action={deleteProgramForm.bind(null, event.slug, survey.slug)}
             disabled={!survey.canRemove}
-            // TODO disabledMessage={t.actions.deleteSurvey.cannotRemove}
+            disabledReason={t.actions.deleteProgramForm.cannotRemove}
           >
             {t.actions.deleteProgramForm.confirmation(
               survey.title || survey.slug,

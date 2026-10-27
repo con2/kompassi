@@ -57,7 +57,7 @@ export default function SurveyEditorView({
             submitButtonVariant="danger"
             action={deleteSurvey.bind(null, eventSlug, survey.slug)}
             disabled={!survey.canRemove}
-            // TODO disabledMessage={t.actions.deleteSurvey.cannotRemove}
+            disabledReason={t.actions.deleteSurvey.cannotRemove}
           >
             {t.actions.deleteSurvey.confirmation(survey.title || survey.slug)}
           </ModalButton>
