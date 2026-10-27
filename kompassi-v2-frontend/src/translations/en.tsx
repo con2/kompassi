@@ -1806,7 +1806,7 @@ const translations = {
         deleteProgramForm: {
           title: "Remove program form",
           cannotRemove:
-            "A program form that has program offers cannot be removed.",
+            "In order to remove this program form, remove all of its language versions first.",
           confirmation: (surveyTitle: string) => (
             <>
               Are you sure you want to remove the program form{" "}
@@ -2860,7 +2860,8 @@ const translations = {
       },
       deleteSurvey: {
         title: "Remove survey",
-        cannotRemove: "A survey that has responses cannot be removed.",
+        cannotRemove:
+          "In order to remove this survey, remove all of its language versions first.",
         confirmation: (surveyTitle: string) => (
           <>
             Are you sure you want to remove the survey{" "}

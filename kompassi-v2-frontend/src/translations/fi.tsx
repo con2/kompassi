@@ -1801,7 +1801,7 @@ const translations: Translations = {
         deleteProgramForm: {
           title: "Poista ohjelmalomake",
           cannotRemove:
-            "Ohjelmalomaketta ei voi poistaa, koska sillä on tehty ohjelmatarjouksia.",
+            "Poistaaksesi tämän ohjelmalomakkeen poista ensin kaikki sen kieliversiot.",
           confirmation: (surveyTitle: string) => (
             <>
               Haluatko varmasti poistaa ohjelmalomakkeen{" "}
@@ -2861,7 +2861,8 @@ const translations: Translations = {
       },
       deleteSurvey: {
         title: "Poista kysely",
-        cannotRemove: "Kyselyä, joka on jo saanut vastauksia, ei voi poistaa.",
+        cannotRemove:
+          "Poistaaksesi tämän kyselyn poista ensin kaikki sen kieliversiot.",
         confirmation: (surveyTitle: string) => (
           <>
             Haluatko varmasti poistaa kyselyn <strong>{surveyTitle}</strong>?
