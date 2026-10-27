@@ -293,12 +293,12 @@ const translations: Translations = {
       choices: {
         title: "Val",
         helpText:
-          'Skriv ett val per rad i formatet `tekniskt-namn: Text som visas för användaren`. Det tekniska namnet identifierar valet, inte frågan, så varje rad måste ha ett eget tekniskt namn. Det får innehålla gemener a-z, siffror och bindestreck (-). Valen för frågan "Får vi fotografera dig?" kan till exempel vara:\n\n```\nyes: Ja\nno: Nej\n```\n\nAnvänd inte frågans namn som tekniskt namn (`fototillstand: Ja`, `fototillstand: Nej`): då går svaren inte att skilja åt. Använd samma tekniska namn i alla språkversioner och översätt bara texten. Ändra inte de tekniska namnen efter att svar har kommit in.',
+          "Ett val per rad: `tekniskt-namn: Text som visas för användaren`. Varje val behöver ett eget tekniskt namn (a-z, 0-9, -). Exempel:\n\n```\nyes: Ja\nno: Nej\n```\n\nBehåll samma tekniska namn i alla språkversioner och ändra dem inte efter att svar har kommit in.",
       },
       questions: {
         title: "Frågor",
         helpText:
-          "Skriv en fråga per rad i formatet `tekniskt-namn: Text som visas för användaren`. Det tekniska namnet identifierar frågeraden, så varje rad måste ha ett eget tekniskt namn. Det får innehålla gemener a-z, siffror och bindestreck (-). Till exempel:\n\n```\nfood: Hur var maten?\nmusic: Hur var musiken?\n```\n\nAnvänd samma tekniska namn i alla språkversioner och översätt bara texten. Ändra inte de tekniska namnen efter att svar har kommit in.",
+          "En fråga per rad: `tekniskt-namn: Text som visas för användaren`. Varje fråga behöver ett eget tekniskt namn (a-z, 0-9, -). Exempel:\n\n```\nfood: Hur var maten?\nmusic: Hur var musiken?\n```\n\nBehåll samma tekniska namn i alla språkversioner och ändra dem inte efter att svar har kommit in.",
       },
       dimension: {
         title: "Dimension",
