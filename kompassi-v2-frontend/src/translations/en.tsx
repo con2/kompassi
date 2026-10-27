@@ -299,12 +299,12 @@ const translations = {
       choices: {
         title: "Choices",
         helpText:
-          'Write one choice per line in the form `technical-name: Text shown to the user`. The technical name identifies the choice, not the question, so each line must have a different technical name. It may contain lower-case letters a-z, numbers and dashes (-). For example, the choices for the question "May we photograph you?" could be:\n\n```\nyes: Yes\nno: No\n```\n\nDo not use the name of the question as the technical name (`photo-permission: Yes`, `photo-permission: No`): the answers could then not be told apart. Use the same technical names in all language versions and only translate the text. Do not change the technical names after responses have been received.',
+          "One choice per line: `technical-name: Text shown to the user`. Each choice needs its own technical name (a-z, 0-9, -). Example:\n\n```\nyes: Yes\nno: No\n```\n\nKeep the technical names the same in all language versions and don't change them after responses have been received.",
       },
       questions: {
         title: "Questions",
         helpText:
-          "Write one question per line in the form `technical-name: Text shown to the user`. The technical name identifies the question row, so each line must have a different technical name. It may contain lower-case letters a-z, numbers and dashes (-). For example:\n\n```\nfood: How was the food?\nmusic: How was the music?\n```\n\nUse the same technical names in all language versions and only translate the text. Do not change the technical names after responses have been received.",
+          "One question per line: `technical-name: Text shown to the user`. Each question needs its own technical name (a-z, 0-9, -). Example:\n\n```\nfood: How was the food?\nmusic: How was the music?\n```\n\nKeep the technical names the same in all language versions and don't change them after responses have been received.",
       },
       dimension: {
         title: "Dimension",
