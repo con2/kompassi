@@ -299,12 +299,12 @@ const translations = {
       choices: {
         title: "Choices",
         helpText:
-          'Each line must contain a choice in the form "row-slug: Choice shown to the user". The slug can contain lower-case letters a-z, numbers and dashes (-). Each row must have a different slug.',
+          "One choice per line: `technical-name: Text shown to the user`. Each choice needs its own technical name (a-z, 0-9, -). Example:\n\n```\nyes: Yes\nno: No\n```\n\nKeep the technical names the same in all language versions and don't change them after responses have been received.",
       },
       questions: {
         title: "Questions",
         helpText:
-          'Each line must contain a question in the form "row-slug: Text shown to the user". The slug can contain lower-case letters a-z, numbers and dashes (-). Each row must have a different slug.',
+          "One question per line: `technical-name: Text shown to the user`. Each question needs its own technical name (a-z, 0-9, -). Example:\n\n```\nfood: How was the food?\nmusic: How was the music?\n```\n\nKeep the technical names the same in all language versions and don't change them after responses have been received.",
       },
       dimension: {
         title: "Dimension",
@@ -1806,7 +1806,7 @@ const translations = {
         deleteProgramForm: {
           title: "Remove program form",
           cannotRemove:
-            "A program form that has program offers cannot be removed.",
+            "In order to remove this program form, remove all of its language versions first.",
           confirmation: (surveyTitle: string) => (
             <>
               Are you sure you want to remove the program form{" "}
@@ -2860,7 +2860,8 @@ const translations = {
       },
       deleteSurvey: {
         title: "Remove survey",
-        cannotRemove: "A survey that has responses cannot be removed.",
+        cannotRemove:
+          "In order to remove this survey, remove all of its language versions first.",
         confirmation: (surveyTitle: string) => (
           <>
             Are you sure you want to remove the survey{" "}

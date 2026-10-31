@@ -353,7 +353,7 @@ def labour_event_box_context(request, event):
         try:
             person = request.user.person
             signup = Signup.objects.get(event=event, person=person)
-        except (Person.DoesNotExist, Signup.DoesNotExist):
+        except Person.DoesNotExist, Signup.DoesNotExist:
             pass
 
     return dict(

@@ -369,7 +369,7 @@ class DesuconEmperkelator(BaseEmperkelator):
 
         try:
             return ShirtSize(frozen_shirt_size_values[0])
-        except (ValueError, KeyError):
+        except ValueError, KeyError:
             return computed_shirt_size
 
     @classmethod

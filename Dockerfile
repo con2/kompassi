@@ -1,4 +1,4 @@
-FROM ghcr.io/astral-sh/uv:python3.14-bookworm AS deps
+FROM ghcr.io/astral-sh/uv:python3.15-trixie AS deps
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
 ENV UV_PYTHON_DOWNLOADS=0
@@ -32,7 +32,7 @@ RUN env DEBUG=0 python manage.py collectstatic --noinput && \
     chmod 755 manage.py scripts/*.sh
 
 
-FROM python:3.14-slim-bookworm AS runtime
+FROM python:3.15-slim-trixie AS runtime
 
 RUN groupadd -g 998 -r kompassi && useradd -r -g kompassi -u 998 kompassi && apt-get update && apt-get -y install libpq5 libpango-1.0-0 libharfbuzz0b libpangoft2-1.0-0 && rm -rf /var/lib/apt/lists
 WORKDIR /usr/src/app

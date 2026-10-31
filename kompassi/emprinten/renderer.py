@@ -77,7 +77,7 @@ def find_lookup_tables(files: typing.Iterable[FileVersion]) -> dict[str, Lut]:
 
 
 @contextlib.contextmanager
-def make_temp_dir(*, keep: bool) -> collections.abc.Generator[str, None, None]:
+def make_temp_dir(*, keep: bool) -> collections.abc.Generator[str]:
     tmp_dir = tempfile.mkdtemp()
     try:
         yield tmp_dir

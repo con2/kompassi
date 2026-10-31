@@ -55,7 +55,7 @@ def handle_api_errors(view_func):
     def _decorator(request, *args, **kwargs):
         try:
             return view_func(request, *args, **kwargs)
-        except (ValueError, JSONValidationError, DjangoValidationError, BadRequest):
+        except ValueError, JSONValidationError, DjangoValidationError, BadRequest:
             logger.exception("Bad Request at %s", request.path)
             return JsonResponse(
                 dict(error="Bad Request"),

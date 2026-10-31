@@ -32,6 +32,7 @@ class Command(BaseCommand):
                         batched(
                             Entry.year_month_filter(Entry.objects.all(), year, month),
                             batch_size,
+                            strict=False,
                         )
                     ):
                         logger.info(f"Processing page {page} of event log entries for {year}-{month}")

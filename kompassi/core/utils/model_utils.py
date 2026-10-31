@@ -30,7 +30,6 @@ SLUG_FIELD_PARAMS = dict(
     "muuttaa luomisen jälkeen.",
 )
 NONUNIQUE_SLUG_FIELD_PARAMS = dict(SLUG_FIELD_PARAMS, unique=False)
-SLUG_FIELD_DEFAULT_VALIDATORS = object()
 
 
 def make_slug_field(

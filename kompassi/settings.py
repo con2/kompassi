@@ -44,12 +44,12 @@ DATABASES = {
             "sslmode": env("POSTGRES_SSLMODE", default="allow"),
         },
         "ENGINE": "django.db.backends.postgresql",
+        # Production connects through PgBouncer in transaction mode, which cannot keep a
+        # server-side cursor open across transactions. Django only honours this key inside
+        # the database config, not as a top-level setting.
+        "DISABLE_SERVER_SIDE_CURSORS": True,
     },
 }
-
-# Production connects through PgBouncer in transaction mode, which cannot keep a server-side
-# cursor open across transactions. QuerySet.iterator() then fetches in client-side chunks.
-DISABLE_SERVER_SIDE_CURSORS = True
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
@@ -491,10 +491,17 @@ KOMPASSI_PHONENUMBERS_DEFAULT_FORMAT = "INTERNATIONAL"
 
 
 # Sending email
-if env("EMAIL_HOST", default=""):
-    EMAIL_HOST = env("EMAIL_HOST")
+if email_host := env("EMAIL_HOST", default=""):
+    MAILERS = {
+        "default": {
+            "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+            "OPTIONS": {"host": email_host},
+        },
+    }
 else:
-    EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
+    MAILERS = {
+        "default": {"BACKEND": "django.core.mail.backends.dummy.EmailBackend"},
+    }
 
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="spam@example.com")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL

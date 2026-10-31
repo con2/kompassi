@@ -28,9 +28,8 @@ class FieldWarning(Enum):
 
 FALSY_VALUES = ("false", "0", "off", "no")
 
-# sentinels
-VALUE_MISSING = object()
-INVALID_VALUE = object()
+VALUE_MISSING = sentinel("VALUE_MISSING")
+INVALID_VALUE = sentinel("INVALID_VALUE")
 
 
 class FieldProcessor:
@@ -109,7 +108,7 @@ class DecimalFieldProcessor(FieldProcessor):
         else:
             try:
                 decimal.Decimal(value)
-            except (decimal.InvalidOperation, TypeError):
+            except decimal.InvalidOperation, TypeError:
                 warnings.append(FieldWarning.INVALID_VALUE)
 
         return warnings

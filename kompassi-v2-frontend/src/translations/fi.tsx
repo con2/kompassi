@@ -302,12 +302,12 @@ const translations: Translations = {
       choices: {
         title: "Vaihtoehdot",
         helpText:
-          'Joka rivillä tulee olla yksi vaihtoehto muodossa "rivin-tekninen-nimi: Käyttäjälle näytettävä vaihtoehto". Teknisessä nimessä saa käyttää pieniä kirjaimia a-z, numeroita sekä väliviivaa (-). Joka rivillä pitää olla eri tekninen nimi.',
+          "Yksi vaihtoehto riviä kohden: `tekninen-nimi: Käyttäjälle näytettävä teksti`. Jokaisella vaihtoehdolla on oltava oma tekninen nimi (a-z, 0-9, -). Esimerkki:\n\n```\nyes: Kyllä\nno: Ei\n```\n\nPidä tekniset nimet samoina kaikissa kieliversioissa äläkä muuta niitä, kun vastauksia on jo tullut.",
       },
       questions: {
         title: "Kysymykset",
         helpText:
-          'Joka rivillä tulee olla yksi kysymys muodossa "rivin-tekninen-nimi: Käyttäjälle näytettävä teksti". Teknisessä nimessä saa käyttää pieniä kirjaimia a-z, numeroita sekä väliviivaa (-). Joka rivillä pitää olla eri tekninen nimi.',
+          "Yksi kysymys riviä kohden: `tekninen-nimi: Käyttäjälle näytettävä teksti`. Jokaisella kysymyksellä on oltava oma tekninen nimi (a-z, 0-9, -). Esimerkki:\n\n```\nfood: Millaista ruoka oli?\nmusic: Millaista musiikki oli?\n```\n\nPidä tekniset nimet samoina kaikissa kieliversioissa äläkä muuta niitä, kun vastauksia on jo tullut.",
       },
       dimension: {
         title: "Dimensio",
@@ -1801,7 +1801,7 @@ const translations: Translations = {
         deleteProgramForm: {
           title: "Poista ohjelmalomake",
           cannotRemove:
-            "Ohjelmalomaketta ei voi poistaa, koska sillä on tehty ohjelmatarjouksia.",
+            "Poistaaksesi tämän ohjelmalomakkeen poista ensin kaikki sen kieliversiot.",
           confirmation: (surveyTitle: string) => (
             <>
               Haluatko varmasti poistaa ohjelmalomakkeen{" "}
@@ -2861,7 +2861,8 @@ const translations: Translations = {
       },
       deleteSurvey: {
         title: "Poista kysely",
-        cannotRemove: "Kyselyä, joka on jo saanut vastauksia, ei voi poistaa.",
+        cannotRemove:
+          "Poistaaksesi tämän kyselyn poista ensin kaikki sen kieliversiot.",
         confirmation: (surveyTitle: string) => (
           <>
             Haluatko varmasti poistaa kyselyn <strong>{surveyTitle}</strong>?

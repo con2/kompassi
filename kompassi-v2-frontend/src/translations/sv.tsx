@@ -293,12 +293,12 @@ const translations: Translations = {
       choices: {
         title: "Val",
         helpText:
-          'Varje rad måste innehålla ett val i formatet "rad-slug: Val som visas för användaren". Sluggen kan innehålla gemener a-z, siffror och bindestreck (-). Varje rad måste ha en unik slug.',
+          "Ett val per rad: `tekniskt-namn: Text som visas för användaren`. Varje val behöver ett eget tekniskt namn (a-z, 0-9, -). Exempel:\n\n```\nyes: Ja\nno: Nej\n```\n\nBehåll samma tekniska namn i alla språkversioner och ändra dem inte efter att svar har kommit in.",
       },
       questions: {
         title: "Frågor",
         helpText:
-          'Varje rad måste innehålla en fråga i formatet "rad-slug: Text som visas för användaren". Sluggen kan innehålla gemener a-z, siffror och bindestreck (-). Varje rad måste ha en unik slug.',
+          "En fråga per rad: `tekniskt-namn: Text som visas för användaren`. Varje fråga behöver ett eget tekniskt namn (a-z, 0-9, -). Exempel:\n\n```\nfood: Hur var maten?\nmusic: Hur var musiken?\n```\n\nBehåll samma tekniska namn i alla språkversioner och ändra dem inte efter att svar har kommit in.",
       },
       dimension: {
         title: "Dimension",
@@ -1774,7 +1774,7 @@ const translations: Translations = {
         deleteProgramForm: {
           title: "Ta bort programformulär",
           cannotRemove:
-            "Ett programformulär som har programerbjudanden kan inte tas bort.",
+            "För att ta bort det här programformuläret, ta först bort alla dess språkversioner.",
           confirmation: (surveyTitle: string) => (
             <>
               Är du säker på att du vill ta bort programformuläret{" "}
@@ -2806,7 +2806,8 @@ const translations: Translations = {
       },
       deleteSurvey: {
         title: "Radera enkät",
-        cannotRemove: "En enkät som redan har fått svar kan inte raderas.",
+        cannotRemove:
+          "För att radera den här enkäten, radera först alla dess språkversioner.",
         confirmation: (surveyTitle: string) => (
           <>
             Är du säker på att du vill ta bort enkäten{" "}

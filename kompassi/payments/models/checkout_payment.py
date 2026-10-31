@@ -319,7 +319,7 @@ class CheckoutPayment(models.Model):
     def admin_get_customer_email(self):
         try:
             return self.customer["email"]
-        except (IndexError, KeyError, ValueError):
+        except IndexError, KeyError, ValueError:
             return None
 
     admin_get_customer_email.short_description = "Customer E-mail"

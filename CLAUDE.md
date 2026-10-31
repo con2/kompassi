@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a monorepo with two main components:
 
-- `kompassi/` — Django backend (Python 3.14+)
+- `kompassi/` — Django backend (Python 3.15+)
 - `kompassi-v2-frontend/` — Next.js frontend (TypeScript, React, Apollo Client)
 
 The backend serves both a legacy Django-rendered UI (V1) and a GraphQL API consumed by the V2 frontend. The V2 frontend lives at a separate origin and authenticates via OAuth2/OIDC Bearer tokens.
@@ -136,6 +136,27 @@ The `kompassi/` package contains many Django apps. The most active ones in V2 de
 - `graphql_api` — single GraphQL schema (`schema.py`) that aggregates mutations/queries from all apps
 
 Legacy V1 apps (`labour`, `badges`, `mailings`, `access`, etc.) still exist and are active but are not being extended.
+
+### User id vs Person id
+
+`django.contrib.auth.User` and `core.Person` are separate models with separate integer id
+sequences, linked one-to-one through `Person.user`. The two ids of the same human differ, and
+every integer in one space is also a valid id of some other human in the other space. Kompassi
+deliberately blurs the distinction internally, and the externally visible field is often just
+named `id` or `sub`, so a mix-up is not caught by types or names.
+
+- `/oidc/userinfo` and the ID token `sub` carry **`User.id`** (django-oauth-toolkit default;
+  `api_v2/custom_oauth2_validator.py` does not override it).
+- Legacy `/api/v2/people/me` returns **`Person.id`** as `id` (`Person.as_dict`).
+- Group membership (`auth_user_groups`), sessions and tokens key on `User.id`;
+  labour signups, program involvement and most domain tables key on `Person.id`.
+
+Before reading, writing, comparing or migrating any numeric identifier for a person, confirm
+from the source which of the two it is: the model field it comes from, or the view or
+serializer that emits it. Do not infer it from a field name, a sample value, or a prompt.
+When an external system stores one of these ids, the integration must state which one, and
+changing it means migrating the stored values. An Outline integration that silently moved
+from `Person.id` to `User.id` in 2026-10 let users sign in to other people's accounts.
 
 ### GraphQL API
 
