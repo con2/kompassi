@@ -57,6 +57,7 @@ def ensure_groups_exist(group_names):
 
 REMAP_MODULES = {
     "events.hitpoint2017": "zombies.hitpoint2017",
+    "kompassi.events.desucon2017.forms": "kompassi.events.desucon2023.forms",
 }
 
 
