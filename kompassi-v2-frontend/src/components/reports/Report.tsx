@@ -98,6 +98,7 @@ export default function Report({
           <DropdownButton
             title={messages.actions.exportDropdown.title + "…"}
             variant="outline-primary"
+            size="sm"
           >
             {(["csv", "xlsx"] as const).map((format) => (
               <DropdownItem

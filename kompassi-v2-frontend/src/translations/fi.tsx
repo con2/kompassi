@@ -3393,7 +3393,7 @@ const translations: Translations = {
     listTitle: "Raportit",
     actions: {
       exportDropdown: {
-        title: "Lataa tiedostona",
+        title: "Vie",
         csv: "CSV",
         xlsx: "Excel",
       },
