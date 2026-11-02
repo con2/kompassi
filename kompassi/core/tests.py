@@ -92,6 +92,13 @@ class PersonTestCase(TestCase):
         p = Person(first_name="Roosa", surname="roosa@example.com", email="roosa@example.com")
         assert p.name_and_email == '"Roosa roosa@example.com" <roosa@example.com>'
 
+        p = Person(first_name="Matti", surname="Meikäläinen", email='"matti@home"@example.com')
+        assert p.name_and_email == 'Matti Meikäläinen <"matti@home"@example.com>'
+
+        # legacy rows with an unparseable email must not raise on attribute access
+        p = Person(first_name="Matti", surname="Meikäläinen", email="matti")
+        assert p.name_and_email == "Matti Meikäläinen <matti>"
+
 
 class UtilsTestCase(TestCase):
     def test_full_hours_between(self):

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from datetime import date, datetime
+from email.errors import HeaderParseError
 from email.headerregistry import Address
 from functools import cached_property
 from typing import TYPE_CHECKING
@@ -232,8 +233,13 @@ class Person(models.Model):
     def name_and_email(self):
         # Rows saved before validate_person_name may still have an @ in a name, which
         # the mail backend rejects unless the display name is quoted.
-        username, _at, domain = self.email.partition("@")
-        return str(Address(display_name=f"{self.first_name} {self.surname}", username=username, domain=domain))
+        display_name = f"{self.first_name} {self.surname}"
+        try:
+            return str(Address(display_name=display_name, addr_spec=self.email))
+        except ValueError, HeaderParseError:
+            # legacy rows may hold an email that does not parse; leave its validity to the mail backend
+            username, _at, domain = self.email.partition("@")
+            return str(Address(display_name=display_name, username=username, domain=domain))
 
     def get_name_display_style(self, preferred_name_display_style):
         if preferred_name_display_style:
