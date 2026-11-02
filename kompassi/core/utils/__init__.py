@@ -34,6 +34,7 @@ from .model_utils import (
     get_previous_and_next,
     phone_number_validator,
     slugify,
+    validate_person_name,
     validate_slug,
 )
 from .password_utils import MAX_PASSWORD_LENGTH, validate_password

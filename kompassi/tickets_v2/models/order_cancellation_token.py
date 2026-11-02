@@ -95,7 +95,7 @@ class OrderCancellationToken(models.Model, OneTimeCodeMixin):
         NOTE: Deliberately not OneTimeCodeMixin.send, which addresses the email
         via a Person and a request; this token has neither.
         """
-        from kompassi.core.tasks import send_email
+        from ..tasks import send_order_cancellation_request_email
 
         order = self.order
         meta = order.meta
@@ -122,7 +122,7 @@ class OrderCancellationToken(models.Model, OneTimeCodeMixin):
         reply_to = (contact_email,) if (contact_email := meta.contact_email) else ()
         to = (f"{order.first_name} {order.last_name} <{order.email}>",)
 
-        send_email.enqueue(
+        send_order_cancellation_request_email.enqueue(
             subject=subject,
             body=body,
             from_email=tickets_from_email(event),

@@ -479,6 +479,9 @@ msgstr "tapahtuman kotisivulta"
 msgid "phone number"
 msgstr "Puhelinnumero ei kelpaa."
 
+msgid "Names cannot contain the @ sign."
+msgstr "Nimessä ei voi olla @-merkkiä."
+
 #~ msgid "Accepting programme"
 #~ msgstr "Ohjelmahaku käynnissä"
 

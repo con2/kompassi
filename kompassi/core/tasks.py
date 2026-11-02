@@ -1,15 +1,13 @@
-import logging
-
-from django.conf import settings
-from django.core.mail import EmailMessage
 from django.tasks import task
 
-logger = logging.getLogger(__name__)
+from .utils.email_utils import send_email_message
 
 
 @task
-def send_email(**opts):
-    if settings.DEBUG:
-        logger.debug(opts["body"])
+def send_password_reset_email(**opts):
+    send_email_message(**opts)
 
-    EmailMessage(**opts).send()
+
+@task
+def send_email_verification_email(**opts):
+    send_email_message(**opts)

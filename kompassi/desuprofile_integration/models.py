@@ -13,6 +13,8 @@ from kompassi.core.models import OneTimeCode
 from kompassi.core.utils import url
 from kompassi.core.utils.cleanup import register_cleanup
 
+from .tasks import send_desuprofile_confirmation_email
+
 DESUPROFILE_USERNAME_MAX_LENGTH = 150
 
 
@@ -41,6 +43,8 @@ class Connection(models.Model):
 
 @register_cleanup(lambda qs: qs.filter(used_at__lt=now() - timedelta(days=30)))
 class ConfirmationCode(OneTimeCode):
+    message_task = send_desuprofile_confirmation_email
+
     desuprofile_id = models.IntegerField()
 
     desuprofile_username = models.CharField(

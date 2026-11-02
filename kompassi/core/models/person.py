@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from datetime import date, datetime
+from email.headerregistry import Address
 from functools import cached_property
 from typing import TYPE_CHECKING
 
@@ -21,7 +22,7 @@ from django.utils.translation import gettext_lazy as _
 from kompassi.field_types import PostgresEnumField
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE, SupportedLanguageCode
 
-from ..utils import calculate_age, format_phone_number, phone_number_validator, pick_attrs
+from ..utils import calculate_age, format_phone_number, phone_number_validator, pick_attrs, validate_person_name
 from .constants import (
     BIRTH_DATE_HELP_TEXT,
     EMAIL_LENGTH,
@@ -52,13 +53,22 @@ def birth_date_validator(value):
 
 
 class Person(models.Model):
-    first_name = models.CharField(max_length=1023, verbose_name=_("First name"))
+    first_name = models.CharField(
+        max_length=1023,
+        verbose_name=_("First name"),
+        validators=[validate_person_name],
+    )
     official_first_names = models.CharField(
         blank=True,
         max_length=1023,
         verbose_name=_("Official first names"),
+        validators=[validate_person_name],
     )
-    surname = models.CharField(max_length=1023, verbose_name=_("Surname"))
+    surname = models.CharField(
+        max_length=1023,
+        verbose_name=_("Surname"),
+        validators=[validate_person_name],
+    )
     nick = models.CharField(
         blank=True,
         max_length=1023,
@@ -220,7 +230,10 @@ class Person(models.Model):
 
     @property
     def name_and_email(self):
-        return f"{self.first_name} {self.surname} <{self.email}>"
+        # Rows saved before validate_person_name may still have an @ in a name, which
+        # the mail backend rejects unless the display name is quoted.
+        username, _at, domain = self.email.partition("@")
+        return str(Address(display_name=f"{self.first_name} {self.surname}", username=username, domain=domain))
 
     def get_name_display_style(self, preferred_name_display_style):
         if preferred_name_display_style:

@@ -4,6 +4,7 @@ from typing import Any
 
 from django.conf import settings
 from django.db import models
+from django.tasks import Task
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -24,6 +25,7 @@ class OneTimeCodeMixin:
     code: Any
     name_and_email: Any
     save: Any
+    message_task: Task
 
     @property
     def is_used(self):
@@ -50,8 +52,6 @@ class OneTimeCodeMixin:
         raise NotImplementedError()
 
     def send(self, request, **kwargs):
-        from ..tasks import send_email
-
         body = self.render_message_body(request)
         subject = self.render_message_subject(request)
 
@@ -64,7 +64,7 @@ class OneTimeCodeMixin:
 
         opts.update(kwargs)
 
-        send_email.enqueue(**opts)
+        self.message_task.enqueue(**opts)
 
     def mark_used(self):
         if self.state != "valid":
