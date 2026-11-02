@@ -14,6 +14,12 @@ validate_slug = RegexValidator(
     message="Tekninen nimi saa sisältää vain pieniä kirjaimia, numeroita sekä väliviivoja.",
 )
 
+validate_person_name = RegexValidator(
+    regex=r"@",
+    inverse_match=True,
+    message=_("Names cannot contain the @ sign."),
+)
+
 validate_slug_underscore = RegexValidator(
     regex=r"^[a-z0-9_]+$",
     message="Tekninen nimi saa sisältää vain pieniä kirjaimia, numeroita sekä alaviivoja.",

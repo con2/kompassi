@@ -5,6 +5,8 @@ from django.dispatch import receiver
 from django.tasks import TaskResult, TaskResultStatus, task
 from django.tasks.signals import task_finished
 
+from kompassi.core.utils.email_utils import send_email_message
+
 from .models.receipt import PendingReceipt, Receipt
 from .optimized_server.models.enums import ReceiptStatus
 
@@ -52,3 +54,8 @@ def mark_receipt_failed(sender, task_result: TaskResult, **kwargs):
     Receipt.objects.filter(event_id=event_id, id=receipt_id, status=ReceiptStatus.PROCESSING).update(
         status=ReceiptStatus.FAILURE
     )
+
+
+@task
+def send_order_cancellation_request_email(**opts):
+    send_email_message(**opts)

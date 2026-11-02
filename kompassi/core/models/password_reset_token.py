@@ -7,6 +7,7 @@ from django.utils.timezone import now
 
 from kompassi.core.utils.cleanup import register_cleanup
 
+from ..tasks import send_password_reset_email
 from ..utils import url
 from .one_time_code import OneTimeCode
 
@@ -17,6 +18,8 @@ class PasswordResetError(RuntimeError):
 
 @register_cleanup(lambda qs: qs.filter(used_at__lt=now() - timedelta(days=30)))
 class PasswordResetToken(OneTimeCode):
+    message_task = send_password_reset_email
+
     ip_address = models.CharField(max_length=45, blank=True)  # IPv6
 
     def render_message_subject(self, request):

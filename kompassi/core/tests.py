@@ -82,6 +82,23 @@ class PersonTestCase(TestCase):
         p = Person(phone="ööää")
         assert p.normalized_phone_number == "ööää"
 
+    def test_name_and_email(self):
+        from kompassi.core.models import Person
+
+        p = Person(first_name="Matti", surname="Meikäläinen", email="matti@example.com")
+        assert p.name_and_email == "Matti Meikäläinen <matti@example.com>"
+
+        # legacy rows with an email address typed into a name field
+        p = Person(first_name="Roosa", surname="roosa@example.com", email="roosa@example.com")
+        assert p.name_and_email == '"Roosa roosa@example.com" <roosa@example.com>'
+
+        p = Person(first_name="Matti", surname="Meikäläinen", email='"matti@home"@example.com')
+        assert p.name_and_email == 'Matti Meikäläinen <"matti@home"@example.com>'
+
+        # legacy rows with an unparseable email must not raise on attribute access
+        p = Person(first_name="Matti", surname="Meikäläinen", email="matti")
+        assert p.name_and_email == "Matti Meikäläinen <matti>"
+
 
 class UtilsTestCase(TestCase):
     def test_full_hours_between(self):
@@ -272,6 +289,44 @@ def test_person_form_program_role_retention_policy():
     assert submit("REMOVE").program_role_retention_policy == ProgramRoleRetentionPolicy.REMOVE
     assert submit("RETAIN").program_role_retention_policy == ProgramRoleRetentionPolicy.RETAIN
     assert submit("").program_role_retention_policy is None
+
+
+@pytest.mark.django_db
+def test_person_form_rejects_at_sign_in_names():
+    from kompassi.core.forms import PersonForm
+    from kompassi.core.models.person import Person
+
+    person, _created = Person.get_or_create_dummy()
+    form_data = {field: getattr(person, field) or "" for field in PersonForm.Meta.fields}
+    form_data["birth_date"] = "1990-01-01"
+    form_data["surname"] = "mahti@example.com"
+
+    form = PersonForm(form_data, instance=person)
+    assert not form.is_valid()
+    assert set(form.errors) == {"surname"}
+
+
+@pytest.mark.django_db
+def test_password_reset_email_to_person_with_at_sign_in_name(rf):
+    """
+    Names saved before the @ sign was disallowed must not make the address unparseable.
+    """
+    from django.contrib.auth.models import AnonymousUser
+    from django.core import mail
+
+    from kompassi.core.models import PasswordResetToken
+    from kompassi.core.models.person import Person
+
+    person, _created = Person.get_or_create_dummy()
+    Person.objects.filter(id=person.id).update(surname="mahti@example.com")
+    person.refresh_from_db()
+
+    request = rf.get("/")
+    request.user = AnonymousUser()
+    PasswordResetToken.objects.create(person=person).send(request)
+
+    assert len(mail.outbox) == 1
+    assert mail.outbox[0].to == [f'"Markku mahti@example.com" <{person.email}>']
 
 
 @pytest.mark.django_db

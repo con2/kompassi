@@ -239,6 +239,9 @@ def test_prefetch_referenced_objects_renders_messages_without_further_queries(dj
         messages = [entry.message for entry in entries]
 
     assert all("An error occurred" not in message for message in messages)
-    assert entries[0].event == event
-    assert entries[0].organization == event.organization
-    assert entries[0].person == person
+
+    # entries created within the same millisecond get UUIDv7 ids in random order
+    person_viewed = next(entry for entry in entries if entry.entry_type == "core.person.viewed")
+    assert person_viewed.event == event
+    assert person_viewed.organization == event.organization
+    assert person_viewed.person == person

@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from kompassi.core.utils.cleanup import register_cleanup
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE, to_supported_language
 
+from ..tasks import send_email_verification_email
 from ..utils import url
 from .one_time_code import OneTimeCode
 
@@ -19,6 +20,8 @@ class EmailVerificationError(RuntimeError):
 
 @register_cleanup(lambda qs: qs.filter(used_at__lt=now() - timedelta(days=30)))
 class EmailVerificationToken(OneTimeCode):
+    message_task = send_email_verification_email
+
     email = models.CharField(max_length=255)
 
     def save(self, *args, **kwargs):
