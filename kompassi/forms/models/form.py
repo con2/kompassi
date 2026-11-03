@@ -11,6 +11,7 @@ from django.db import models
 from django.http import HttpRequest
 
 from kompassi.core.models.event import Event
+from kompassi.dimensions.utils.dimension_cache import DimensionCache
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE, get_language_choices
 
 from .field import Field
@@ -88,33 +89,38 @@ class Form(models.Model):
     @classmethod
     def refresh_cached_fields_qs(cls, qs: models.QuerySet[Self], batch_size: int = 100):
         cls.objects.bulk_update(
-            [form.with_cached_fields() for form in qs], ["cached_enriched_fields"], batch_size=batch_size
+            [form.with_cached_fields() for form in qs.select_related("survey__universe", "survey__event")],
+            ["fields", "cached_enriched_fields"],
+            batch_size=batch_size,
         )
 
     def with_cached_fields(self):
-        self.cached_enriched_fields = [self._enrich_field(field) for field in self.fields]
+        """
+        Prunes subsetValues of deleted dimension values from the stored fields before enriching,
+        so that the stored fields always describe what the form offers.
+        """
+        caches = self.survey.preload_field_dimensions(self.fields)
+        self.fields = self.survey.prune_subset_values(self.fields, caches)
+        self.cached_enriched_fields = [self._enrich_field(field, caches) for field in self.fields]
         return self
 
     def refresh_cached_fields(self):
         # NOTE: fields included to avoid double save on programmatic editing of fields
         self.with_cached_fields().save(update_fields=["fields", "cached_enriched_fields"])
 
-    def _enrich_field(self, field: dict[str, Any]) -> dict[str, Any]:
+    def _enrich_field(self, field: dict[str, Any], caches: dict[str | None, DimensionCache]) -> dict[str, Any]:
         """
         Some field types may contain server side directives that need to be resolved before
         turning the form specification over to the frontend.
+
+        :param caches: The result of Survey.preload_field_dimensions for the fields of this form.
         """
 
-        # TODO(#643) subsetValues
-        if field.get("type") in ("DimensionSingleSelect", "DimensionMultiSelect") and (
-            dimension_slug := field.get("dimension")
-        ):
-            universe = self.survey.resolve_dimension_universe(field.get("dimensionUniverse"))
-            dimension = universe.dimensions.get(slug=dimension_slug)
-            field = dict(
-                field,
-                choices=[choice.model_dump(by_alias=True) for choice in dimension.as_choices(self.language)],
-            )
+        if dimension_slug := self.survey.get_selectable_dimension_slug(field):
+            dimension = caches[field.get("dimensionUniverse")].dimensions[dimension_slug]
+            # absent, null and [] all mean that every value is offered
+            choices = dimension.as_choices(self.language, value_slugs=field.get("subsetValues") or None)
+            field = dict(field, choices=[choice.model_dump(by_alias=True) for choice in choices])
 
         return field
 

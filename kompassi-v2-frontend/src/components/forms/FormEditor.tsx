@@ -56,19 +56,23 @@ function injectChoices(
     // has no choices pre-populated by the server
     (!field.choices || field.choices.length === 0)
   ) {
-    // TODO(#643) subsetValues
     const dimension = findEditorDimension(
       dimensions,
       field.dimension,
       getFieldDimensionUniverse(field, defaultDimensionUniverse),
     );
     if (dimension) {
+      const subsetValues = field.subsetValues?.length
+        ? new Set(field.subsetValues)
+        : undefined;
       return {
         ...field,
-        choices: dimension.values.map(({ slug, title }) => ({
-          slug,
-          title: title || slug,
-        })),
+        choices: dimension.values
+          .filter(({ slug }) => !subsetValues || subsetValues.has(slug))
+          .map(({ slug, title }) => ({
+            slug,
+            title: title || slug,
+          })),
       };
     }
   }

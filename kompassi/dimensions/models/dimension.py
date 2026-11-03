@@ -17,6 +17,8 @@ from .scope import Scope
 from .universe import Universe
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from kompassi.forms.models.field import Choice
 
     from .dimension_value import DimensionValue
@@ -189,7 +191,10 @@ class Dimension(models.Model):
         value_order_field = self.get_value_order_field(language)
         return self.values.all().order_by(value_order_field)
 
-    def as_choices(self, language: str | None = None) -> list[Choice]:
+    def as_choices(self, language: str | None = None, value_slugs: Iterable[str] | None = None) -> list[Choice]:
+        """
+        :param value_slugs: If given, only these values are included. Slugs of nonexistent values are ignored.
+        """
         from kompassi.forms.models.field import Choice
 
         title_fields = [f"title_{lang}" for lang in SUPPORTED_LANGUAGE_CODES]
@@ -198,12 +203,16 @@ class Dimension(models.Model):
         if language in SUPPORTED_LANGUAGE_CODES:
             title_fields = [f"title_{language}"] + [field for field in title_fields if field != f"title_{language}"]
 
+        values = self.get_values(language)
+        if value_slugs is not None:
+            values = values.filter(slug__in=value_slugs)
+
         return [
             Choice(
                 slug=slug,
                 title=next((localized_title for localized_title in localized_titles if localized_title), slug),
             )
-            for slug, *localized_titles in self.get_values(language).values_list("slug", *title_fields)
+            for slug, *localized_titles in values.values_list("slug", *title_fields)
         ]
 
     def get_title(self, lang: str = DEFAULT_LANGUAGE) -> str:

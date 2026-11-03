@@ -119,7 +119,6 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
                 dimension=dimension.slug,
                 title=original_field.title,
                 required=original_field.required,
-                subset_values=[choice.slug for choice in original_field.choices] if original_field.choices else None,
             ),
         )
 

@@ -304,6 +304,11 @@ const translations: Translations = {
         title: "Dimension",
         helpText: "Vilken dimension ska fältet hämta sina val från?",
       },
+      subsetValues: {
+        title: "Erbjudna värden",
+        helpText:
+          "Kryssa för de värden som svararen kan välja mellan. Lämna alla okryssade för att erbjuda dimensionens alla värden. Svar som redan innehåller ett värde som lämnats bort kan inte redigeras eller föras vidare förrän värdet kryssas för igen.",
+      },
       dimensionUniverse: {
         program: "Programpunkt",
         involvement: "Programvärd",

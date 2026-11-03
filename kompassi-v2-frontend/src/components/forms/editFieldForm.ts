@@ -40,7 +40,7 @@ export function findEditorDimension(
 
 /// The dimension dropdown of the field editor encodes the universe into the choice slug
 /// so that one dropdown can offer the dimensions of both universes.
-function encodeDimensionChoice(dimension: EditorDimension): string {
+export function encodeDimensionChoice(dimension: EditorDimension): string {
   return dimension.universe
     ? `${dimension.universe}/${dimension.slug}`
     : dimension.slug;
@@ -58,6 +58,14 @@ function decodeDimensionChoice(value: string): {
     dimensionUniverse: value.slice(0, separator) as DimensionUniverse,
     dimension: value.slice(separator + 1),
   };
+}
+
+export function findEditorDimensionByChoice(
+  dimensions: EditorDimension[],
+  choice: string,
+): EditorDimension | undefined {
+  const { dimension, dimensionUniverse } = decodeDimensionChoice(choice);
+  return findEditorDimension(dimensions, dimension, dimensionUniverse);
 }
 
 export interface AnnotationOption {
@@ -92,6 +100,8 @@ export function getFieldEditorFields(
   dimensions: EditorDimension[],
   annotations: AnnotationOption[] = [],
   formContext: FormEditorContext = "survey",
+  /// The dimension currently chosen in the dimension dropdown, whose values are offered as subsetValues.
+  selectedDimension?: EditorDimension,
 ): Field[] {
   const t = messages;
   const slugField: Field = {
@@ -213,6 +223,21 @@ export function getFieldEditorFields(
     ...t.dimension,
   };
 
+  const subsetValuesFields: Field[] = selectedDimension?.values.length
+    ? [
+        {
+          type: "MultiSelect",
+          slug: "subsetValues",
+          required: false,
+          choices: selectedDimension.values.map(({ slug, title }) => ({
+            slug,
+            title: title || slug,
+          })),
+          ...t.subsetValues,
+        },
+      ]
+    : [];
+
   const maxLengthField: Field = {
     type: "NumberField",
     slug: "maxLength",
@@ -238,6 +263,10 @@ export function getFieldEditorFields(
         return editableFieldFields.concat([choicesField]); // , encryptTo]);
       case "DimensionSingleSelect":
       case "DimensionMultiSelect":
+        return editableFieldFields.concat([
+          dimensionField,
+          ...subsetValuesFields,
+        ]); // , encryptTo]);
       case "DimensionSingleCheckbox":
         return editableFieldFields.concat([dimensionField]); // , encryptTo]);
       case "RadioMatrix":
@@ -321,6 +350,7 @@ export function formDataToField(
   fields: Field[],
   initialValues: Field,
   formData: FormData,
+  defaultDimensionUniverse?: DimensionUniverse,
 ): Field {
   const values: Values = {
     ...processFormData(fields, formData),
@@ -355,14 +385,32 @@ export function formDataToField(
       };
     case "DimensionSingleSelect":
     case "DimensionMultiSelect":
-    case "DimensionSingleCheckbox":
-      // an unqualified choice must clear a qualifier the field had before
+    case "DimensionSingleCheckbox": {
+      // The editor offers no value checkboxes when the chosen dimension is unknown to it or has
+      // no values. A saved subset must survive such an edit unless the dimension was changed,
+      // as the subset of one dimension means nothing for another.
+      const dimensionChanged =
+        values.dimension !==
+        fieldToValues(initialValues, defaultDimensionUniverse).dimension;
+      let subsetValues: string[] | undefined;
+      if (fields.some((field) => field.slug === "subsetValues")) {
+        subsetValues = values.subsetValues as string[] | undefined;
+      } else if (
+        !dimensionChanged &&
+        initialValues.type !== "DimensionSingleCheckbox"
+      ) {
+        subsetValues = initialValues.subsetValues;
+      }
       return {
         ...initialValues,
         ...values,
+        // nothing ticked means every value is offered, which is spelled as no subsetValues at all
+        subsetValues: subsetValues?.length ? subsetValues : undefined,
+        // an unqualified choice must clear a qualifier the field had before
         dimensionUniverse: undefined,
         ...decodeDimensionChoice(String(values.dimension ?? "")),
       } as Field;
+    }
     default:
       return { ...initialValues, ...values };
   }

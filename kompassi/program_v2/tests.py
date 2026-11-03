@@ -549,6 +549,8 @@ def test_invite_form_fields_may_refer_to_either_universe():
     DimensionValue.objects.create(dimension=shirt_size, slug="m", title_en="M")
     genre = Dimension.objects.create(universe=event.program_universe, slug="genre")
     DimensionValue.objects.create(dimension=genre, slug="fantasy", title_en="Fantasy")
+    # not in the subset of the genre field, so must not be offered
+    DimensionValue.objects.create(dimension=genre, slug="horror", title_en="Horror")
 
     invite_en = Form(
         event=event,
@@ -571,6 +573,7 @@ def test_invite_form_fields_may_refer_to_either_universe():
                 type="DimensionSingleSelect",
                 dimension="genre",
                 dimensionUniverse="program",
+                subsetValues=["fantasy"],
                 propagateDimensionOnCreate=True,
             ),
         ],

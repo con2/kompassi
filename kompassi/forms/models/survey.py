@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import dataclasses
 import logging
-from collections.abc import Collection, Mapping
+from collections import defaultdict
+from collections.abc import Collection, Iterable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from functools import cached_property
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Any, Self
 
 import yaml
 from django.conf import settings
@@ -283,6 +284,58 @@ class Survey(models.Model):
                 return self.event.involvement_universe
             case other:
                 raise ValueError(f"Dimension fields cannot refer to the {other} universe ({self})")
+
+    @staticmethod
+    def get_selectable_dimension_slug(field: dict[str, Any]) -> str | None:
+        """
+        Only the select types offer the values of their dimension as choices, so only they
+        need the dimension resolved when the form is saved. Resolving it for a checkbox
+        field would make a dangling dimension there fail the save.
+        """
+        if field.get("type") in ("DimensionSingleSelect", "DimensionMultiSelect"):
+            return field.get("dimension") or None
+        return None
+
+    def preload_field_dimensions(self, fields: Iterable[dict[str, Any]]) -> dict[str | None, DimensionCache]:
+        """
+        The dimensions the dimension select fields of `fields` refer to, keyed by the dimensionUniverse
+        qualifier of the field. A form of many dimension fields resolves them with one pair of
+        queries per universe instead of a pair per field.
+        """
+        slugs_by_universe: dict[str | None, set[str]] = defaultdict(set)
+        for field in fields:
+            if dimension_slug := self.get_selectable_dimension_slug(field):
+                slugs_by_universe[field.get("dimensionUniverse")].add(dimension_slug)
+
+        return {
+            dimension_universe: self.resolve_dimension_universe(dimension_universe).preload_dimensions(slugs)
+            for dimension_universe, slugs in slugs_by_universe.items()
+        }
+
+    def prune_subset_values(
+        self,
+        fields: list[dict[str, Any]],
+        caches: dict[str | None, DimensionCache] | None = None,
+    ) -> list[dict[str, Any]]:
+        """
+        Drops from the subsetValues of dimension fields the values that do not exist in the
+        dimension the field refers to, eg. after the value was deleted or the form was cloned
+        into an event whose dimension has different values. A subset left empty is cleared,
+        so the field offers every value of the dimension instead of none.
+
+        :param caches: The result of preload_field_dimensions(fields), if the caller already has it.
+        """
+        if caches is None:
+            caches = self.preload_field_dimensions(fields)
+
+        pruned_fields = []
+        for field in fields:
+            if field.get("subsetValues") and (dimension_slug := self.get_selectable_dimension_slug(field)):
+                existing_slugs = caches[field.get("dimensionUniverse")].values_by_dimension[dimension_slug]
+                subset_values = [slug for slug in field["subsetValues"] if slug in existing_slugs]
+                field = dict(field, subsetValues=subset_values or None)
+            pruned_fields.append(field)
+        return pruned_fields
 
     @property
     def is_in_involvement_universe(self) -> bool:

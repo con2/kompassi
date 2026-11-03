@@ -36,5 +36,6 @@ class DeleteDimensionValue(graphene.Mutation):
             raise Exception("Cannot remove dimension value")
 
         value.delete()
+        value.dimension.refresh_dependents()
 
         return DeleteDimensionValue(slug=input.value_slug)  # type: ignore

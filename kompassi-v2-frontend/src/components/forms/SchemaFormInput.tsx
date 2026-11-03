@@ -228,8 +228,9 @@ function SchemaFormInput({
       }
     case "MultiSelect":
     case "DimensionMultiSelect":
+      // the checkboxes are uncontrolled, so they must be remounted to show a new value or new choices
       return (
-        <Fragment key={JSON.stringify(value)}>
+        <Fragment key={JSON.stringify([value, field.choices])}>
           {field.choices?.map((choice) => {
             const name = `${slug}.${choice.slug}`;
             const choiceId = `${idPrefix}${idPrefix ? "-" : ""}${field.slug}-${

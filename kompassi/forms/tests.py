@@ -13,6 +13,7 @@ from kompassi.access.models.cbac_entry import CBACEntry
 from kompassi.core.middleware import RequestLocalCache
 from kompassi.core.models import Event, Person
 from kompassi.core.utils.cleanup import perform_cleanup
+from kompassi.dimensions.graphql.mutations.delete_dimension_value import DeleteDimensionValue
 from kompassi.dimensions.graphql.mutations.put_dimension import PutDimension
 from kompassi.dimensions.models.dimension import Dimension, ValueOrdering
 from kompassi.dimensions.models.dimension_value import DimensionValue
@@ -971,6 +972,127 @@ def test_update_form_fields_strips_dimension_choices():
     assert enriched_field["choices"] == [dict(slug="test-value", title="Renamed value")]
 
 
+def _update_form_fields(survey: Survey, fields: list[dict]):
+    UpdateFormFields.mutate(
+        None,
+        _mock_info(dict(app="forms")),
+        SimpleNamespace(
+            event_slug=survey.event.slug,
+            survey_slug=survey.slug,
+            language="en",
+            fields=fields,
+        ),  # type: ignore
+    )
+
+
+@pytest.mark.django_db
+def test_subset_values_limit_dimension_field_choices():
+    event, _created = Event.get_or_create_dummy()
+    survey = Survey.objects.create(event=event, slug="test-survey")
+
+    dimension = Dimension.objects.create(
+        universe=survey.universe,
+        slug="test-dimension",
+        value_ordering=ValueOrdering.MANUAL,
+    )
+    for order, slug in enumerate(["a", "b", "c"]):
+        DimensionValue.objects.create(dimension=dimension, slug=slug, order=order)
+
+    form = Form.objects.create(event=event, survey=survey, language="en", fields=[])
+
+    def get_choice_slugs() -> list[str]:
+        form.refresh_from_db()
+        (field,) = form.cached_enriched_fields
+        return [choice["slug"] for choice in field["choices"]]
+
+    def save_with_subset(subset_values: list[str]):
+        _update_form_fields(
+            survey,
+            [
+                dict(
+                    slug="test-dimension",
+                    type="DimensionMultiSelect",
+                    dimension="test-dimension",
+                    subsetValues=subset_values,
+                ),
+            ],
+        )
+
+    # dimension order wins over the order of subsetValues
+    save_with_subset(["c", "a"])
+    assert get_choice_slugs() == ["a", "c"]
+
+    # a value added later is not offered unless the subset is edited to include it
+    DimensionValue.objects.create(dimension=dimension, slug="d", order=3)
+    dimension.refresh_dependents()
+    assert get_choice_slugs() == ["a", "c"]
+
+    # an empty subset offers every value
+    save_with_subset([])
+    assert get_choice_slugs() == ["a", "b", "c", "d"]
+
+    # values that do not exist (eg. deleted ones) are dropped on save
+    save_with_subset(["a", "nope"])
+    assert get_choice_slugs() == ["a"]
+    assert form.fields[0]["subsetValues"] == ["a"]
+
+    # a subset of only nonexistent values offers every value instead of none
+    save_with_subset(["nope"])
+    assert get_choice_slugs() == ["a", "b", "c", "d"]
+    assert form.fields[0]["subsetValues"] is None
+
+    # deleting every value of the subset through the API clears the stored subset as well
+    save_with_subset(["d"])
+    DeleteDimensionValue.mutate(
+        None,
+        SimpleNamespace(context=_mock_info(dict(app="forms"))),
+        SimpleNamespace(
+            scope_slug=survey.scope.slug,
+            universe_slug=survey.universe.slug,
+            dimension_slug="test-dimension",
+            value_slug="d",
+        ),  # type: ignore
+    )
+    assert get_choice_slugs() == ["a", "b", "c"]
+    assert form.fields[0]["subsetValues"] is None
+
+
+@pytest.mark.django_db
+def test_out_of_subset_value_is_not_lifted():
+    event, _created = Event.get_or_create_dummy()
+    survey = Survey.objects.create(event=event, slug="test-survey")
+
+    dimension = Dimension.objects.create(universe=survey.universe, slug="test-dimension")
+    DimensionValue.objects.create(dimension=dimension, slug="test-dimension-value-1")
+    DimensionValue.objects.create(dimension=dimension, slug="test-dimension-value-2")
+
+    form = Form.objects.create(
+        event=event,
+        survey=survey,
+        language="en",
+        fields=[
+            dict(
+                slug="test-dimension",
+                type="DimensionSingleSelect",
+                dimension="test-dimension",
+                subsetValues=["test-dimension-value-1"],
+            )
+        ],
+    )
+
+    def respond(value: str) -> Response:
+        response = Response.objects.create(form=form, form_data={"test-dimension": value})
+        survey.workflow.handle_new_response_phase1(response)
+        survey.workflow.handle_new_response_phase2(response)
+        response.refresh_from_db()
+        return response
+
+    assert respond("test-dimension-value-2").cached_dimensions == {}
+    assert respond("test-dimension-value-1").cached_dimensions == {
+        "test-dimension": ["test-dimension-value-1"],
+    }
+
+
 @pytest.mark.django_db
 def test_promote_field_to_dimension():
     with transaction.atomic():
@@ -1077,6 +1199,11 @@ def test_promote_field_to_dimension():
         "q-foo": ["c-bar"],
     }
     assert response3.cached_dimensions == {}
+
+    # the promoted field offers every value of the dimension, including ones added later
+    form_en.refresh_from_db()
+    (promoted_field,) = form_en.fields
+    assert not promoted_field.get("subsetValues")
 
     # CASE 2: Existing dimension
     Form.objects.create(
@@ -1700,6 +1827,66 @@ def test_survey_clone_copies_missing_field_dimensions_into_program_universe():
     assert {choice["slug"] for choice in genre_field["choices"]} == {"fantasy", "scifi"}
 
 
+@pytest.mark.django_db
+def test_survey_clone_prunes_subset_values_to_existing_target_values():
+    """
+    A program form cloned into an event that already has the dimension keeps the target
+    event's values, which may differ from the source event's.
+    """
+    from kompassi.program_v2.models.meta import ProgramV2EventMeta
+
+    source_meta, _created = ProgramV2EventMeta.get_or_create_dummy()
+    source_event = source_meta.event
+    target_event = _create_program_event(source_meta, "clone-target-event")
+
+    source_genre = Dimension.objects.create(universe=source_event.program_universe, slug="genre")
+    source_type = Dimension.objects.create(universe=source_event.program_universe, slug="type")
+    for dimension, slugs in [(source_genre, ["fantasy", "scifi", "horror"]), (source_type, ["larp", "talk"])]:
+        for slug in slugs:
+            DimensionValue.objects.create(dimension=dimension, slug=slug)
+
+    target_genre = Dimension.objects.create(universe=target_event.program_universe, slug="genre")
+    target_type = Dimension.objects.create(universe=target_event.program_universe, slug="type")
+    for dimension, slugs in [(target_genre, ["fantasy", "horror", "romance"]), (target_type, ["workshop"])]:
+        for slug in slugs:
+            DimensionValue.objects.create(dimension=dimension, slug=slug)
+
+    source_survey = Survey(
+        event=source_event,
+        slug="offer-form",
+        app=DimensionApp.PROGRAM,
+        purpose=SurveyPurpose.DEFAULT,
+    ).with_mandatory_fields()
+    source_survey.save()
+    Form.objects.create(
+        event=source_event,
+        survey=source_survey,
+        language="en",
+        fields=[
+            dict(slug="genre", type="DimensionMultiSelect", dimension="genre", subsetValues=["fantasy", "scifi"]),
+            dict(slug="type", type="DimensionSingleSelect", dimension="type", subsetValues=["larp"]),
+        ],
+    )
+
+    clone = source_survey.clone(
+        event=target_event,
+        slug="offer-form",
+        app=DimensionApp.PROGRAM,
+        purpose=SurveyPurpose.DEFAULT,
+    )
+
+    cloned_form = clone.languages.get(language="en")
+    fields = {field["slug"]: field for field in cloned_form.fields}
+    enriched = {field["slug"]: field for field in cloned_form.cached_enriched_fields}
+
+    assert fields["genre"]["subsetValues"] == ["fantasy"]
+    assert [choice["slug"] for choice in enriched["genre"]["choices"]] == ["fantasy"]
+
+    # none of the subset exists in the target, so rather than offering nothing, offer everything
+    assert fields["type"]["subsetValues"] is None
+    assert [choice["slug"] for choice in enriched["type"]["choices"]] == ["workshop"]
+
+
 def _create_program_event(source_meta, slug: str):
     from kompassi.program_v2.models.meta import ProgramV2EventMeta
 
@@ -2284,6 +2471,15 @@ def test_field_propagation_config_is_validated():
 
     with pytest.raises(pydantic.ValidationError):
         Field.model_validate(dict(slug="d", type="DimensionSingleSelect", dimension="d", dimensionUniverse="forms"))
+
+    Field.model_validate(dict(slug="d", type="DimensionMultiSelect", dimension="d", subsetValues=["a"]))
+
+    with pytest.raises(pydantic.ValidationError):
+        Field.model_validate(dict(slug="s", type="SingleLineText", subsetValues=["a"]))
+
+    with pytest.raises(pydantic.ValidationError):
+        # a single checkbox has no choices to take a subset of
+        Field.model_validate(dict(slug="d", type="DimensionSingleCheckbox", dimension="d", subsetValues=["a"]))
 
 
 @pytest.mark.django_db
