@@ -2547,3 +2547,60 @@ def test_extract_dimension_values_uses_only_marked_fields():
 
     assert extract_dimension_values_for_universe(response, cache=cache) == {"kind": ["a"]}
     assert extract_dimension_values_for_universe(response, cache=cache, on_edit=True) == {}
+
+
+@pytest.mark.django_db
+def test_delete_standalone_survey_deletes_its_universe():
+    """
+    Deleting a stand-alone survey removes its Universe so a survey with the same slug can
+    be created again, also by cloning (Universe.clone creates the Universe unconditionally).
+    """
+    from kompassi.dimensions.models.universe import Universe
+
+    event, _created = Event.get_or_create_dummy()
+
+    source = Survey.objects.create(event=event, slug="delete-clone-source")
+    survey = source.clone(
+        event=event,
+        slug="delete-me",
+        app=DimensionApp.FORMS,
+        purpose=SurveyPurpose.DEFAULT,
+    )
+    universe_id = survey.universe_id
+
+    survey.delete()
+
+    assert not Universe.objects.filter(id=universe_id).exists()
+
+    recreated = source.clone(
+        event=event,
+        slug="delete-me",
+        app=DimensionApp.FORMS,
+        purpose=SurveyPurpose.DEFAULT,
+    )
+    assert recreated.universe.slug == "delete-me"
+
+
+@pytest.mark.django_db
+def test_delete_program_form_keeps_program_universe():
+    """
+    The program Universe is shared by all program forms of the event and must survive
+    the deletion of any one of them.
+    """
+    from kompassi.program_v2.models.meta import ProgramV2EventMeta
+
+    meta, _created = ProgramV2EventMeta.get_or_create_dummy()
+    event = meta.event
+    program_universe = event.program_universe
+
+    survey = Survey.objects.create(
+        event=event,
+        slug="delete-me-program",
+        app=DimensionApp.PROGRAM,
+        purpose=SurveyPurpose.DEFAULT,
+    )
+    assert survey.universe_id == program_universe.id
+
+    survey.delete()
+
+    assert event.program_universe.id == program_universe.id

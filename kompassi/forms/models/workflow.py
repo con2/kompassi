@@ -243,9 +243,8 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
     def revoke_all_access(self, request: HttpRequest | None) -> int:
         """
         Deletes every CBACEntry granted via grant_access for this survey, regardless of
-        grantee. Call this when the survey itself is deleted: the survey's Universe is not
-        deleted along with it (see Survey._get_universe), so a future survey created with
-        the same slug would otherwise reuse the same Universe and inherit these grants.
+        grantee. Call this when the survey itself is deleted: the grants are keyed by survey
+        slug, so a future survey created with the same slug would otherwise inherit them.
         """
         if not self.can_access_be_granted:
             return 0

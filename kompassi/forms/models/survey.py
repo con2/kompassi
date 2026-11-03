@@ -207,6 +207,19 @@ class Survey(models.Model):
         self.with_mandatory_fields()
         super().save(**kwargs)
 
+    def delete(self, **kwargs):
+        """
+        A stand-alone survey (app=FORMS) owns a Universe named after its slug. Its Universe
+        goes with it, or a survey later created with the same slug would collide with it
+        (Survey.clone) or silently inherit its dimensions (Survey._get_universe).
+        Program forms share the event's program or involvement Universe, which stays.
+        """
+        universe = self.universe if self.app == DimensionApp.FORMS else None
+        result = super().delete(**kwargs)
+        if universe is not None and not universe.surveys.exists():
+            universe.delete()
+        return result
+
     @cached_property
     def profile_field_selector(self) -> ProfileFieldSelector:
         return ProfileFieldSelector.from_anonymity(self.anonymity)
