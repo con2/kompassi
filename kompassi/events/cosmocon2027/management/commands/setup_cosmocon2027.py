@@ -122,6 +122,7 @@ class Setup:
             ("Vapaaehtoinen", "vapaaehtoinen", "labour"),
             ("Ohjelmanjärjestäjä", "ohjelma", "program_v2"),
             ("Vieras", "vieras", "badges"),
+            ("Cosplay", "cosplay", "badges"),
         ]:
             PersonnelClass.objects.update_or_create(
                 event=self.event,
