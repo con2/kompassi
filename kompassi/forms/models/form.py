@@ -116,9 +116,7 @@ class Form(models.Model):
         :param caches: The result of Survey.preload_field_dimensions for the fields of this form.
         """
 
-        if field.get("type") in ("DimensionSingleSelect", "DimensionMultiSelect") and (
-            dimension_slug := field.get("dimension")
-        ):
+        if dimension_slug := self.survey.get_selectable_dimension_slug(field):
             dimension = caches[field.get("dimensionUniverse")].dimensions[dimension_slug]
             # absent, null and [] all mean that every value is offered
             choices = dimension.as_choices(self.language, value_slugs=field.get("subsetValues") or None)

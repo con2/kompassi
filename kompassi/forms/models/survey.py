@@ -285,15 +285,26 @@ class Survey(models.Model):
             case other:
                 raise ValueError(f"Dimension fields cannot refer to the {other} universe ({self})")
 
+    @staticmethod
+    def get_selectable_dimension_slug(field: dict[str, Any]) -> str | None:
+        """
+        Only the select types offer the values of their dimension as choices, so only they
+        need the dimension resolved when the form is saved. Resolving it for a checkbox
+        field would make a dangling dimension there fail the save.
+        """
+        if field.get("type") in ("DimensionSingleSelect", "DimensionMultiSelect"):
+            return field.get("dimension") or None
+        return None
+
     def preload_field_dimensions(self, fields: Iterable[dict[str, Any]]) -> dict[str | None, DimensionCache]:
         """
-        The dimensions the dimension fields of `fields` refer to, keyed by the dimensionUniverse
+        The dimensions the dimension select fields of `fields` refer to, keyed by the dimensionUniverse
         qualifier of the field. A form of many dimension fields resolves them with one pair of
         queries per universe instead of a pair per field.
         """
         slugs_by_universe: dict[str | None, set[str]] = defaultdict(set)
         for field in fields:
-            if dimension_slug := field.get("dimension"):
+            if dimension_slug := self.get_selectable_dimension_slug(field):
                 slugs_by_universe[field.get("dimensionUniverse")].add(dimension_slug)
 
         return {
@@ -319,7 +330,7 @@ class Survey(models.Model):
 
         pruned_fields = []
         for field in fields:
-            if field.get("subsetValues") and (dimension_slug := field.get("dimension")):
+            if field.get("subsetValues") and (dimension_slug := self.get_selectable_dimension_slug(field)):
                 existing_slugs = caches[field.get("dimensionUniverse")].values_by_dimension[dimension_slug]
                 subset_values = [slug for slug in field["subsetValues"] if slug in existing_slugs]
                 field = dict(field, subsetValues=subset_values or None)
