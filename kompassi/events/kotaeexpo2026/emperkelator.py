@@ -115,6 +115,12 @@ class KotaeEmperkelator(BaseEmperkelator):
             if personnel_classes & WEEKEND_TICKET_PERSONNEL_CLASSES:
                 return TicketType.WEEKEND_TICKET
 
+            seller_weekdays: set[int] = set()
+            for slug in personnel_classes & SELLER_PERSONNEL_CLASS_WEEKDAYS.keys():
+                seller_weekdays |= SELLER_PERSONNEL_CLASS_WEEKDAYS[slug]
+            if seller_weekdays:
+                return TicketType.from_weekdays(seller_weekdays)
+
         weekdays: set[int] = set()
         for involvement in self.involvements:
             if involvement.type == InvolvementType.PROGRAM_HOST:
