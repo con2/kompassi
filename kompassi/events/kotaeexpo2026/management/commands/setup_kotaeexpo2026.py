@@ -101,14 +101,10 @@ class Setup:
             ("Vapaaehtoinen", "vapaaehtoinen", "labour"),
             ("Ohjelmanjärjestäjä", "ohjelma", "program_v2"),
             ("Vieras", "vieras", "badges"),
-            # ("Ohjelmanpitäjä lauantai", "ohjelmanpitaja-la", "program_v2"),
-            # ("Ohjelmanpitäjä sunnuntai", "ohjelmanpitaja-su", "program_v2"),
-            # ("Ohjelmanpitäjä viikonloppu", "ohjelmanpitaja-viikonloppu", "program_v2"),
-            # ("Artesaani", "artesaani", "badges"),
-            # ("Taidekuja lauantai", "taidekuja-la", "badges"),
-            # ("Taidekuja sunnuntai", "taidekuja-su", "badges"),
-            # ("Expo näytteilleasettaja", "exponaytteilleasettaja", "badges"),
-            # ("Näytteilleasettaja", "naytteilleasettaja", "badges"),
+            ("Myyjä lauantai", "myyja-la", "badges"),
+            ("Myyjä sunnuntai", "myyja-su", "badges"),
+            ("Myyjä viikonloppu", "myyja-vkl", "badges"),
+            ("Sidosryhmä", "sidosryhma", "badges"),
         ]:
             PersonnelClass.objects.update_or_create(
                 event=self.event,
