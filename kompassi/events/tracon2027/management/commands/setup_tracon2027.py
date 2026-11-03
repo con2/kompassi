@@ -91,7 +91,7 @@ class Setup:
         self.setup_tickets_v2()
         self.setup_forms()
 
-        # self.setup_program_v2()
+        self.setup_program_v2()
         # self.setup_kirpputori()
         # self.setup_konsti()
         # self.setup_paikkala()
