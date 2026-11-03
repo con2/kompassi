@@ -1078,6 +1078,11 @@ def test_promote_field_to_dimension():
     }
     assert response3.cached_dimensions == {}
 
+    # the promoted field offers every value of the dimension, including ones added later
+    form_en.refresh_from_db()
+    (promoted_field,) = form_en.fields
+    assert not promoted_field.get("subsetValues")
+
     # CASE 2: Existing dimension
     Form.objects.create(
         event=event,
