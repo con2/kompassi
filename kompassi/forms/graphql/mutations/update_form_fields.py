@@ -42,33 +42,27 @@ class UpdateFormFields(graphene.Mutation):
             survey.workflow.check_access(info, operation="update", field="languages")
 
             for field in fields.fields:
-                if field.dimension_universe is not None:
-                    if survey.app != DimensionApp.PROGRAM:
-                        raise ValueError(f"Field {field.slug}: only program forms may set dimensionUniverse")
-                    if survey.purpose == SurveyPurpose.FOLLOWUP and field.dimension_universe == DimensionApp.PROGRAM:
-                        # a follow-up respondent may host several program items, so there is no single target
-                        raise ValueError(f"Field {field.slug}: follow-up forms cannot refer to the program universe")
-
-                if field.subset_values:
-                    universe = survey.resolve_dimension_universe(field.dimension_universe)
-                    dimension = universe.dimensions.get(slug=field.dimension)
-                    unknown = set(field.subset_values) - set(dimension.values.values_list("slug", flat=True))
-                    if unknown:
-                        raise ValueError(
-                            f"Field {field.slug}: unknown values for dimension {field.dimension}: {sorted(unknown)}"
-                        )
+                if field.dimension_universe is None:
+                    continue
+                if survey.app != DimensionApp.PROGRAM:
+                    raise ValueError(f"Field {field.slug}: only program forms may set dimensionUniverse")
+                if survey.purpose == SurveyPurpose.FOLLOWUP and field.dimension_universe == DimensionApp.PROGRAM:
+                    # a follow-up respondent may host several program items, so there is no single target
+                    raise ValueError(f"Field {field.slug}: follow-up forms cannot refer to the program universe")
 
             # Dimension fields' choices are only ever derived from the dimension at read time
             # (see Form._enrich_field). Persisting client-supplied choices for them would freeze
             # stale values and translations in place, so they must never be saved.
-            form.fields = [
-                field.model_dump(
-                    mode="json",
-                    by_alias=True,
-                    exclude={"choices"} if field.type.is_dimension_field else None,
-                )
-                for field in fields.fields
-            ]
+            form.fields = survey.prune_subset_values(
+                [
+                    field.model_dump(
+                        mode="json",
+                        by_alias=True,
+                        exclude={"choices"} if field.type.is_dimension_field else None,
+                    )
+                    for field in fields.fields
+                ]
+            )
             form.save(update_fields=["fields", "cached_enriched_fields"])
 
             survey.refresh_cached_key_fields(form)

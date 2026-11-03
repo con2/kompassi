@@ -1030,8 +1030,15 @@ def test_subset_values_limit_dimension_field_choices():
     save_with_subset([])
     assert get_choice_slugs() == ["a", "b", "c", "d"]
 
-    with pytest.raises(ValueError):
-        save_with_subset(["nope"])
+    # values that do not exist (eg. deleted ones) are dropped on save
+    save_with_subset(["a", "nope"])
+    assert get_choice_slugs() == ["a"]
+    assert form.fields[0]["subsetValues"] == ["a"]
+
+    # a subset of only nonexistent values offers every value instead of none
+    save_with_subset(["nope"])
+    assert get_choice_slugs() == ["a", "b", "c", "d"]
+    assert form.fields[0]["subsetValues"] is None
 
 
 @pytest.mark.django_db
@@ -1802,6 +1809,66 @@ def test_survey_clone_copies_missing_field_dimensions_into_program_universe():
     cloned_form = clone.languages.get(language="en")
     genre_field = next(field for field in cloned_form.cached_enriched_fields if field["slug"] == "genre")
     assert {choice["slug"] for choice in genre_field["choices"]} == {"fantasy", "scifi"}
+
+
+@pytest.mark.django_db
+def test_survey_clone_prunes_subset_values_to_existing_target_values():
+    """
+    A program form cloned into an event that already has the dimension keeps the target
+    event's values, which may differ from the source event's.
+    """
+    from kompassi.program_v2.models.meta import ProgramV2EventMeta
+
+    source_meta, _created = ProgramV2EventMeta.get_or_create_dummy()
+    source_event = source_meta.event
+    target_event = _create_program_event(source_meta, "clone-target-event")
+
+    source_genre = Dimension.objects.create(universe=source_event.program_universe, slug="genre")
+    source_type = Dimension.objects.create(universe=source_event.program_universe, slug="type")
+    for dimension, slugs in [(source_genre, ["fantasy", "scifi", "horror"]), (source_type, ["larp", "talk"])]:
+        for slug in slugs:
+            DimensionValue.objects.create(dimension=dimension, slug=slug)
+
+    target_genre = Dimension.objects.create(universe=target_event.program_universe, slug="genre")
+    target_type = Dimension.objects.create(universe=target_event.program_universe, slug="type")
+    for dimension, slugs in [(target_genre, ["fantasy", "horror", "romance"]), (target_type, ["workshop"])]:
+        for slug in slugs:
+            DimensionValue.objects.create(dimension=dimension, slug=slug)
+
+    source_survey = Survey(
+        event=source_event,
+        slug="offer-form",
+        app=DimensionApp.PROGRAM,
+        purpose=SurveyPurpose.DEFAULT,
+    ).with_mandatory_fields()
+    source_survey.save()
+    Form.objects.create(
+        event=source_event,
+        survey=source_survey,
+        language="en",
+        fields=[
+            dict(slug="genre", type="DimensionMultiSelect", dimension="genre", subsetValues=["fantasy", "scifi"]),
+            dict(slug="type", type="DimensionSingleSelect", dimension="type", subsetValues=["larp"]),
+        ],
+    )
+
+    clone = source_survey.clone(
+        event=target_event,
+        slug="offer-form",
+        app=DimensionApp.PROGRAM,
+        purpose=SurveyPurpose.DEFAULT,
+    )
+
+    cloned_form = clone.languages.get(language="en")
+    fields = {field["slug"]: field for field in cloned_form.fields}
+    enriched = {field["slug"]: field for field in cloned_form.cached_enriched_fields}
+
+    assert fields["genre"]["subsetValues"] == ["fantasy"]
+    assert [choice["slug"] for choice in enriched["genre"]["choices"]] == ["fantasy"]
+
+    # none of the subset exists in the target, so rather than offering nothing, offer everything
+    assert fields["type"]["subsetValues"] is None
+    assert [choice["slug"] for choice in enriched["type"]["choices"]] == ["workshop"]
 
 
 def _create_program_event(source_meta, slug: str):

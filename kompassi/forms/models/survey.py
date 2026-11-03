@@ -6,7 +6,7 @@ from collections.abc import Collection, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from functools import cached_property
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Any, Self
 
 import yaml
 from django.conf import settings
@@ -283,6 +283,28 @@ class Survey(models.Model):
                 return self.event.involvement_universe
             case other:
                 raise ValueError(f"Dimension fields cannot refer to the {other} universe ({self})")
+
+    def prune_subset_values(self, fields: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """
+        Drops from the subsetValues of dimension fields the values that do not exist in the
+        dimension the field refers to, eg. after the value was deleted or the form was cloned
+        into an event whose dimension has different values. A subset left empty is cleared,
+        so the field offers every value of the dimension instead of none.
+        """
+        value_slugs_by_dimension: dict[tuple[int, str], set[str]] = {}
+        pruned_fields = []
+        for field in fields:
+            if field.get("subsetValues") and (dimension_slug := field.get("dimension")):
+                universe = self.resolve_dimension_universe(field.get("dimensionUniverse"))
+                key = (universe.id, dimension_slug)
+                if key not in value_slugs_by_dimension:
+                    dimension = universe.dimensions.get(slug=dimension_slug)
+                    value_slugs_by_dimension[key] = set(dimension.values.values_list("slug", flat=True))
+                existing_slugs = value_slugs_by_dimension[key]
+                subset_values = [slug for slug in field["subsetValues"] if slug in existing_slugs]
+                field = dict(field, subsetValues=subset_values or None)
+            pruned_fields.append(field)
+        return pruned_fields
 
     @property
     def is_in_involvement_universe(self) -> bool:

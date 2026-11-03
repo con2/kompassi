@@ -141,7 +141,9 @@ class Form(models.Model):
             title=self.title,
             description=self.description,
             thank_you_message=self.thank_you_message,
-            fields=[{**field, **field_overrides.get(field["slug"], {})} for field in self.fields],
+            fields=survey.prune_subset_values(
+                [{**field, **field_overrides.get(field["slug"], {})} for field in self.fields]
+            ),
             created_by=created_by,
         )
         form.save()
