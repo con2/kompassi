@@ -20,6 +20,13 @@ SUNDAY = 6
 # V1 personnel classes that always get a weekend ticket
 WEEKEND_TICKET_PERSONNEL_CLASSES = {"vastaava", "vapaaehtoinen"}
 
+# Seller personnel classes and the weekdays they grant tickets for
+SELLER_PERSONNEL_CLASS_WEEKDAYS = {
+    "myyja-la": {SATURDAY},
+    "myyja-su": {SUNDAY},
+    "myyja-vkl": {SATURDAY, SUNDAY},
+}
+
 
 class TicketType(Enum):
     """
