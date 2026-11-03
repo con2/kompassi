@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import {
+  encodeDimensionChoice,
   fieldToValues,
   findEditorDimensionByChoice,
   formDataToField,
@@ -47,8 +48,11 @@ const EditFieldModal = ({
   );
 
   // The value checkboxes follow the dimension dropdown, so its value must be known while editing.
+  // A new field has no dimension yet, and the required dropdown then shows its first choice.
   const [dimensionChoice, setDimensionChoice] = useState<string>(
-    values.dimension ?? "",
+    () =>
+      values.dimension ??
+      (dimensions.length ? encodeDimensionChoice(dimensions[0]) : ""),
   );
   const handleChange = useCallback((event: React.FormEvent) => {
     const target = event.target as HTMLInputElement;
@@ -90,10 +94,15 @@ const EditFieldModal = ({
     (event: React.SyntheticEvent) => {
       event.preventDefault();
       const formData = new FormData(event.target as HTMLFormElement);
-      const field = formDataToField(fields, fieldToEdit, formData);
+      const field = formDataToField(
+        fields,
+        fieldToEdit,
+        formData,
+        defaultDimensionUniverse,
+      );
       onSubmit(field);
     },
-    [fieldToEdit, fields, onSubmit],
+    [fieldToEdit, fields, onSubmit, defaultDimensionUniverse],
   );
 
   return (

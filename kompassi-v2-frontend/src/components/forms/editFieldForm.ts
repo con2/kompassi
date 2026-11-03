@@ -40,7 +40,7 @@ export function findEditorDimension(
 
 /// The dimension dropdown of the field editor encodes the universe into the choice slug
 /// so that one dropdown can offer the dimensions of both universes.
-function encodeDimensionChoice(dimension: EditorDimension): string {
+export function encodeDimensionChoice(dimension: EditorDimension): string {
   return dimension.universe
     ? `${dimension.universe}/${dimension.slug}`
     : dimension.slug;
@@ -60,7 +60,6 @@ function decodeDimensionChoice(value: string): {
   };
 }
 
-/// Resolves the value of the dimension dropdown of the field editor.
 export function findEditorDimensionByChoice(
   dimensions: EditorDimension[],
   choice: string,
@@ -351,6 +350,7 @@ export function formDataToField(
   fields: Field[],
   initialValues: Field,
   formData: FormData,
+  defaultDimensionUniverse?: DimensionUniverse,
 ): Field {
   const values: Values = {
     ...processFormData(fields, formData),
@@ -386,16 +386,26 @@ export function formDataToField(
     case "DimensionSingleSelect":
     case "DimensionMultiSelect":
     case "DimensionSingleCheckbox": {
-      // nothing ticked means every value is offered, which is spelled as no subsetValues at all
-      const subsetValues = values.subsetValues as string[] | undefined;
+      // The editor offers no value checkboxes when the chosen dimension is unknown to it or has
+      // no values. A saved subset must survive such an edit unless the dimension was changed,
+      // as the subset of one dimension means nothing for another.
+      const dimensionChanged =
+        values.dimension !==
+        fieldToValues(initialValues, defaultDimensionUniverse).dimension;
+      let subsetValues: string[] | undefined;
+      if (fields.some((field) => field.slug === "subsetValues")) {
+        subsetValues = values.subsetValues as string[] | undefined;
+      } else if (
+        !dimensionChanged &&
+        initialValues.type !== "DimensionSingleCheckbox"
+      ) {
+        subsetValues = initialValues.subsetValues;
+      }
       return {
         ...initialValues,
         ...values,
-        subsetValues:
-          initialValues.type !== "DimensionSingleCheckbox" &&
-          subsetValues?.length
-            ? subsetValues
-            : undefined,
+        // nothing ticked means every value is offered, which is spelled as no subsetValues at all
+        subsetValues: subsetValues?.length ? subsetValues : undefined,
         // an unqualified choice must clear a qualifier the field had before
         dimensionUniverse: undefined,
         ...decodeDimensionChoice(String(values.dimension ?? "")),

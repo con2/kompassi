@@ -313,7 +313,7 @@ const translations = {
       subsetValues: {
         title: "Offered values",
         helpText:
-          "Tick the values the respondent may choose from. Leave all unticked to offer every value of the dimension.",
+          "Tick the values the respondent may choose from. Leave all unticked to offer every value of the dimension. Responses already holding a value that is left out cannot be edited or passed forward until the value is ticked again.",
       },
       dimensionUniverse: {
         program: "Program item",
