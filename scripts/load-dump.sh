@@ -24,7 +24,10 @@ docker compose up -d router postgres redis
 docker compose stop backend worker uvicorn
 
 log "Recreating the database"
-until docker compose exec -T postgres pg_isready -q -U kompassi; do
+# On a fresh volume the image first loads sql/00-schema.sql through a temporary server that
+# listens only on the unix socket. Checking over TCP waits for the real server, so dropdb
+# --force below cannot kill that load and take the container down with it.
+until docker compose exec -T postgres pg_isready -q -h localhost -U kompassi; do
   sleep 1
 done
 docker compose exec -T postgres dropdb -U kompassi --maintenance-db=postgres --if-exists --force kompassi
