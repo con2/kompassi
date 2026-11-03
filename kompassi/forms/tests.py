@@ -1040,6 +1040,12 @@ def test_subset_values_limit_dimension_field_choices():
     assert get_choice_slugs() == ["a", "b", "c", "d"]
     assert form.fields[0]["subsetValues"] is None
 
+    # same when every value of the subset is deleted after the form was saved
+    save_with_subset(["d"])
+    dimension.values.get(slug="d").delete()
+    dimension.refresh_dependents()
+    assert get_choice_slugs() == ["a", "b", "c"]
+
 
 @pytest.mark.django_db
 def test_out_of_subset_value_is_not_lifted():

@@ -112,6 +112,9 @@ class Form(models.Model):
             dimension = universe.dimensions.get(slug=dimension_slug)
             # absent, null and [] all mean that every value is offered
             choices = dimension.as_choices(self.language, value_slugs=field.get("subsetValues") or None)
+            if not choices:
+                # every value of the subset has been deleted since the form was saved
+                choices = dimension.as_choices(self.language)
             field = dict(field, choices=[choice.model_dump(by_alias=True) for choice in choices])
 
         return field
