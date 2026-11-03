@@ -13,6 +13,7 @@ from kompassi.access.models.cbac_entry import CBACEntry
 from kompassi.core.middleware import RequestLocalCache
 from kompassi.core.models import Event, Person
 from kompassi.core.utils.cleanup import perform_cleanup
+from kompassi.dimensions.graphql.mutations.delete_dimension_value import DeleteDimensionValue
 from kompassi.dimensions.graphql.mutations.put_dimension import PutDimension
 from kompassi.dimensions.models.dimension import Dimension, ValueOrdering
 from kompassi.dimensions.models.dimension_value import DimensionValue
@@ -1040,11 +1041,20 @@ def test_subset_values_limit_dimension_field_choices():
     assert get_choice_slugs() == ["a", "b", "c", "d"]
     assert form.fields[0]["subsetValues"] is None
 
-    # same when every value of the subset is deleted after the form was saved
+    # deleting every value of the subset through the API clears the stored subset as well
     save_with_subset(["d"])
-    dimension.values.get(slug="d").delete()
-    dimension.refresh_dependents()
+    DeleteDimensionValue.mutate(
+        None,
+        SimpleNamespace(context=_mock_info(dict(app="forms"))),
+        SimpleNamespace(
+            scope_slug=survey.scope.slug,
+            universe_slug=survey.universe.slug,
+            dimension_slug="test-dimension",
+            value_slug="d",
+        ),  # type: ignore
+    )
     assert get_choice_slugs() == ["a", "b", "c"]
+    assert form.fields[0]["subsetValues"] is None
 
 
 @pytest.mark.django_db

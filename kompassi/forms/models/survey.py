@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import dataclasses
 import logging
-from collections.abc import Collection, Mapping
+from collections import defaultdict
+from collections.abc import Collection, Iterable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from functools import cached_property
@@ -284,23 +285,42 @@ class Survey(models.Model):
             case other:
                 raise ValueError(f"Dimension fields cannot refer to the {other} universe ({self})")
 
-    def prune_subset_values(self, fields: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    def preload_field_dimensions(self, fields: Iterable[dict[str, Any]]) -> dict[str | None, DimensionCache]:
+        """
+        The dimensions the dimension fields of `fields` refer to, keyed by the dimensionUniverse
+        qualifier of the field. A form of many dimension fields resolves them with one pair of
+        queries per universe instead of a pair per field.
+        """
+        slugs_by_universe: dict[str | None, set[str]] = defaultdict(set)
+        for field in fields:
+            if dimension_slug := field.get("dimension"):
+                slugs_by_universe[field.get("dimensionUniverse")].add(dimension_slug)
+
+        return {
+            dimension_universe: self.resolve_dimension_universe(dimension_universe).preload_dimensions(slugs)
+            for dimension_universe, slugs in slugs_by_universe.items()
+        }
+
+    def prune_subset_values(
+        self,
+        fields: list[dict[str, Any]],
+        caches: dict[str | None, DimensionCache] | None = None,
+    ) -> list[dict[str, Any]]:
         """
         Drops from the subsetValues of dimension fields the values that do not exist in the
         dimension the field refers to, eg. after the value was deleted or the form was cloned
         into an event whose dimension has different values. A subset left empty is cleared,
         so the field offers every value of the dimension instead of none.
+
+        :param caches: The result of preload_field_dimensions(fields), if the caller already has it.
         """
-        value_slugs_by_dimension: dict[tuple[int, str], set[str]] = {}
+        if caches is None:
+            caches = self.preload_field_dimensions(fields)
+
         pruned_fields = []
         for field in fields:
             if field.get("subsetValues") and (dimension_slug := field.get("dimension")):
-                universe = self.resolve_dimension_universe(field.get("dimensionUniverse"))
-                key = (universe.id, dimension_slug)
-                if key not in value_slugs_by_dimension:
-                    dimension = universe.dimensions.get(slug=dimension_slug)
-                    value_slugs_by_dimension[key] = set(dimension.values.values_list("slug", flat=True))
-                existing_slugs = value_slugs_by_dimension[key]
+                existing_slugs = caches[field.get("dimensionUniverse")].values_by_dimension[dimension_slug]
                 subset_values = [slug for slug in field["subsetValues"] if slug in existing_slugs]
                 field = dict(field, subsetValues=subset_values or None)
             pruned_fields.append(field)
