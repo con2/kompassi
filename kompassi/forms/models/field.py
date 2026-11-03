@@ -151,7 +151,8 @@ class Field(pydantic.BaseModel, populate_by_name=True):
     )
 
     # TODO silly union of all field types. refactor this into proper (GraphQL?) types
-    # dimension and subsetValues only make sense for DimensionSingleSelect, DimensionMultiSelect
+    # dimension only makes sense for DimensionSingleSelect, DimensionMultiSelect, DimensionSingleCheckbox
+    # subsetValues only makes sense for DimensionSingleSelect, DimensionMultiSelect
     # choices only makes sense for SingleSelect, Multiselect, RadioMatrix
     # multiple only makes sense for FileUpload
     # decimal_places only makes sense for NumberField, DecimalField
@@ -232,6 +233,12 @@ class Field(pydantic.BaseModel, populate_by_name=True):
                 raise ValueError(f"Field {self.slug}: only Dimension* fields can have dimensionUniverse")
             if self.dimension_universe not in (DimensionApp.PROGRAM, DimensionApp.INVOLVEMENT):
                 raise ValueError(f"Field {self.slug}: dimensionUniverse must be program or involvement")
+
+        if self.subset_values and self.type not in (
+            FieldType.DIMENSION_SINGLE_SELECT,
+            FieldType.DIMENSION_MULTI_SELECT,
+        ):
+            raise ValueError(f"Field {self.slug}: only Dimension*Select fields can have subsetValues")
 
         wants_annotation = self.propagate_to_annotation or self.propagate_to_annotation_on_edit
         if wants_annotation and not self.type.can_propagate_to_annotation:

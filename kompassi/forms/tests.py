@@ -971,6 +971,105 @@ def test_update_form_fields_strips_dimension_choices():
     assert enriched_field["choices"] == [dict(slug="test-value", title="Renamed value")]
 
 
+def _update_form_fields(survey: Survey, fields: list[dict]):
+    UpdateFormFields.mutate(
+        None,
+        _mock_info(dict(app="forms")),
+        SimpleNamespace(
+            event_slug=survey.event.slug,
+            survey_slug=survey.slug,
+            language="en",
+            fields=fields,
+        ),  # type: ignore
+    )
+
+
+@pytest.mark.django_db
+def test_subset_values_limit_dimension_field_choices():
+    event, _created = Event.get_or_create_dummy()
+    survey = Survey.objects.create(event=event, slug="test-survey")
+
+    dimension = Dimension.objects.create(
+        universe=survey.universe,
+        slug="test-dimension",
+        value_ordering=ValueOrdering.MANUAL,
+    )
+    for order, slug in enumerate(["a", "b", "c"]):
+        DimensionValue.objects.create(dimension=dimension, slug=slug, order=order)
+
+    form = Form.objects.create(event=event, survey=survey, language="en", fields=[])
+
+    def get_choice_slugs() -> list[str]:
+        form.refresh_from_db()
+        (field,) = form.cached_enriched_fields
+        return [choice["slug"] for choice in field["choices"]]
+
+    def save_with_subset(subset_values: list[str]):
+        _update_form_fields(
+            survey,
+            [
+                dict(
+                    slug="test-dimension",
+                    type="DimensionMultiSelect",
+                    dimension="test-dimension",
+                    subsetValues=subset_values,
+                ),
+            ],
+        )
+
+    # dimension order wins over the order of subsetValues
+    save_with_subset(["c", "a"])
+    assert get_choice_slugs() == ["a", "c"]
+
+    # a value added later is not offered unless the subset is edited to include it
+    DimensionValue.objects.create(dimension=dimension, slug="d", order=3)
+    dimension.refresh_dependents()
+    assert get_choice_slugs() == ["a", "c"]
+
+    # an empty subset offers every value
+    save_with_subset([])
+    assert get_choice_slugs() == ["a", "b", "c", "d"]
+
+    with pytest.raises(ValueError):
+        save_with_subset(["nope"])
+
+
+@pytest.mark.django_db
+def test_out_of_subset_value_is_not_lifted():
+    event, _created = Event.get_or_create_dummy()
+    survey = Survey.objects.create(event=event, slug="test-survey")
+
+    dimension = Dimension.objects.create(universe=survey.universe, slug="test-dimension")
+    DimensionValue.objects.create(dimension=dimension, slug="test-dimension-value-1")
+    DimensionValue.objects.create(dimension=dimension, slug="test-dimension-value-2")
+
+    form = Form.objects.create(
+        event=event,
+        survey=survey,
+        language="en",
+        fields=[
+            dict(
+                slug="test-dimension",
+                type="DimensionSingleSelect",
+                dimension="test-dimension",
+                subsetValues=["test-dimension-value-1"],
+            )
+        ],
+    )
+
+    def respond(value: str) -> Response:
+        response = Response.objects.create(form=form, form_data={"test-dimension": value})
+        survey.workflow.handle_new_response_phase1(response)
+        survey.workflow.handle_new_response_phase2(response)
+        response.refresh_from_db()
+        return response
+
+    assert respond("test-dimension-value-2").cached_dimensions == {}
+    assert respond("test-dimension-value-1").cached_dimensions == {
+        "test-dimension": ["test-dimension-value-1"],
+    }
+
+
 @pytest.mark.django_db
 def test_promote_field_to_dimension():
     with transaction.atomic():
@@ -2289,6 +2388,15 @@ def test_field_propagation_config_is_validated():
 
     with pytest.raises(pydantic.ValidationError):
         Field.model_validate(dict(slug="d", type="DimensionSingleSelect", dimension="d", dimensionUniverse="forms"))
+
+    Field.model_validate(dict(slug="d", type="DimensionMultiSelect", dimension="d", subsetValues=["a"]))
+
+    with pytest.raises(pydantic.ValidationError):
+        Field.model_validate(dict(slug="s", type="SingleLineText", subsetValues=["a"]))
+
+    with pytest.raises(pydantic.ValidationError):
+        # a single checkbox has no choices to take a subset of
+        Field.model_validate(dict(slug="d", type="DimensionSingleCheckbox", dimension="d", subsetValues=["a"]))
 
 
 @pytest.mark.django_db

@@ -105,16 +105,14 @@ class Form(models.Model):
         turning the form specification over to the frontend.
         """
 
-        # TODO(#643) subsetValues
         if field.get("type") in ("DimensionSingleSelect", "DimensionMultiSelect") and (
             dimension_slug := field.get("dimension")
         ):
             universe = self.survey.resolve_dimension_universe(field.get("dimensionUniverse"))
             dimension = universe.dimensions.get(slug=dimension_slug)
-            field = dict(
-                field,
-                choices=[choice.model_dump(by_alias=True) for choice in dimension.as_choices(self.language)],
-            )
+            # absent, null and [] all mean that every value is offered
+            choices = dimension.as_choices(self.language, value_slugs=field.get("subsetValues") or None)
+            field = dict(field, choices=[choice.model_dump(by_alias=True) for choice in choices])
 
         return field
 
