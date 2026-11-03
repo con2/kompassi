@@ -60,6 +60,15 @@ function decodeDimensionChoice(value: string): {
   };
 }
 
+/// Resolves the value of the dimension dropdown of the field editor.
+export function findEditorDimensionByChoice(
+  dimensions: EditorDimension[],
+  choice: string,
+): EditorDimension | undefined {
+  const { dimension, dimensionUniverse } = decodeDimensionChoice(choice);
+  return findEditorDimension(dimensions, dimension, dimensionUniverse);
+}
+
 export interface AnnotationOption {
   slug: string;
   title: string;
@@ -92,6 +101,8 @@ export function getFieldEditorFields(
   dimensions: EditorDimension[],
   annotations: AnnotationOption[] = [],
   formContext: FormEditorContext = "survey",
+  /// The dimension currently chosen in the dimension dropdown, whose values are offered as subsetValues.
+  selectedDimension?: EditorDimension,
 ): Field[] {
   const t = messages;
   const slugField: Field = {
@@ -213,6 +224,21 @@ export function getFieldEditorFields(
     ...t.dimension,
   };
 
+  const subsetValuesFields: Field[] = selectedDimension?.values.length
+    ? [
+        {
+          type: "MultiSelect",
+          slug: "subsetValues",
+          required: false,
+          choices: selectedDimension.values.map(({ slug, title }) => ({
+            slug,
+            title: title || slug,
+          })),
+          ...t.subsetValues,
+        },
+      ]
+    : [];
+
   const maxLengthField: Field = {
     type: "NumberField",
     slug: "maxLength",
@@ -238,6 +264,10 @@ export function getFieldEditorFields(
         return editableFieldFields.concat([choicesField]); // , encryptTo]);
       case "DimensionSingleSelect":
       case "DimensionMultiSelect":
+        return editableFieldFields.concat([
+          dimensionField,
+          ...subsetValuesFields,
+        ]); // , encryptTo]);
       case "DimensionSingleCheckbox":
         return editableFieldFields.concat([dimensionField]); // , encryptTo]);
       case "RadioMatrix":
@@ -355,14 +385,22 @@ export function formDataToField(
       };
     case "DimensionSingleSelect":
     case "DimensionMultiSelect":
-    case "DimensionSingleCheckbox":
-      // an unqualified choice must clear a qualifier the field had before
+    case "DimensionSingleCheckbox": {
+      // nothing ticked means every value is offered, which is spelled as no subsetValues at all
+      const subsetValues = values.subsetValues as string[] | undefined;
       return {
         ...initialValues,
         ...values,
+        subsetValues:
+          initialValues.type !== "DimensionSingleCheckbox" &&
+          subsetValues?.length
+            ? subsetValues
+            : undefined,
+        // an unqualified choice must clear a qualifier the field had before
         dimensionUniverse: undefined,
         ...decodeDimensionChoice(String(values.dimension ?? "")),
       } as Field;
+    }
     default:
       return { ...initialValues, ...values };
   }

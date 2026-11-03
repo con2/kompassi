@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import {
   fieldToValues,
+  findEditorDimensionByChoice,
   formDataToField,
   getFieldEditorFields,
   type AnnotationOption,
@@ -40,12 +41,40 @@ const EditFieldModal = ({
   formContext,
 }: EditFieldModalProps) => {
   const t = messages.FormEditor.editFieldModal;
-  const fields = getFieldEditorFields(
-    fieldToEdit.type,
-    messages.FormEditor.editFieldForm,
-    dimensions,
-    annotations,
-    formContext,
+  const values = useMemo(
+    () => fieldToValues(fieldToEdit, defaultDimensionUniverse),
+    [fieldToEdit, defaultDimensionUniverse],
+  );
+
+  // The value checkboxes follow the dimension dropdown, so its value must be known while editing.
+  const [dimensionChoice, setDimensionChoice] = useState<string>(
+    values.dimension ?? "",
+  );
+  const handleChange = useCallback((event: React.FormEvent) => {
+    const target = event.target as HTMLInputElement;
+    if (target.name === "dimension") {
+      setDimensionChoice(target.value);
+    }
+  }, []);
+
+  const fields = useMemo(
+    () =>
+      getFieldEditorFields(
+        fieldToEdit.type,
+        messages.FormEditor.editFieldForm,
+        dimensions,
+        annotations,
+        formContext,
+        findEditorDimensionByChoice(dimensions, dimensionChoice),
+      ),
+    [
+      fieldToEdit.type,
+      messages.FormEditor.editFieldForm,
+      dimensions,
+      annotations,
+      formContext,
+      dimensionChoice,
+    ],
   );
 
   const handleSubmit = useCallback(
@@ -57,10 +86,6 @@ const EditFieldModal = ({
     },
     [fieldToEdit, fields, onSubmit],
   );
-  const values = useMemo(
-    () => fieldToValues(fieldToEdit, defaultDimensionUniverse),
-    [fieldToEdit, defaultDimensionUniverse],
-  );
 
   return (
     <Modal show={true} onHide={onClose} size="lg">
@@ -69,7 +94,7 @@ const EditFieldModal = ({
           {t.title}: {messages.FormEditor.fieldTypes[fieldToEdit.type]}
         </Modal.Title>
       </Modal.Header>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} onChange={handleChange}>
         <Modal.Body>
           <SchemaForm
             fields={fields}

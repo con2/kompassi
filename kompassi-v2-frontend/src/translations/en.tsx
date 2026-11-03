@@ -310,6 +310,11 @@ const translations = {
         title: "Dimension",
         helpText: "Which dimension should the field get its choices from?",
       },
+      subsetValues: {
+        title: "Offered values",
+        helpText:
+          "Tick the values the respondent may choose from. Leave all unticked to offer every value of the dimension.",
+      },
       dimensionUniverse: {
         program: "Program item",
         involvement: "Program host",

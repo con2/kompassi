@@ -313,6 +313,11 @@ const translations: Translations = {
         title: "Dimensio",
         helpText: "Mistä dimensiosta tämä kenttä saa vastausvaihtoehtonsa?",
       },
+      subsetValues: {
+        title: "Tarjottavat arvot",
+        helpText:
+          "Valitse arvot, joista vastaaja voi valita. Jätä kaikki valitsematta, jos haluat tarjota dimension kaikki arvot.",
+      },
       dimensionUniverse: {
         program: "Ohjelmanumero",
         involvement: "Ohjelmanpitäjä",
