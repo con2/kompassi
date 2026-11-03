@@ -57,6 +57,15 @@ const EditFieldModal = ({
     }
   }, []);
 
+  // The subset saved for the field's own dimension means nothing for another dimension.
+  const formValues = useMemo(
+    () =>
+      dimensionChoice === values.dimension
+        ? values
+        : { ...values, subsetValues: undefined },
+    [values, dimensionChoice],
+  );
+
   const fields = useMemo(
     () =>
       getFieldEditorFields(
@@ -98,7 +107,7 @@ const EditFieldModal = ({
         <Modal.Body>
           <SchemaForm
             fields={fields}
-            values={values}
+            values={formValues}
             messages={messages.SchemaForm}
           />
         </Modal.Body>
