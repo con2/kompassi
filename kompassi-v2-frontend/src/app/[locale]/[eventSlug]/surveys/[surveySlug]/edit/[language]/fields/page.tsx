@@ -1,5 +1,5 @@
 import { SignInRequired } from "@con2/components";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import SurveyEditorView from "../../SurveyEditorView";
 import { promoteFieldToDimension, updateSurveyFields } from "./actions";
@@ -47,8 +47,12 @@ const query = graphql(`
       name
 
       forms {
-        survey(slug: $surveySlug) {
+        survey(slug: $surveySlug, app: FORMS) {
           ...EditSurveyFieldsPage
+        }
+        # Program forms have their own field editor that knows where their values go.
+        programForm: survey(slug: $surveySlug, app: PROGRAM) {
+          slug
         }
       }
     }
@@ -65,6 +69,18 @@ interface Props {
 }
 
 export const revalidate = 0;
+
+function redirectProgramFormOrNotFound(
+  programForm: { slug: string } | null | undefined,
+  { eventSlug, surveySlug, language }: Awaited<Props["params"]>,
+): never {
+  if (programForm) {
+    redirect(
+      `/${eventSlug}/program-forms/${surveySlug}/edit/${language}/fields`,
+    );
+  }
+  notFound();
+}
 
 export async function generateMetadata(props: Props) {
   const params = await props.params;
@@ -85,7 +101,7 @@ export async function generateMetadata(props: Props) {
   });
 
   if (!data.event?.forms?.survey?.form) {
-    notFound();
+    redirectProgramFormOrNotFound(data.event?.forms?.programForm, params);
   }
 
   const title = getPageTitle({
@@ -121,7 +137,7 @@ export default async function EditSurveyLanguagePage(props: Props) {
   });
 
   if (!data?.event?.forms?.survey?.form) {
-    notFound();
+    redirectProgramFormOrNotFound(data?.event?.forms?.programForm, params);
   }
 
   const survey = data.event.forms.survey;
