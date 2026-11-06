@@ -12,6 +12,7 @@ import { RegistryListFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Field } from "@/components/forms/models";
+import { slugPattern } from "@/components/forms/slugPatterns";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import InvolvementAdminView from "@/components/involvement/InvolvementAdminView";
 import getPageTitle from "@/helpers/getPageTitle";
@@ -155,6 +156,8 @@ export default async function RegistriesPage(props: Props) {
       title: t.attributes.slug,
       type: "SingleLineText",
       required: true,
+      pattern: slugPattern,
+      patternDescription: t.attributes.slugPatternDescription,
     },
     {
       slug: "title_en",

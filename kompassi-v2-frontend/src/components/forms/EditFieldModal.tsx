@@ -79,9 +79,11 @@ const EditFieldModal = ({
         annotations,
         formContext,
         findEditorDimensionByChoice(dimensions, dimensionChoice),
+        fieldToEdit.slug,
       ),
     [
       fieldToEdit.type,
+      fieldToEdit.slug,
       messages.FormEditor.editFieldForm,
       dimensions,
       annotations,

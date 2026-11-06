@@ -6,6 +6,7 @@ import {
   supportedLanguages,
 } from "@/translations";
 import { validate as uuidValidate } from "uuid";
+import { matchesPattern, slugPattern } from "@/components/forms/slugPatterns";
 
 const headers = {
   "x-api-key": ticketsApiKey,
@@ -16,9 +17,8 @@ const postHeaders = {
   "x-api-key": ticketsApiKey,
 };
 
-const slugRegex = /^[a-z0-9-]+$/;
 export function isValidSlug(slug: string): boolean {
-  return slugRegex.test(slug);
+  return matchesPattern(slug, slugPattern);
 }
 
 export function isValidOrderId(orderId: string): boolean {

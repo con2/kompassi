@@ -1,5 +1,6 @@
 import { DimensionEditorFragment } from "@/__generated__/graphql";
 import { Field } from "@/components/forms/models";
+import { slugPattern } from "@/components/forms/slugPatterns";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import { supportedLanguages } from "@/translations";
 import type { Translations } from "@/translations/en";
@@ -30,6 +31,7 @@ export default function DimensionForm({ messages, dimension }: Props) {
       slug: "slug",
       required: typeof dimension === "undefined",
       readOnly: typeof dimension !== "undefined",
+      pattern: slugPattern,
       ...t.attributes.slug,
     },
     {

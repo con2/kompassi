@@ -1,5 +1,6 @@
 import { Choice, DimensionUniverse, Field, FieldType, Values } from "./models";
 import processFormData from "./processFormData";
+import { fieldSlugPattern, matchesPattern } from "./slugPatterns";
 import { DimensionValueSelectFragment } from "@/__generated__/graphql";
 
 export type FormEditorContext = "survey" | "program" | "involvement";
@@ -102,13 +103,19 @@ export function getFieldEditorFields(
   formContext: FormEditorContext = "survey",
   /// The dimension currently chosen in the dimension dropdown, whose values are offered as subsetValues.
   selectedDimension?: EditorDimension,
+  currentSlug: string = "",
 ): Field[] {
   const t = messages;
+  // A legacy field whose name breaks the pattern must still be editable without renaming it,
+  // as renaming orphans the answers already stored under the old name.
+  const enforcePattern =
+    !currentSlug || matchesPattern(currentSlug, fieldSlugPattern);
   const slugField: Field = {
     type: "SingleLineText",
     slug: "slug",
     required: true,
     ...t.slug,
+    ...(enforcePattern ? { pattern: fieldSlugPattern } : {}),
   };
 
   const baseFieldEditorFields: Field[] = [

@@ -1,13 +1,25 @@
-import { generateUniqueIdentifier } from "@con2/components/helpers";
 import type { FormEditorContext } from "./editFieldForm";
 import { Field, FieldType } from "./models";
+
+/// "SingleLineText" -> "single_line_text", then "single_line_text_2" and so on if taken.
+export function generateFieldSlug(
+  type: FieldType,
+  usedIdentifiers: string[],
+): string {
+  const base = type.replace(/(?<=[a-z0-9])(?=[A-Z])/g, "_").toLowerCase();
+  let slug = base;
+  for (let counter = 2; usedIdentifiers.includes(slug); counter++) {
+    slug = `${base}_${counter}`;
+  }
+  return slug;
+}
 
 export default function newField(
   type: FieldType,
   usedIdentifiers: string[],
   formContext: FormEditorContext,
 ): Field {
-  const slug = generateUniqueIdentifier(type, usedIdentifiers);
+  const slug = generateFieldSlug(type, usedIdentifiers);
   // survey responses have nothing to pass dimension values forward to
   const propagation =
     formContext === "survey"

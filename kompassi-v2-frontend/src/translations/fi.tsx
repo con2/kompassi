@@ -8,6 +8,11 @@ function UNTRANSLATED<T>(wat: T): T {
   return wat;
 }
 
+const slugPatternDescription =
+  "Käytä vain pieniä kirjaimia a–z, numeroita 0–9 ja väliviivoja (-).";
+const fieldSlugPatternDescription =
+  "Käytä vain pieniä kirjaimia a–z, numeroita 0–9, alaviivoja (_), väliviivoja (-) ja pisteitä (.).";
+
 const translations: Translations = {
   Common: {
     ok: "OK",
@@ -248,9 +253,10 @@ const translations: Translations = {
 
     editFieldForm: {
       slug: {
+        patternDescription: fieldSlugPatternDescription,
         title: "Tekninen nimi",
         helpText:
-          "Kentän tekninen nimi. Ei näytetä loppukäyttäjälle. Sallitut merkit: pienet kirjaimet a-z (ei ääkköset åäö), numerot 0-9 ja alaviiva _. Ei saa alkaa numerolla. Kentän teknisen nimen tulee olla sama eri kieliversioissa.",
+          "Kentän tekninen nimi. Ei näytetä loppukäyttäjälle. Käytä pieniä kirjaimia a-z (ei ääkkösiä åäö), numeroita 0-9 ja alaviivoja _, esim. paidan_koko. Kentän teknisen nimen tulee olla sama eri kieliversioissa. Jos muutat sitä myöhemmin, kenttään jo annetut vastaukset irtoavat siitä.",
       },
       title: {
         title: "Otsikko",
@@ -1456,6 +1462,7 @@ const translations: Translations = {
       `${numPrograms} ohjelmanumero${numPrograms === 1 ? "" : "a"}.`,
     attributes: {
       slug: {
+        patternDescription: slugPatternDescription,
         title: "Tekninen nimi",
         helpText:
           "Ohjelmanumeron tekninen nimi. Täytyy olla uniikki tapahtuman sisällä. Ei voi muuttaa luomisen jälkeen. Voi sisältää pieniä kirjaimia, numeroita ja väliviivoja (-). Tulee osaksi osoitetta: <code>/EVENT-SLUG/programs/PROGRAM-SLUG</code> (esim. <code>/tracon2025/programs/opening-ceremony</code>).",
@@ -1735,6 +1742,7 @@ const translations: Translations = {
         `${numForms} ohjelmalomake${numForms === 1 ? "" : "tta"}.`,
       attributes: {
         slug: {
+          patternDescription: slugPatternDescription,
           title: "Tekninen nimi",
           helpText: (
             <>
@@ -2288,6 +2296,7 @@ const translations: Translations = {
         }.`,
       attributes: {
         slug: {
+          patternDescription: slugPatternDescription,
           title: "Tekninen nimi",
           helpText: UNTRANSLATED(
             <>
@@ -2593,6 +2602,7 @@ const translations: Translations = {
     ),
     attributes: {
       slug: {
+        patternDescription: slugPatternDescription,
         title: "Tekninen nimi",
         helpText: (
           <>
@@ -3034,8 +3044,8 @@ const translations: Translations = {
       },
       attributes: {
         slug: {
+          patternDescription: slugPatternDescription,
           title: "Tekninen nimi",
-          // TODO add pattern for slug and document it in helpText
           helpText: (
             <>
               Koneluettava, lyhyt nimi dimensiolle. Teknistä nimeä ei voi
@@ -3111,8 +3121,8 @@ const translations: Translations = {
       },
       attributes: {
         slug: {
+          patternDescription: slugPatternDescription,
           title: "Tekninen nimi",
-          // TODO add pattern for slug and document it in helpText
           helpText: (
             <>
               Koneluettava, lyhyt nimi arvolle. Teknistä nimeä ei voi muuttaa
@@ -3254,6 +3264,7 @@ const translations: Translations = {
     listTitle: "Henkilörekisterit",
     attributes: {
       slug: "Tunniste",
+      slugPatternDescription,
       title: {
         en: "Nimi (englanniksi)",
         fi: "Nimi (suomeksi)",

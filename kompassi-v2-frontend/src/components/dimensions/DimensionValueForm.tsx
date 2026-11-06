@@ -1,6 +1,7 @@
 import { cssNamedColors } from "@con2/components/helpers";
 import { DimensionEditorValueFragment } from "@/__generated__/graphql";
 import { Field } from "@/components/forms/models";
+import { slugPattern } from "@/components/forms/slugPatterns";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import { supportedLanguages } from "@/translations";
 import type { Translations } from "@/translations/en";
@@ -24,6 +25,7 @@ export default function DimensionValueForm({ messages, value }: Props) {
       slug: "slug",
       required: typeof value === "undefined",
       readOnly: typeof value !== "undefined",
+      pattern: slugPattern,
       ...t.attributes.slug,
     },
     {

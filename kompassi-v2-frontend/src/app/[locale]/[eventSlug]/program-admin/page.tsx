@@ -20,6 +20,7 @@ import {
   toFilterableDimensions,
 } from "@/components/dimensions/helpers";
 import { Field } from "@/components/forms/models";
+import { slugPattern } from "@/components/forms/slugPatterns";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import getPageTitle from "@/helpers/getPageTitle";
@@ -189,6 +190,7 @@ export default async function FormResponsesPage(props: Props) {
       slug: "slug",
       required: true,
       type: "SingleLineText",
+      pattern: slugPattern,
       ...t.attributes.slug,
     },
     {
