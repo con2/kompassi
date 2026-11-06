@@ -1099,13 +1099,9 @@ def test_edit_drops_value_left_out_of_narrowed_subset():
     survey = Survey.objects.create(event=event, slug="test-survey")
 
     for dimension_slug in ("single", "multi"):
-        dimension = Dimension.objects.create(
-            universe=survey.universe,
-            slug=dimension_slug,
-            value_ordering=ValueOrdering.MANUAL,
-        )
-        for order, value_slug in enumerate(["a", "b"]):
-            DimensionValue.objects.create(dimension=dimension, slug=value_slug, order=order)
+        dimension = Dimension.objects.create(universe=survey.universe, slug=dimension_slug)
+        for value_slug in ("a", "b"):
+            DimensionValue.objects.create(dimension=dimension, slug=value_slug)
 
     form = Form.objects.create(event=event, survey=survey, language="en", fields=[])
 
@@ -1130,15 +1126,19 @@ def test_edit_drops_value_left_out_of_narrowed_subset():
         response.refresh_from_db()
         return response
 
+    # cached_dimensions does not order the values of a dimension
+    def dimension_values(response: Response) -> dict[str, set[str]]:
+        return {dimension: set(values) for dimension, values in response.cached_dimensions.items()}
+
     original = respond({"single": "b", "multi.a": "on", "multi.b": "on"})
-    assert original.cached_dimensions == {"single": ["b"], "multi": ["a", "b"]}
+    assert dimension_values(original) == {"single": {"b"}, "multi": {"a", "b"}}
 
     save_with_subset(["a"])
     form.refresh_from_db()
 
     # an untouched response keeps the value that is no longer offered
     original.refresh_from_db()
-    assert original.cached_dimensions == {"single": ["b"], "multi": ["a", "b"]}
+    assert dimension_values(original) == {"single": {"b"}, "multi": {"a", "b"}}
 
     # the editor does not render "b", so it is absent from what an edit submits
     edited = respond({"single": "", "multi.a": "on"}, old_version=original)
