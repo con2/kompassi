@@ -13,3 +13,9 @@ export const fieldSlugPattern = "[a-z0-9_.\\-]+";
 export function matchesPattern(value: string, pattern: string): boolean {
   return new RegExp(`^(?:${pattern})$`).test(value);
 }
+
+/// Escapes a string to match itself literally outside a character class. Under the `v` flag only
+/// syntax characters may be escaped; escaping anything else is itself a syntax error.
+export function escapePatternLiteral(value: string): string {
+  return value.replace(/[\^$\\.*+?()[\]{}|/]/g, "\\$&");
+}

@@ -1,6 +1,10 @@
 import { Choice, DimensionUniverse, Field, FieldType, Values } from "./models";
 import processFormData from "./processFormData";
-import { fieldSlugPattern, matchesPattern } from "./slugPatterns";
+import {
+  escapePatternLiteral,
+  fieldSlugPattern,
+  matchesPattern,
+} from "./slugPatterns";
 import { DimensionValueSelectFragment } from "@/__generated__/graphql";
 
 export type FormEditorContext = "survey" | "program" | "involvement";
@@ -107,15 +111,18 @@ export function getFieldEditorFields(
 ): Field[] {
   const t = messages;
   // A legacy field whose name breaks the pattern must still be editable without renaming it,
-  // as renaming orphans the answers already stored under the old name.
-  const enforcePattern =
-    !currentSlug || matchesPattern(currentSlug, fieldSlugPattern);
+  // as renaming orphans the answers already stored under the old name. Any other name, including
+  // a replacement for the legacy one, must match the pattern.
+  const slugPattern =
+    !currentSlug || matchesPattern(currentSlug, fieldSlugPattern)
+      ? fieldSlugPattern
+      : `${escapePatternLiteral(currentSlug)}|${fieldSlugPattern}`;
   const slugField: Field = {
     type: "SingleLineText",
     slug: "slug",
     required: true,
     ...t.slug,
-    ...(enforcePattern ? { pattern: fieldSlugPattern } : {}),
+    pattern: slugPattern,
   };
 
   const baseFieldEditorFields: Field[] = [
