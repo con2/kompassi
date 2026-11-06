@@ -1094,6 +1094,82 @@ def test_out_of_subset_value_is_not_lifted():
 
 
 @pytest.mark.django_db
+def test_edit_drops_value_left_out_of_narrowed_subset():
+    event, _created = Event.get_or_create_dummy()
+    survey = Survey.objects.create(event=event, slug="test-survey")
+
+    for dimension_slug in ("single", "multi"):
+        dimension = Dimension.objects.create(
+            universe=survey.universe,
+            slug=dimension_slug,
+            value_ordering=ValueOrdering.MANUAL,
+        )
+        for order, value_slug in enumerate(["a", "b"]):
+            DimensionValue.objects.create(dimension=dimension, slug=value_slug, order=order)
+
+    form = Form.objects.create(event=event, survey=survey, language="en", fields=[])
+
+    def save_with_subset(subset_values: list[str] | None):
+        _update_form_fields(
+            survey,
+            [
+                dict(slug="single", type="DimensionSingleSelect", dimension="single", subsetValues=subset_values),
+                dict(slug="multi", type="DimensionMultiSelect", dimension="multi", subsetValues=subset_values),
+            ],
+        )
+
+    save_with_subset(None)
+    form.refresh_from_db()
+
+    def respond(form_data: dict[str, str], old_version: Response | None = None) -> Response:
+        response = Response.objects.create(form=form, form_data=form_data)
+        if old_version:
+            old_version.superseded_by = response
+            old_version.save(update_fields=["superseded_by"])
+        survey.workflow.handle_new_response_phase1(response, old_version=old_version)
+        response.refresh_from_db()
+        return response
+
+    original = respond({"single": "b", "multi.a": "on", "multi.b": "on"})
+    assert original.cached_dimensions == {"single": ["b"], "multi": ["a", "b"]}
+
+    save_with_subset(["a"])
+    form.refresh_from_db()
+
+    # an untouched response keeps the value that is no longer offered
+    original.refresh_from_db()
+    assert original.cached_dimensions == {"single": ["b"], "multi": ["a", "b"]}
+
+    # the editor does not render "b", so it is absent from what an edit submits
+    edited = respond({"single": "", "multi.a": "on"}, old_version=original)
+    assert edited.cached_dimensions == {"multi": ["a"]}
+
+
+@pytest.mark.django_db
+def test_survey_default_dimension_survives_unanswered_field_on_create():
+    event, _created = Event.get_or_create_dummy()
+    survey = Survey.objects.create(event=event, slug="test-survey")
+
+    dimension = Dimension.objects.create(universe=survey.universe, slug="test-dimension")
+    DimensionValue.objects.create(dimension=dimension, slug="default")
+    survey.set_default_response_dimension_values({"test-dimension": ["default"]}, survey.universe.preload_dimensions())
+    survey.refresh_cached_default_dimensions()
+
+    form = Form.objects.create(
+        event=event,
+        survey=survey,
+        language="en",
+        fields=[dict(slug="test-dimension", type="DimensionSingleSelect", dimension="test-dimension")],
+    )
+
+    response = Response.objects.create(form=form, form_data={"test-dimension": ""})
+    survey.workflow.handle_new_response_phase1(response)
+    response.refresh_from_db()
+
+    assert response.cached_dimensions == {"test-dimension": ["default"]}
+
+
+@pytest.mark.django_db
 def test_promote_field_to_dimension():
     with transaction.atomic():
         event, _created = Event.get_or_create_dummy()
