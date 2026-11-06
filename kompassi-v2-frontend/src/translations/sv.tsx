@@ -307,7 +307,7 @@ const translations: Translations = {
       subsetValues: {
         title: "Erbjudna värden",
         helpText:
-          "Kryssa för de värden som svararen kan välja mellan. Lämna alla okryssade för att erbjuda dimensionens alla värden. Svar som redan innehåller ett värde som lämnats bort kan inte redigeras eller föras vidare förrän värdet kryssas för igen.",
+          "Kryssa för de värden som svararen kan välja mellan. Lämna alla okryssade för att erbjuda dimensionens alla värden. Om du lämnar bort ett värde som redan har valts i några svar, behåller svaren värdet tills de redigeras. Vid redigering tas värdet bort ur svaret.",
       },
       dimensionUniverse: {
         program: "Programpunkt",

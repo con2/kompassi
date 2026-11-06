@@ -17,6 +17,7 @@ def lift_dimension_values(
     *,
     dimension_slugs: list[str] | None = None,
     cache: DimensionCache,
+    clear_unanswered: bool = False,
 ):
     """
     Lifts the values of dimensions from form data into proper dimension values.
@@ -26,6 +27,8 @@ def lift_dimension_values(
     afterwards to update the cached_dimensions field.
 
     :param dimension_slugs: If provided, only these dimensions will be lifted.
+    :param clear_unanswered: If True, a dimension field left without a value clears its dimension.
+        Otherwise the dimension keeps whatever value it already had, eg. a survey default.
     """
     survey = response.survey
 
@@ -82,6 +85,9 @@ def lift_dimension_values(
         value_slugs = get_dimension_field_value_slugs(field, values, log_context)
         if value_slugs is None:
             continue
+
+        if clear_unanswered:
+            values_to_set.setdefault(dimension.slug, set())
 
         for value_slug in value_slugs:
             value = cache.values_by_dimension[dimension.slug][value_slug]

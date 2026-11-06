@@ -320,7 +320,10 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         else:
             response.set_dimension_values(self.survey.cached_default_response_dimensions, cache=cache)
 
-        lift_dimension_values(response, cache=cache)
+        # On edit, the form is the source of truth for its dimension fields. This is also how an
+        # edit drops a value that has since been left out of the field's subsetValues: the
+        # editor does not offer it, so it is not submitted.
+        lift_dimension_values(response, cache=cache, clear_unanswered=old_version is not None)
         response.refresh_cached_fields()
 
         # Old versions need not be findable through dimensions.
