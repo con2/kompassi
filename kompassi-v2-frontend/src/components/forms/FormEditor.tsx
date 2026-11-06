@@ -127,7 +127,7 @@ export default function FormEditor(props: Props) {
   const handleAddField = React.useCallback(
     (fieldType: FieldType, aboveFieldSlug?: string) => {
       const usedIdentifiers = fields.map((field) => field.slug);
-      const field = newField(fieldType, usedIdentifiers);
+      const field = newField(fieldType, usedIdentifiers, formContext);
 
       if (["Divider", "Spacer"].includes(fieldType)) {
         // This field type has no options to be edited by the user,
@@ -140,7 +140,7 @@ export default function FormEditor(props: Props) {
         setEditFieldModalOpen(true);
       }
     },
-    [fields, handleChange],
+    [fields, handleChange, formContext],
   );
 
   const handleEditField = React.useCallback(

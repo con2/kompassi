@@ -1,11 +1,18 @@
 import { generateUniqueIdentifier } from "@con2/components/helpers";
+import type { FormEditorContext } from "./editFieldForm";
 import { Field, FieldType } from "./models";
 
 export default function newField(
   type: FieldType,
   usedIdentifiers: string[],
+  formContext: FormEditorContext,
 ): Field {
   const slug = generateUniqueIdentifier(type, usedIdentifiers);
+  // survey responses have nothing to pass dimension values forward to
+  const propagation =
+    formContext === "survey"
+      ? {}
+      : { propagateDimensionOnCreate: true, propagateDimensionOnEdit: true };
   switch (type) {
     case "Divider":
     case "Spacer":
@@ -27,9 +34,16 @@ export default function newField(
       return { type, slug, title: "", choices: [] };
     case "DimensionSingleSelect":
     case "DimensionMultiSelect":
-      return { type, slug, title: "", choices: [], dimension: "" };
+      return {
+        type,
+        slug,
+        title: "",
+        choices: [],
+        dimension: "",
+        ...propagation,
+      };
     case "DimensionSingleCheckbox":
-      return { type, slug, title: "", dimension: "" };
+      return { type, slug, title: "", dimension: "", ...propagation };
     case "RadioMatrix":
       return { type, slug, title: "", choices: [], questions: [] };
     case "MultiItemField":
