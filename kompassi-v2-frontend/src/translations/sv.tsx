@@ -16,6 +16,11 @@ function UNSURE<T>(wat: T): T {
   return wat;
 }
 
+const slugPatternDescription =
+  "Använd endast små bokstäver a–z, siffror 0–9 och bindestreck (-).";
+const fieldSlugPatternDescription =
+  "Använd endast små bokstäver a–z, siffror 0–9, understreck (_), bindestreck (-) och punkter (.).";
+
 const translations: Translations = {
   Common: {
     ok: "OK",
@@ -238,9 +243,10 @@ const translations: Translations = {
 
     editFieldForm: {
       slug: {
+        patternDescription: fieldSlugPatternDescription,
         title: "Tekniskt namn",
         helpText:
-          "Maskinläsbart fältnamn. Giltiga tecken: gemener a-z, siffror 0-9, understreck _. Får inte börja med en siffra. Det tekniska namnet måste vara detsamma i alla språkversioner.",
+          "Maskinläsbart fältnamn. Använd gemener a-z, siffror 0-9 och understreck _, t.ex. shirt_size. Det tekniska namnet måste vara detsamma i alla språkversioner. Om du ändrar det senare kopplas de svar som redan getts i fältet bort från det.",
       },
       title: {
         title: "Titel",
@@ -1432,6 +1438,7 @@ const translations: Translations = {
       `${numPrograms} programpunkt${numPrograms === 1 ? "" : "er"}.`,
     attributes: {
       slug: {
+        patternDescription: slugPatternDescription,
         title: "Tekniskt namn",
         helpText:
           "Maskinläsbart namn på programpunkten. Måste vara unikt inom evenemanget. Kan inte ändras efter att det skapats. Kan innehålla gemener, siffror och bindestreck (-). Ingår i URL:en: <code>/EVENEMANG-SLUG/programs/PROGRAM-SLUG</code> (t.ex. <code>/tracon2025/programs/opening-ceremony</code>).",
@@ -1712,6 +1719,7 @@ const translations: Translations = {
       ),
       attributes: {
         slug: {
+          patternDescription: slugPatternDescription,
           title: "Tekniskt namn",
           helpText: (
             <>
@@ -2254,6 +2262,7 @@ const translations: Translations = {
         `${numScheduleItems} schemapunkt${numScheduleItems === 1 ? "" : "er"}.`,
       attributes: {
         slug: {
+          patternDescription: slugPatternDescription,
           title: "Tekniskt namn",
           helpText: (
             <>
@@ -2542,6 +2551,7 @@ const translations: Translations = {
     ),
     attributes: {
       slug: {
+        patternDescription: slugPatternDescription,
         title: "Tekniskt namn",
         helpText: (
           <>
@@ -2975,6 +2985,7 @@ const translations: Translations = {
       },
       attributes: {
         slug: {
+          patternDescription: slugPatternDescription,
           title: "Tekniskt namn",
           helpText: (
             <>
@@ -3048,6 +3059,7 @@ const translations: Translations = {
       },
       attributes: {
         slug: {
+          patternDescription: slugPatternDescription,
           title: "Tekniskt namn",
           helpText: (
             <>
@@ -3255,6 +3267,7 @@ const translations: Translations = {
     listTitle: "Register",
     attributes: {
       slug: "Slugg",
+      slugPatternDescription,
       title: {
         en: "Namn (engelska)",
         fi: "Namn (finska)",

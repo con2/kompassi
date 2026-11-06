@@ -19,6 +19,7 @@ import { SurveyFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Field } from "@/components/forms/models";
+import { slugPattern } from "@/components/forms/slugPatterns";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import { publicUrl } from "@/config";
 import { getTranslations } from "@/translations";
@@ -238,6 +239,7 @@ export default async function SurveysPage(props: Props) {
       slug: "slug",
       type: "SingleLineText",
       required: true,
+      pattern: slugPattern,
       ...t.attributes.slug,
     },
     getAnonymityDropdown(t),

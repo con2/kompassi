@@ -17,6 +17,7 @@ import { OfferFormFragment, SurveyPurpose } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Field } from "@/components/forms/models";
+import { slugPattern } from "@/components/forms/slugPatterns";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import { publicUrl } from "@/config";
@@ -287,6 +288,7 @@ export default async function ProgramFormsPage(props: Props) {
       slug: "slug",
       type: "SingleLineText",
       required: true,
+      pattern: slugPattern,
       ...t.attributes.slug,
     },
     {

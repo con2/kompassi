@@ -6,6 +6,7 @@ import {
 } from "@/__generated__/graphql";
 import { buildDimensionField } from "@/components/dimensions/DimensionValueSelectionForm";
 import { Field } from "@/components/forms/models";
+import { slugPattern } from "@/components/forms/slugPatterns";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import type { Translations } from "@/translations/en";
 import { isValidSlug } from "@/services/tickets";
@@ -51,6 +52,8 @@ export function buildScheduleItemForm(
       type: "SingleLineText",
       required: true,
       readOnly: editingExisting,
+      pattern: slugPattern,
+      patternDescription: t?.attributes.slug.patternDescription,
       title: t?.attributes.slug.title,
       helpText: editingExisting ? "" : t?.attributes.slug.helpText,
     },

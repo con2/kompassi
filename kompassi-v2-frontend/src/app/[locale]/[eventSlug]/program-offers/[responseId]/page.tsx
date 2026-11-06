@@ -16,6 +16,7 @@ import {
   validateCachedDimensions,
 } from "@/components/dimensions/models";
 import { Field, validateFields } from "@/components/forms/models";
+import { slugPattern } from "@/components/forms/slugPatterns";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import { OldVersionAlert } from "@/components/response/OldVersionAlert";
@@ -221,6 +222,7 @@ export default async function ProgramOfferPage(props: Props) {
       slug: "slug",
       type: "SingleLineText",
       required: true,
+      pattern: slugPattern,
       ...programT.attributes.slug,
     },
     {

@@ -1,5 +1,10 @@
 import { JSX, ReactNode } from "react";
 
+const slugPatternDescription =
+  "Use only lower case letters a–z, numbers 0–9 and dashes (-).";
+const fieldSlugPatternDescription =
+  "Use only lower case letters a–z, numbers 0–9, underscores (_), dashes (-) and dots (.).";
+
 const translations = {
   Common: {
     ok: "OK",
@@ -243,9 +248,10 @@ const translations = {
 
     editFieldForm: {
       slug: {
+        patternDescription: fieldSlugPatternDescription,
         title: "Technical name",
         helpText:
-          "Machine-readable field name. Valid characters: small letters a-z, numbers 0-9, underscore _. Must not start with a number. The slug must be the same in different languages.",
+          "Machine-readable field name. Use small letters a-z, numbers 0-9 and underscores _, eg. shirt_size. The slug must be the same in different languages. Changing it later detaches the answers already given to the field.",
       },
       title: {
         title: "Title",
@@ -1467,6 +1473,7 @@ const translations = {
     inEvent: (eventName: string) => <>in {eventName}</>,
     attributes: {
       slug: {
+        patternDescription: slugPatternDescription,
         title: "Slug",
         helpText:
           "Machine-readable name of the program item. Must be unique within the event. Cannot be changed after creation. Can contain lower case letters, numbers and dashes (-). Will be part of the URL: <code>/EVENT-SLUG/programs/PROGRAM-SLUG</code> (eg. <code>/tracon2025/programs/opening-ceremony</code>).",
@@ -1744,6 +1751,7 @@ const translations = {
       ),
       attributes: {
         slug: {
+          patternDescription: slugPatternDescription,
           title: "Slug",
           helpText: (
             <>
@@ -2288,6 +2296,7 @@ const translations = {
         }.`,
       attributes: {
         slug: {
+          patternDescription: slugPatternDescription,
           title: "Slug",
           helpText: (
             <>
@@ -2594,6 +2603,7 @@ const translations = {
     ),
     attributes: {
       slug: {
+        patternDescription: slugPatternDescription,
         title: "Slug",
         helpText: (
           <>
@@ -3028,6 +3038,7 @@ const translations = {
       },
       attributes: {
         slug: {
+          patternDescription: slugPatternDescription,
           title: "Technical name",
           helpText: (
             <>
@@ -3104,8 +3115,8 @@ const translations = {
       },
       attributes: {
         slug: {
+          patternDescription: slugPatternDescription,
           title: "Technical name",
-          // TODO add pattern for slug and document it in helpText
           helpText: (
             <>
               Machine-readable, short name for the dimension value. Cannot be
@@ -3311,6 +3322,7 @@ const translations = {
     listTitle: "Registries",
     attributes: {
       slug: "Slug",
+      slugPatternDescription,
       title: {
         en: "Title (English)",
         fi: "Title (Finnish)",
