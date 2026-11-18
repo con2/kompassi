@@ -2,17 +2,22 @@ from datetime import datetime, timedelta
 
 from dateutil.tz import tzlocal
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
+from kompassi.access.models.cbac_entry import CBACEntry
 from kompassi.access.models.email_alias_domain import EmailAliasDomain
 from kompassi.access.models.email_alias_type import EmailAliasVariant
 from kompassi.access.models.group_email_alias_grant import GroupEmailAliasGrant
 from kompassi.badges.models import BadgesEventMeta
 from kompassi.core.models import Event, Organization, Venue
 from kompassi.forms.models.meta import FormsEventMeta
+from kompassi.forms.models.projection import Projection
+from kompassi.forms.models.splat import Splat
+from kompassi.forms.models.survey import Survey as FormsSurvey
 from kompassi.forms.models.survey import SurveyDTO
 from kompassi.intra.models import IntraEventMeta, Team
 from kompassi.involvement.models.involvement_to_badge import InvolvementToBadgeMapping
@@ -44,6 +49,7 @@ class Setup:
         self.setup_access()
         self.setup_forms()
         self.setup_program_v2()
+        self.setup_station_access()
 
     def setup_core(self):
         self.organization, _unused = Organization.objects.get_or_create(
@@ -252,6 +258,32 @@ class Setup:
             ],
         )
 
+    def setup_station_access(self):
+        temp_permission_valid_from = (self.event.start_time - timedelta(days=3)).replace(
+            hour=0, minute=0, second=0, tzinfo=self.tz
+        )
+        temp_permission_valid_until = self.event.end_time.replace(hour=23, minute=59, second=59, tzinfo=self.tz)
+
+        # Vikailmoitus - https://outline.con2.fi/doc/survey-response-to-slack-vikailmo-5IJAbLMjQY
+        # NOTE: This is a User id, not a Person id
+        User = get_user_model()
+        user_id = 22653  # tracon-vikailmoitus
+        user = User.objects.filter(id=user_id).first()
+        projection = Projection.objects.filter(scope=self.event.scope, slug="vikailmoitus").first()
+        if user and projection:
+            CBACEntry.grant_access(
+                user,
+                claims=dict(
+                    event=self.event.slug,
+                    app="forms",
+                    model="Projection",
+                    operation="query",
+                    slug=projection.slug,
+                ),
+                expires_at=temp_permission_valid_until,
+                valid_from=temp_permission_valid_from,
+            )
+
     def setup_intra(self):
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
         organizer_group = self.event.labour_event_meta.get_group("vastaava")
@@ -317,6 +349,30 @@ class Setup:
             ),
         ]:
             survey.save(self.event)
+
+        survey = FormsSurvey.objects.filter(event=self.event, slug="vikailmoitus").first()
+        if survey:
+            splats = [
+                Splat(
+                    target_field=slug,
+                    source_fields=[slug],
+                    required=False,
+                )
+                for slug in ["issue", "location", "contacts"]
+            ]
+
+            projection, _created = Projection.objects.update_or_create(
+                scope=survey.scope,
+                slug="vikailmoitus",
+                defaults=dict(
+                    is_public=False,
+                    default_language_code="fi",
+                    splats=[splat.model_dump(mode="json", by_alias=True) for splat in splats],
+                    special_fields=["responseId", "createdAt", "updatedAt"],
+                ),
+            )
+
+            projection.surveys.set([survey])
 
     def setup_program_v2(self):
         InvolvementEventMeta.ensure(self.event)
