@@ -6,6 +6,7 @@ from .views.aliases_views import (
 )
 from .views.api_views import (
     access_admin_aliases_api,
+    access_admin_aliases_json_api,
     access_admin_group_emails_api,
     access_admin_group_members_api,
     api_discord_view,
@@ -44,6 +45,11 @@ urlpatterns = [
         r"^api/v1/domains/(?P<domain_name>[a-z0-9-\.]+)/aliases.txt$",
         access_admin_aliases_api,
         name="access_admin_aliases_api",
+    ),
+    re_path(
+        r"^api/v1/domains/(?P<domain_name>[a-z0-9-\.]+)/aliases.json$",
+        access_admin_aliases_json_api,
+        name="access_admin_aliases_json_api",
     ),
     re_path(
         r"^api/v1/groups/(?P<group_name>[a-z0-9-]+)/emails.txt$",

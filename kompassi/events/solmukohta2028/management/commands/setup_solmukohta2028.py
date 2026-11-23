@@ -178,8 +178,9 @@ class Setup:
                 [EmailAliasVariant.CUSTOM_FIRSTNAME_LASTNAME],
             )
 
-        # Lets ropecon-aliases read the organizer group's members for Google Workspace account sync,
-        # without granting it every group via the same API endpoint.
+        # Lets ropecon-aliases read the organizer group's members and the solmukohta.eu alias
+        # holders for Google Workspace account sync, without granting it every group or domain
+        # via the same API endpoints.
         User = get_user_model()
         ropecon_aliases = User.objects.filter(username="ropecon-aliases").first()
         if ropecon_aliases is None:
@@ -192,6 +193,17 @@ class Setup:
                 claims=dict(
                     view="access_admin_group_members_api",
                     group_name=organizer_group.name,
+                ),
+                expires_at=self.event.end_time + timedelta(days=CBAC_VALID_AFTER_EVENT_DAYS),
+            )
+
+            domain = EmailAliasDomain.objects.get(domain_name="solmukohta.eu")
+            CBACEntry.grant_access(
+                ropecon_aliases,
+                claims=dict(
+                    view="access_admin_aliases_json_api",
+                    organization=domain.organization.slug,
+                    domain_name=domain.domain_name,
                 ),
                 expires_at=self.event.end_time + timedelta(days=CBAC_VALID_AFTER_EVENT_DAYS),
             )

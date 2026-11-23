@@ -1,9 +1,12 @@
+from base64 import b64encode
 from datetime import timedelta
 from types import SimpleNamespace
 from unittest import TestCase as NonDatabaseTestCase
 from unittest.mock import patch
 
 import pytest
+from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.test import RequestFactory, TestCase
 from django.utils.timezone import now
 
@@ -421,3 +424,52 @@ class CustomFirstnameLastnameVariantTestCase(TestCase):
         variant = EmailAliasVariant.CUSTOM_FIRSTNAME_LASTNAME
         with patch.object(Signup, "signup_extra", new=SimpleNamespace(email_alias="Mahti.Markku")):
             assert variant.get_account_name(signup.person, domain) == "mahti.markku"
+
+
+@pytest.mark.django_db
+def test_aliases_json_api_is_granted_per_domain():
+    """
+    An application user sees the alias holders of a domain only when its CBAC entry names
+    that domain. The email returned is the person's own address, not an alias.
+    """
+    from django.contrib.auth.models import Group
+    from django.test import Client
+
+    Entry.ensure_partitions()
+
+    alias, _created = EmailAlias.get_or_create_dummy()
+    person = alias.person
+    other_domain = EmailAliasDomain.objects.create(
+        domain_name="other.example.com",
+        organization=alias.domain.organization,
+    )
+
+    app_user = get_user_model().objects.create_user(username="alias-sync", password="secret")
+    app_user.groups.add(Group.objects.get_or_create(name=settings.KOMPASSI_APPLICATION_USER_GROUP)[0])
+    CBACEntry.grant_access(
+        app_user,
+        claims=dict(
+            view="access_admin_aliases_json_api",
+            organization=alias.domain.organization.slug,
+            domain_name=alias.domain.domain_name,
+        ),
+        expires_at=now() + timedelta(days=1),
+    )
+
+    client = Client(headers={"authorization": "Basic " + b64encode(b"alias-sync:secret").decode()})
+
+    response = client.get(f"/api/v1/domains/{alias.domain.domain_name}/aliases.json")
+    assert response.status_code == 200
+    assert response.json() == [
+        dict(
+            alias=alias.email_address,
+            first_name=person.first_name,
+            surname=person.surname,
+            email=person.email,
+            phone=person.normalized_phone_number,
+        )
+    ]
+    assert person.email != alias.email_address
+
+    response = client.get(f"/api/v1/domains/{other_domain.domain_name}/aliases.json")
+    assert response.status_code == 403

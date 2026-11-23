@@ -19,7 +19,7 @@ def permission_denied_view(request, exception=None):
         next=request.path,
     )
 
-    return render(request, "403.pug", vars)
+    return render(request, "403.pug", vars, status=403)
 
 
 def not_found_view(request, exception=None):

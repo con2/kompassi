@@ -12,7 +12,7 @@ from kompassi.core.utils import pick_attrs
 from kompassi.involvement.models import Involvement
 from kompassi.labour.helpers import labour_event_required
 
-from ..models import CBACEntry, EmailAliasDomain, InternalEmailAlias
+from ..models import CBACEntry, EmailAlias, EmailAliasDomain, InternalEmailAlias
 
 logger = logging.getLogger(__name__)
 
@@ -96,3 +96,27 @@ def access_admin_aliases_api(request, domain_name):
             logger.warning("Internal alias %s does not have target emails", alias)
 
     return HttpResponse("\n".join(lines), content_type="text/plain; charset=UTF-8")
+
+
+@require_safe
+@api_view
+@api_login_required
+def access_admin_aliases_json_api(request, domain_name):
+    domain = get_object_or_404(EmailAliasDomain, domain_name=domain_name)
+
+    # Unlike default_cbac_required, this includes domain_name in the claims so that
+    # access can be granted for one specific domain instead of every domain.
+    claims = get_default_claims(request, organization=domain.organization.slug, domain_name=domain_name)
+    if not CBACEntry.is_allowed(request.user, claims):
+        raise_cbac_permission_denied(request, claims)
+
+    return [
+        dict(
+            alias=alias.email_address,
+            first_name=alias.person.first_name,
+            surname=alias.person.surname,
+            email=alias.person.email,
+            phone=alias.person.normalized_phone_number,
+        )
+        for alias in EmailAlias.objects.filter(domain=domain).select_related("person").order_by("account_name")
+    ]

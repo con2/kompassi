@@ -277,8 +277,9 @@ class Setup:
             ],
         )
 
-        # Lets ropecon-aliases read conitea's members for Google Workspace account sync,
-        # without granting it every group via the same API endpoint.
+        # Lets ropecon-aliases read conitea's members and the ropecon.fi alias holders for
+        # Google Workspace account sync, without granting it every group or domain via the
+        # same API endpoints.
         User = get_user_model()
         ropecon_aliases = User.objects.filter(username="ropecon-aliases").first()
         if ropecon_aliases is None:
@@ -295,6 +296,16 @@ class Setup:
                     ),
                     expires_at=self.event.end_time + timedelta(days=CBAC_VALID_AFTER_EVENT_DAYS),
                 )
+
+            CBACEntry.grant_access(
+                ropecon_aliases,
+                claims=dict(
+                    view="access_admin_aliases_json_api",
+                    organization=domain.organization.slug,
+                    domain_name=domain.domain_name,
+                ),
+                expires_at=self.event.end_time + timedelta(days=CBAC_VALID_AFTER_EVENT_DAYS),
+            )
 
     def setup_program_v2(self):
         (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
