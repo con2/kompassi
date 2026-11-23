@@ -462,6 +462,7 @@ def test_aliases_json_api_is_granted_per_domain():
     assert response.status_code == 200
     assert response.json() == [
         dict(
+            id=person.id,
             alias=alias.email_address,
             first_name=person.first_name,
             surname=person.surname,
