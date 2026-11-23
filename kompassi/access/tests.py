@@ -474,3 +474,12 @@ def test_aliases_json_api_is_granted_per_domain():
 
     response = client.get(f"/api/v1/domains/{other_domain.domain_name}/aliases.json")
     assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_person_without_user_cannot_hold_alias():
+    alias_type, _created = EmailAliasType.get_or_create_dummy()
+    person = Person.objects.create(first_name="Userless", surname="Person", email="userless@example.com")
+
+    with pytest.raises(ValueError):
+        EmailAlias.objects.create(type=alias_type, person=person)

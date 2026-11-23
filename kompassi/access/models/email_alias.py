@@ -77,6 +77,9 @@ class EmailAlias(EmailAliasMixin, models.Model):
 
 @receiver(pre_save, sender=EmailAlias)
 def populate_email_alias_computed_fields(sender, instance: EmailAlias, **kwargs):
+    if instance.person and instance.person.user_id is None:
+        raise ValueError(f"Cannot give an email alias to {instance.person} who has no user account")
+
     if instance.type:
         instance.domain = instance.type.domain
 
