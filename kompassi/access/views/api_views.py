@@ -112,7 +112,7 @@ def access_admin_aliases_json_api(request, domain_name):
 
     return [
         dict(
-            id=alias.person.id,
+            id=alias.person.user_id,
             alias=alias.email_address,
             first_name=alias.person.first_name,
             surname=alias.person.surname,

@@ -148,6 +148,8 @@ named `id` or `sub`, so a mix-up is not caught by types or names.
 - `/oidc/userinfo` and the ID token `sub` carry **`User.id`** (django-oauth-toolkit default;
   `api_v2/custom_oauth2_validator.py` does not override it).
 - Legacy `/api/v2/people/me` returns **`Person.id`** as `id` (`Person.as_dict`).
+- Access-related interfaces (the `access` app's APIs, anything feeding account or permission
+  sync in another system) emit **`User.id`**, so that the value matches the OIDC `sub`.
 - Group membership (`auth_user_groups`), sessions and tokens key on `User.id`;
   labour signups, program involvement and most domain tables key on `Person.id`.
 
